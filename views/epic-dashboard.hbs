@@ -45,6 +45,10 @@
             <label for='selectedProject'>Project:<span class='aui-icon icon-required'>required</span></label>
             <select class='select' id='selectedProject'></select>
         </div>
+        <div class='field-group'>
+            <label for='selectedVersion'>Release:<span class='aui-icon icon-required'>required</span></label>
+            <select class='select' id='selectedVersion'></select>
+        </div>
         <div class='buttons-container'>
             <button type='submit' id='saveConfiguration' class='aui-button'>Save</button>
         </div>
@@ -75,7 +79,7 @@
                 $('#issues-in-project').html(this.template());
                 this.setTitle(configuration);
                 var that = this;
-                new IssueSearchService().getIssues(configuration.project, function(issues) {
+                new IssueSearchService().getIssues(configuration.project, configuration.version, function(issues) {
                     var issueTable = $('#issuesTable');
                     $.each(issues, function(i, $issue) {
                         issueTable.append(that.rowTemplate({issue: $issue}));
@@ -87,10 +91,10 @@
 
     var IssueSearchService = function() {
         return {
-            getIssues: function(project, callback) {
+            getIssues: function(project, version, callback) {
                 AP.require(['request'], function(request) {
                     request({
-                        url: '/rest/api/2/search?jql=' + encodeURIComponent('project = ' + project),
+                        url: '/rest/api/2/search?jql=' + encodeURIComponent('project = ' + project + ' AND fixVersion = "' + version + '" AND issuetype = Epic'),
                         success: function(response) {
                             var issues = JSON.parse(response).issues;
                             callback(issues);
@@ -106,7 +110,7 @@
             template: function(value) {
                 return _.template($('#dashboardItemConfigTemplate').html())(value);
             },
-            addProjects: function(config) {
+            addProjects: function(config, addVersions) {
                 AP.require(['request'], function(request) {
                     request({
                         url: '/rest/api/2/project',
@@ -114,17 +118,39 @@
                             var projects = JSON.parse(response);
                             var selectedProject = $('#selectedProject');
                             $.each(projects, function(index, project) {
-                                var select = $('<option>', {value: project.id})
-                                        .text(project.name);
+                                var select = $('<option>', {value: project.id}).text(project.name);
                                 if (config && config.project == project.id) {
                                     selectedProject.append(select.attr('selected', 'selected'));
                                 }
                                 selectedProject.append(select);
                             });
+                            addVersions(config)
                         }
                     });
                 });
 
+            },
+            addVersions: function (config) {
+                var $selectedProject = $('#selectedProject');
+                var currentProject = $selectedProject.find(':selected').val();
+                console.log(currentProject);
+                AP.require(['request'], function(request) {
+                    request({
+                        url: '/rest/api/2/project/' + currentProject,
+                        success: function(response) {
+                            var selectedVersion = $('#selectedVersion');
+                            selectedVersion.empty();
+                            var versions = JSON.parse(response).versions;
+                            $.each(versions, function (index, version) {
+                                var versionOption = $('<option>', {value: version.id}).text(version.name);
+                                if (config && config.version == version.id) {
+                                    selectedVersion.append(versionOption.attr('selected', 'selected'));
+                                }
+                                selectedVersion.append(versionOption);
+                            });
+                        }
+                    })
+                });
             },
             render: function(config) {
                 if (config) {
@@ -132,13 +158,17 @@
                 } else {
                     $('#issues-in-project').html(this.template({itemTitle : 'Issues for project'}));
                 }
-                this.addProjects(config);
+                this.addProjects(config, this.addVersions);
+                this.addVersions(config);
+
+                $('#selectedProject').change(this.addVersions, config);
                 $('#saveConfiguration').click(function(e) {
                     e.preventDefault();
                     var service = new DashboardItemConfigurationService();
                     var $title = $('#itemTitle').val();
                     var $project = $('#selectedProject').find(':selected').val();
-                    var configuration = {project: $project, title: $title};
+                    var $version = $('#selectedVersion').find(':selected').val();
+                    var configuration = {project: $project, title: $title, version: $version};
                     service.save(configuration, function() {
                         new IssueTableView().render(configuration);
                     });

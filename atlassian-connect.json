@@ -19,23 +19,29 @@
     "installed": "/installed"
   },
   "scopes": [
-    "READ"
+    "READ",
+    "WRITE"
   ],
   "modules": {
   "jiraDashboardItems": [
     {
-      "description": {
-        "value": "Dashboard item description"
-      },
-      "url": "/epic-dashboard?dashboardItemId={dashboardItem.id}&dashboardId={dashboard.id}",
-      "configurable": true,
-      "thumbnailUrl": "http://content.sportslogos.net/logos/32/755/full/hyoflhueqc3u3whapwey2gjnj.png",
-      "name": {
-        "value": "Epic Report"
-      },
-      "key": "epic-dashboard-item-key"
-    }
-  ]
+                "name" : {
+                    "value" : "Issues in project",
+                    "i18n" : "issues.in.project.i18n"
+                },
+                "url" : "/epic-dashboard?dashboard={dashboard.id}&dashboardItem={dashboardItem.id}",
+                "key" : "iframe-requests",
+                "description" : {
+                    "value" : "Issues in project dashboard item",
+                    "i18n" : "issues.in.project.description.i18n"
+                },
+
+                "thumbnailUrl": "http://content.sportslogos.net/logos/32/755/full/hyoflhueqc3u3whapwey2gjnj.png",
+                "configurable" : true,
+                "conditions" : [{
+                        "condition": "/condition?view={dashboardItem.viewType}&dashboard={dashboard.id}&dashboardItem={dashboardItem.id}"
+                }]
+    }]
   }
 }
 

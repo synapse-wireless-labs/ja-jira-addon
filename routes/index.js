@@ -22,8 +22,8 @@ module.exports = function (app, addon) {
             // Rendering a template is easy; the `render()` method takes two params: name of template
             // and a json object to pass the context in
             res.render('epic-dashboard', {
-                dashboard: req.query['dashboardId'],
-                dashboardItem: req.query['dashboardItemId']
+                dashboard: req.query['dashboard'],
+                dashboardItem: req.query['dashboardItem']
             });
         }
     );

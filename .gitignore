@@ -1,0 +1,12 @@
+*.iml
+*.idea
+.DS_Store
+node_modules
+*.pem
+credentials.json
+store.db
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

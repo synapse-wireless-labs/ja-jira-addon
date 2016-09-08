@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="ap-local-base-url" content="{{localBaseUrl}}">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="ap-local-base-url" content="{{localBaseUrl}}">
+
+    <link rel="stylesheet" href="//aui-cdn.atlassian.com/aui-adg/5.6.11/css/aui.css" media="all">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="//aui-cdn.atlassian.com/aui-adg/5.6.11/js/aui.js" type="text/javascript"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <script src="{{hostBaseUrl}}/atlassian-connect/all.js"></script>
+</head>
+
+<body class="aui-page-hybrid">
+<section id="content" role="main">
+    <div class="aui-page-panel ac-content">
+        <div class="aui-page-panel-inner">
+            <section class="aui-page-panel-content">
+                <div id="issues-in-project" class="aui-item">
+                </div>
+            </section>
+        </div>
+    </div>
+</section>
+<script type="text/underscore-template" id="issueTableRow">
+    <tr><td><%=issue.key%></td><td><%=issue.fields.summary%></td><td><%=issue.fields.description%></td></tr>
+</script>
+<script type="text/underscore-template" id="issuesTableTemplate">
+    <table id='issuesTable' class='aui'>
+        <thead>
+        <th>Key</th><th>Summary</th><th>Description</th>
+        </thead>
+        <tbody></tbody>
+    </table>
+</script>
+<script type="text/underscore-template" id="dashboardItemConfigTemplate">
+    <form class='aui'>
+        <div class='field-group'>
+            <label for='itemTitle'>Title:<span class='aui-icon icon-required'>required</span></label>
+            <input class='text medium-field' type='text' id='itemTitle' value='<%=itemTitle%>' />
+        </div>
+        <div class='field-group'>
+            <label for='selectedProject'>Project:<span class='aui-icon icon-required'>required</span></label>
+            <select class='select' id='selectedProject'></select>
+        </div>
+        <div class='buttons-container'>
+            <button type='submit' id='saveConfiguration' class='aui-button'>Save</button>
+        </div>
+    </form>
+</script>
+<script type="text/javascript">
+
+    var IssueTableView = function() {
+        return {
+            setTitle: function(config) {
+                if (config) {
+                    AP.require(['jira'], function(jira) {
+                        jira.setDashboardItemTitle(config.title);
+                    });
+                } else {
+                    AP.require(['jira'], function(jira) {
+                        jira.setDashboardItemTitle('Issues in project');
+                    });
+                }
+            },
+            template: function(value) {
+                return _.template($('#issuesTableTemplate').html())(value);
+            },
+            rowTemplate: function(issue) {
+                return _.template($('#issueTableRow').html())(issue);
+            },
+            render: function(configuration) {
+                $('#issues-in-project').html(this.template());
+                this.setTitle(configuration);
+                var that = this;
+                new IssueSearchService().getIssues(configuration.project, function(issues) {
+                    var issueTable = $('#issuesTable');
+                    $.each(issues, function(i, $issue) {
+                        issueTable.append(that.rowTemplate({issue: $issue}));
+                    });
+                });
+            }
+        }
+    };
+
+    var IssueSearchService = function() {
+        return {
+            getIssues: function(project, callback) {
+                AP.require(['request'], function(request) {
+                    request({
+                        url: '/rest/api/2/search?jql=' + encodeURIComponent('project = ' + project),
+                        success: function(response) {
+                            var issues = JSON.parse(response).issues;
+                            callback(issues);
+                        }
+                    });
+                });
+            }
+        }
+    };
+
+    var DashboardItemConfigurationView = function() {
+        return {
+            template: function(value) {
+                return _.template($('#dashboardItemConfigTemplate').html())(value);
+            },
+            addProjects: function(config) {
+                AP.require(['request'], function(request) {
+                    request({
+                        url: '/rest/api/2/project',
+                        success: function(response) {
+                            var projects = JSON.parse(response);
+                            var selectedProject = $('#selectedProject');
+                            $.each(projects, function(index, project) {
+                                var select = $('<option>', {value: project.id})
+                                        .text(project.name);
+                                if (config && config.project == project.id) {
+                                    selectedProject.append(select.attr('selected', 'selected'));
+                                }
+                                selectedProject.append(select);
+                            });
+                        }
+                    });
+                });
+
+            },
+            render: function(config) {
+                if (config) {
+                    $('#issues-in-project').html(this.template({itemTitle : config.title}));
+                } else {
+                    $('#issues-in-project').html(this.template({itemTitle : 'Issues for project'}));
+                }
+                this.addProjects(config);
+                $('#saveConfiguration').click(function(e) {
+                    e.preventDefault();
+                    var service = new DashboardItemConfigurationService();
+                    var $title = $('#itemTitle').val();
+                    var $project = $('#selectedProject').find(':selected').val();
+                    var configuration = {project: $project, title: $title};
+                    service.save(configuration, function() {
+                        new IssueTableView().render(configuration);
+                    });
+                });
+            }
+        }
+    };
+
+    var DashboardItemConfigurationService = function() {
+        return {
+            getConfiguration: function(configuredCallback, errorCallback) {
+                AP.require(['request'], function(request) {
+                    request({
+                        url: '/rest/api/2/dashboard/{{{dashboard}}}/items/{{{dashboardItem}}}/properties/itemkey',
+                        success: function(response) {
+                            configuredCallback(JSON.parse(response).value);
+                        }
+                    });
+                });
+            },
+            isConfigured : function(configuredCallback, notConfiguredCallback) {
+                var that = this;
+                AP.require(['request'], function(request) {
+                    request({
+                        url: '/rest/api/2/dashboard/{{{dashboard}}}/items/{{{dashboardItem}}}/properties',
+                        success: function(response) {
+                            var arrayOfProperties = JSON.parse(response).keys;
+                            var configured = _.find(arrayOfProperties, function(property) {
+                                return "itemkey" == property.key;
+                            });
+                            if (configured) {
+                                that.getConfiguration(configuredCallback)
+                            } else {
+                                notConfiguredCallback();
+                            }
+                        }
+                    });
+                });
+            },
+            save : function(configuration, successCallback) {
+                AP.require(['request'], function(request) {
+                    request({
+                        url: '/rest/api/2/dashboard/{{{dashboard}}}/items/{{{dashboardItem}}}/properties/itemkey',
+                        type: 'PUT',
+                        contentType: 'application/json',
+                        data: JSON.stringify(configuration),
+                        success: successCallback
+                    });
+                });
+            }
+        }
+    };
+
+    var DashboardItemView = function() {
+        return {
+            render: function() {
+                var service = new DashboardItemConfigurationService();
+                service.isConfigured(function(config) {
+                    new IssueTableView().render(config)
+                }, function() {
+                    new DashboardItemConfigurationView().render();
+                });
+            }
+        }
+    };
+
+    AP.require(['jira'], function (jira) {
+        jira.DashboardItem.onDashboardItemEdit(function() {
+            new DashboardItemConfigurationService().getConfiguration(function(config) {
+                new DashboardItemConfigurationView().render(config);
+            });
+        });
+    });
+
+    new DashboardItemView().render();
+
+</script>
+
+</body>
+</html>

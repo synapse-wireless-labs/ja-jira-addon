@@ -1,0 +1,41 @@
+{
+  "key": "ja-report-addon",
+  "name": "Agile Report Add-on",
+  "description": "Provide helpful macros for reporting on Agile projects",
+  "vendor": {
+    "name": "Synapse Wireless Labs",
+    "url": "http://www.synapse-wireless.com/"
+  },
+  "baseUrl": "{{localBaseUrl}}",
+  "links": {
+    "self": "{{localBaseUrl}}/atlassian-connect.json",
+    "homepage": "{{localBaseUrl}}/atlassian-connect.json"
+  },
+  "authentication": {
+    "type": "jwt"
+  },
+  "lifecycle": {
+    // atlassian-connect-express expects this route to be configured to manage the installation handshake
+    "installed": "/installed"
+  },
+  "scopes": [
+    "READ"
+  ],
+  "modules": {
+  "jiraDashboardItems": [
+    {
+      "description": {
+        "value": "Dashboard item description"
+      },
+      "url": "/epic-dashboard?dashboardItemId={dashboardItem.id}&dashboardId={dashboard.id}",
+      "configurable": true,
+      "thumbnailUrl": "http://content.sportslogos.net/logos/32/755/full/hyoflhueqc3u3whapwey2gjnj.png",
+      "name": {
+        "value": "Epic Report"
+      },
+      "key": "epic-dashboard-item-key"
+    }
+  ]
+  }
+}
+

@@ -34,17 +34,22 @@
             <span class="aui-lozenge <%=epic.lozengeColorClass%>"><%=epic.fields.status.statusCategory.name%></span>
         </td>
         <td headers="progress">
-
             <ul class="ag-progress">
-                <li class="ag-todo" style="width:<%=epic.percentTodo%>%"><a
-                        href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory =%22To Do%22 AND %22Epic Link%22 = <%=epic.key%>"
-                        class="ag-status-info inlineToDoDialog"><b><%=epic.toDoPoints%></b></a></li>
-                <li class="ag-inprogress" style="width:<%=epic.percentInProgress%>%"><a
-                        href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory = %22In Progress%22 AND %22Epic Link%22 = <%=epic.key%>"
-                        class="ag-status-info inlineProgressDialog"><b><%=epic.inProgressPoints%></b></a></li>
-                <li class="ag-done" style="width:<%=epic.percentInProgress%>%"><a
-                        href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory = %22Done%22 AND %22Epic Link%22 = <%=epic.key%>"
-                        class="ag-status-info inlineProgressDialog"><b><%=epic.donePoints%></b></a></li>
+                <li class="ag-todo <% if (epic.toDoPoints==0){print(" hidden");}%>" style="width:<%=epic.percentTodo%>%">
+                    <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory =%22To Do%22 AND %22Epic Link%22 = <%=epic.key%>" class="ag-status-info inlineToDoDialog" target="_blank">
+                        <b><%=epic.toDoPoints%></b>
+                    </a>
+                </li>
+                <li class="ag-inprogress <% if (epic.inProgressPoints==0){print(" hidden");}%>" style="width:<%=epic.percentInProgress%>%">
+                    <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory = %22In Progress%22 AND %22Epic Link%22 = <%=epic.key%>" class="ag-status-info inlineProgressDialog" target="_blank">
+                        <b><%=epic.inProgressPoints%></b>
+                    </a>
+                </li>
+                <li class="ag-done <% if (epic.donePoints==0){print(" hidden");}%>" style="width:<%=epic.percentComplete%>%">
+                    <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory = %22Done%22 AND %22Epic Link%22 = <%=epic.key%>" class="ag-status-info inlineProgressDialog" target="_blank">
+                        <b><%=epic.donePoints%></b>
+                    </a>
+                </li>
             </ul>
         </td>
         <td headers="summary">
@@ -225,10 +230,13 @@
                                                 epic.donePoints += story_points;
                                                 break;
                                         }
-                                        epic.percentTodo = Math.floor((epic.toDoPoints / epic.totalPoints) * 100);
-                                        epic.percentInProgress = Math.floor((epic.inProgressPoints / epic.totalPoints) * 100);
-                                        epic.percentComplete = Math.floor((epic.donePoints / epic.totalPoints) * 100);
                                     }
+                                });
+
+                                $.each(epicsJson, function (i, epic) {
+                                    epic.percentTodo = (epic.toDoPoints / epic.totalPoints) * 100;
+                                    epic.percentInProgress = (epic.inProgressPoints / epic.totalPoints) * 100;
+                                    epic.percentComplete = (epic.donePoints / epic.totalPoints) * 100;
                                 });
 
                                 callback(epics);

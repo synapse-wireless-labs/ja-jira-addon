@@ -25,12 +25,12 @@
     </div>
 </section>
 <script type="text/underscore-template" id="issueTableRow">
-    <tr><td><%=issue.key%></td><td><%=issue.fields.summary%></td><td><%=issue.fields.description%></td></tr>
+    <tr><td><%=issue.key%></td><td><%=issue.fields.status.statusCategory.name%></td><td><%=issue.fields.summary%></td><td><%=issue.fields.description%></td></tr>
 </script>
 <script type="text/underscore-template" id="issuesTableTemplate">
     <table id='issuesTable' class='aui'>
         <thead>
-        <th>Key</th><th>Summary</th><th>Description</th>
+        <th>Key</th><th>Status</th><th>Summary</th><th>Description</th>
         </thead>
         <tbody></tbody>
     </table>

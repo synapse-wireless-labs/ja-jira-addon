@@ -13,3 +13,29 @@
   padding: 20px 40px 20px 0;
   height: 100px;
 }
+.ghx-classification-progress,
+.ghx-classification-progress>li {
+    display: block;
+    margin: 0;
+    padding: 0;
+    width: 100%
+}
+.ghx-classification-progress,
+.ghx-classification-progress:first-child {
+    background: #e5e5e5;
+    margin-top: 5px;
+}
+.ghx-version-column .ghx-classification-item.ghx-open .ghx-classification-progress:first-child {
+    margin-top: 10px
+}
+.ghx-classification-item:hover .ghx-classification-progress,
+.ghx-classification-item.ghx-selected .ghx-classification-progress {
+    background: #ccd9ea
+}
+.ghx-classification-progress>li {
+    height: 5px;
+}
+.ghx-classification-progress .ghx-implemented {
+    background-color: #3b73af;
+    max-width: 100%
+}

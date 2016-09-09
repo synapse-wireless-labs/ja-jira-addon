@@ -25,12 +25,26 @@
     </div>
 </section>
 <script type="text/underscore-template" id="issueTableRow">
-    <tr><td><%=epic.key%></td><td><%=epic.fields.status.statusCategory.name%></td><td><%=epic.fields.summary%></td><td><%=epic.fields.description%></td></tr>
+    <tr>
+        <td class="issuekey">
+            <a class="issue-link" data-issue-key="<%=epic.key%>" href="https://synapse-test.atlassian.net/browse/<%=epic.key%>"><%=epic.key%></a>
+        </td>
+        <td class="status">
+            <span class="jira-issue-status-lozenge aui-lozenge jira-issue-status-lozenge-blue-gray jira-issue-status-lozenge-new aui-lozenge-subtle jira-issue-status-lozenge-max-width-medium" data-tooltip="<span class=&quot;jira-issue-status-tooltip-title&quot;><%=epic.fields.status.statusCategory.name%></span>" original-title=""><%=epic.fields.status.statusCategory.name%></span>
+        </td>
+        <td class="summary">
+            <p><a class="issue-link" data-issue-key="<%=epic.key%>" href="https://synapse-test.atlassian.net/browse/<%=epic.key%>"><%=epic.fields.summary%></a></p>
+        </td>
+    </tr>
 </script>
+<td class="status">
+                    </td>
 <script type="text/underscore-template" id="issuesTableTemplate">
     <table id='issuesTable' class='aui'>
         <thead>
-        <th>Key</th><th>Status</th><th>Summary</th><th>Description</th>
+            <th>Key</th>
+            <th>Status</th>
+            <th>Summary</th>
         </thead>
         <tbody></tbody>
     </table>

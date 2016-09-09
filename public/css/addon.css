@@ -64,6 +64,10 @@
     overflow: hidden
 }
 
+li.ag-empty {
+    background: #cccccc
+}
+
 li.ag-todo {
     background: #4a6785
 }

@@ -47,7 +47,7 @@
         </td>
         <td style="min-width: 300px" headers="progress">
             <ul class="ag-progress">
-                <li class="ag-todo" <% if (epic.totalPoints > 0) { %> style="width:<%=epic.percentTodo%>%" <% } else { %>" style="width:100%"<% } %> >
+                <li <% if (epic.totalPoints > 0) { %> class="ag-todo" style="width:<%=epic.percentTodo%>%" <% } else { %>" class="ag-empty" style="width:100%"<% } %> >
                     <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory =%22To Do%22 AND %22Epic Link%22 = <%=epic.key%>" class="ag-status-info inlineToDoDialog" target="_blank">
                         <b><% if (epic.totalPoints > 0) { %> <%=epic.toDoPoints%> <% } else { %>None<% } %></b>
                     </a>

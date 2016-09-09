@@ -25,7 +25,7 @@
     </div>
 </section>
 <script type="text/underscore-template" id="issueTableRow">
-    <tr><td><%=issue.key%></td><td><%=issue.fields.status.statusCategory.name%></td><td><%=issue.fields.summary%></td><td><%=issue.fields.description%></td></tr>
+    <tr><td><%=epic.key%></td><td><%=epic.fields.status.statusCategory.name%></td><td><%=epic.fields.summary%></td><td><%=epic.fields.description%></td></tr>
 </script>
 <script type="text/underscore-template" id="issuesTableTemplate">
     <table id='issuesTable' class='aui'>
@@ -79,10 +79,10 @@
                 $('#issues-in-project').html(this.template());
                 this.setTitle(configuration);
                 var that = this;
-                new IssueSearchService().getIssues(configuration.project, configuration.version, function(issues) {
-                    var issueTable = $('#issuesTable');
-                    $.each(issues, function(i, $issue) {
-                        issueTable.append(that.rowTemplate({issue: $issue}));
+                new IssueSearchService().getEpics(configuration.project, configuration.version, function(epics) {
+                    var epicTable = $('#issuesTable tbody');
+                    $.each(epics, function(i, $epic) {
+                        epicTable.append(that.rowTemplate({epic: $epic}));
                     });
                 });
             }
@@ -91,13 +91,34 @@
 
     var IssueSearchService = function() {
         return {
-            getIssues: function(project, version, callback) {
+            getEpics: function(project, version, callback) {
                 AP.require(['request'], function(request) {
                     request({
                         url: '/rest/api/2/search?jql=' + encodeURIComponent('project = ' + project + ' AND fixVersion = "' + version + '" AND issuetype = Epic'),
                         success: function(response) {
-                            var issues = JSON.parse(response).issues;
-                            callback(issues);
+                            var epics = JSON.parse(response).issues;
+                            callback(epics);
+                        }
+                    });
+                });
+            },
+            getCustomIds: function(callback) {
+                AP.require(['request'], function(request) {
+                    request({
+                        url: 'rest/api/2/field',
+                        success: function(response) {
+                            var fields = JSON.parse(response);
+                            var story_points_id = '';
+                            var epic_link_id = '';
+                            $.each(fields, function(i, field) {
+                                if (field.name == "Story Points") {
+                                    story_points_id = field.id;
+                                } else if (field.name == "Epic Link") {
+                                    epic_link_id = field.id;
+                                }
+                            });
+
+                            callback(story_points_id, epic_link_id);
                         }
                     });
                 });

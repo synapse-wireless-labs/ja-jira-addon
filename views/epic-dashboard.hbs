@@ -7,6 +7,7 @@
     <meta name="ap-local-base-url" content="{{localBaseUrl}}">
 
     <link rel="stylesheet" href="//aui-cdn.atlassian.com/aui-adg/5.6.11/css/aui.css" media="all">
+    <link rel="stylesheet" href="{{furl '/css/addon.css'}}" type="text/css" />
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     <script src="//aui-cdn.atlassian.com/aui-adg/5.6.11/js/aui.js" type="text/javascript"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
@@ -26,25 +27,38 @@
 </section>
 <script type="text/underscore-template" id="issueTableRow">
     <tr>
-        <td class="issuekey">
-            <a class="issue-link" data-issue-key="<%=epic.key%>" href="https://synapse-test.atlassian.net/browse/<%=epic.key%>"><%=epic.key%></a>
+        <td headers="key">
+            <a class="issue-link" data-issue-key="<%=epic.key%>" href="{{hostBaseUrl}}/browse/<%=epic.key%>"><%=epic.key%></a>
         </td>
-        <td class="status">
+        <td headers="status">
             <span class="jira-issue-status-lozenge aui-lozenge jira-issue-status-lozenge-blue-gray jira-issue-status-lozenge-new aui-lozenge-subtle jira-issue-status-lozenge-max-width-medium" data-tooltip="<span class=&quot;jira-issue-status-tooltip-title&quot;><%=epic.fields.status.statusCategory.name%></span>" original-title=""><%=epic.fields.status.statusCategory.name%></span>
         </td>
-        <td class="summary">
-            <p><a class="issue-link" data-issue-key="<%=epic.key%>" href="https://synapse-test.atlassian.net/browse/<%=epic.key%>"><%=epic.fields.summary%></a></p>
+        <td headers="progress">
+
+            <ul class="ag-progress">
+                <li class="ag-todo" style="width:<%=epic.percentTodo%>%"><a
+                        href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory =%22To Do%22 AND %22Epic Link%22 = <%=epic.key%>"
+                        class="ag-status-info inlineToDoDialog"><b><%=epic.toDoPoints%></b></a></li>
+                <li class="ag-inprogress" style="width:<%=epic.percentInProgress%>%"><a
+                        href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory = %22In Progress%22 AND %22Epic Link%22 = <%=epic.key%>"
+                        class="ag-status-info inlineProgressDialog"><b><%=epic.inProgressPoints%></b></a></li>
+                <li class="ag-done" style="width:<%=epic.percentInProgress%>%"><a
+                        href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory = %22Done%22 AND %22Epic Link%22 = <%=epic.key%>"
+                        class="ag-status-info inlineProgressDialog"><b><%=epic.donePoints%></b></a></li>
+            </ul>
+        </td>
+        <td headers="summary">
+            <p><a class="issue-link" data-issue-key="<%=epic.key%>" href="{{hostBaseUrl}}/browse/<%=epic.key%>"><%=epic.fields.summary%></a></p>
         </td>
     </tr>
 </script>
-<td class="status">
-                    </td>
 <script type="text/underscore-template" id="issuesTableTemplate">
     <table id='issuesTable' class='aui'>
         <thead>
-            <th>Key</th>
-            <th>Status</th>
-            <th>Summary</th>
+            <th id="key">Key</th>
+            <th id="status">Status</th>
+            <th id="progress">Progress</th>
+            <th id="summary">Summary</th>
         </thead>
         <tbody></tbody>
     </table>
@@ -53,7 +67,7 @@
     <form class='aui'>
         <div class='field-group'>
             <label for='itemTitle'>Title:<span class='aui-icon icon-required'>required</span></label>
-            <input class='text medium-field' type='text' id='itemTitle' value='<%=itemTitle%>' />
+            <input class='text medium-field' type='text' id='itemTitle' value='<%=itemTitle%>'/>
         </div>
         <div class='field-group'>
             <label for='selectedProject'>Project:<span class='aui-icon icon-required'>required</span></label>
@@ -70,89 +84,161 @@
 </script>
 <script type="text/javascript">
 
-    var IssueTableView = function() {
+    var IssueTableView = function () {
         return {
-            setTitle: function(config) {
+            setTitle: function (config) {
                 if (config) {
-                    AP.require(['jira'], function(jira) {
+                    AP.require(['jira'], function (jira) {
                         jira.setDashboardItemTitle(config.title);
                     });
                 } else {
-                    AP.require(['jira'], function(jira) {
+                    AP.require(['jira'], function (jira) {
                         jira.setDashboardItemTitle('Issues in project');
                     });
                 }
             },
-            template: function(value) {
-                return _.template($('#issuesTableTemplate').html())(value);
+            template: function (context) {
+                return _.template($('#issuesTableTemplate').html())(context);
             },
-            rowTemplate: function(issue) {
-                return _.template($('#issueTableRow').html())(issue);
-            },
-            render: function(configuration) {
+            render: function (configuration) {
                 $('#issues-in-project').html(this.template());
                 this.setTitle(configuration);
-                var that = this;
-                new IssueSearchService().getEpics(configuration.project, configuration.version, function(epics) {
-                    var epicTable = $('#issuesTable tbody');
-                    $.each(epics, function(i, $epic) {
-                        epicTable.append(that.rowTemplate({epic: $epic}));
-                    });
-                });
+
+                new IssueSearchService(configuration.project, configuration.version)
+                        .getEpics(function(epics){
+                            var epicTable = $('#issuesTable tbody');
+                            $.each(epics, function (i, $epic) {
+                                epicTable.append(_.template($('#issueTableRow').html())({epic: $epic}));
+                            });
+                        })
+                }
             }
-        }
     };
 
-    var IssueSearchService = function() {
+    var IssueSearchService = function (project, version) {
         return {
-            getEpics: function(project, version, callback) {
-                AP.require(['request'], function(request) {
-                    request({
-                        url: '/rest/api/2/search?jql=' + encodeURIComponent('project = ' + project + ' AND fixVersion = "' + version + '" AND issuetype = Epic'),
-                        success: function(response) {
-                            var epics = JSON.parse(response).issues;
-                            callback(epics);
-                        }
-                    });
-                });
-            },
-            getCustomIds: function(callback) {
-                AP.require(['request'], function(request) {
-                    request({
-                        url: 'rest/api/2/field',
-                        success: function(response) {
-                            var fields = JSON.parse(response);
-                            var story_points_id = '';
-                            var epic_link_id = '';
-                            $.each(fields, function(i, field) {
-                                if (field.name == "Story Points") {
-                                    story_points_id = field.id;
-                                } else if (field.name == "Epic Link") {
-                                    epic_link_id = field.id;
+            getEpics: function(callback) {
+                AP.require(['request'], function (request) {
+                    var epics={};
+
+                    var getEpicList = function(callback) {
+                        var jql = encodeURIComponent('project = ' + project + ' AND fixVersion = "' + version + '" AND issuetype = Epic');
+
+                        request({
+                            url: '/rest/api/2/search?jql=' + jql,
+                            success: function (response) {
+                                var epicsJson = JSON.parse(response).issues;
+                                callback(epicsJson);
+                            }
+                        });
+                    };
+
+                    var getCustomIds = function(callback) {
+                        var story_points_id = '';
+                        var epic_link_id = '';
+
+                        request({
+                            url: '/rest/api/2/field',
+                            success: function (response) {
+                                var fields = JSON.parse(response);
+                                $.each(fields, function (i, field) {
+                                    if (field.name == "Story Points") {
+                                        story_points_id = field.id;
+                                    } else if (field.name == "Epic Link") {
+                                        epic_link_id = field.id;
+                                    }
+                                });
+
+                                callback(story_points_id, epic_link_id);
+                            }
+                        });
+                    };
+
+                    getCustomIds(function (story_points_id, epic_link_id) {
+
+                        var getIssuesFromEpics = function(callback) {
+                            var keylist = [];
+                            $.each(epics, function (i, epic) {
+                                keylist.push(epic.key);
+                            });
+                            var jql = encodeURIComponent('project = ' + project + ' AND fixVersion = "' + version + '" AND "Epic Link" in (' + keylist.join(',') + ')');
+                            var fields = encodeURIComponent([epic_link_id,story_points_id,'status','key'].join(','));
+
+                            request({
+                                url: '/rest/api/2/search?jql=' + jql + '&fields=' + fields + '&maxResults=500',
+                                success: function (response) {
+                                    var issues = JSON.parse(response).issues;
+                                    callback(issues);
                                 }
                             });
+                        };
 
-                            callback(story_points_id, epic_link_id);
-                        }
+                        getEpicList(function (epicsJson) {
+                            $.each(epicsJson, function (i, e) {
+                                epics[e.key] = e;
+                                e.stories = [];
+                                e.storyCount = 0;
+                                e.estimatedStoryCount = 0;
+                                e.totalPoints = 0;
+                                e.toDoPoints = 0;
+                                e.inProgressPoints = 0;
+                                e.donePoints = 0;
+                                e.percentTodo = 0;
+                                e.percentInProgress = 0;
+                                e.percentComplete = 0;
+
+                            });
+
+                            getIssuesFromEpics(function (issuesJson) {
+                                $.each(issuesJson, function (i, issue) {
+                                    epic = epics[issue.fields[epic_link_id]];
+                                    epic.stories.push(issue.key);
+                                    epic.storyCount += 1;
+
+                                    story_points = issue.fields[story_points_id];
+                                    if (story_points) {
+                                        epic.estimatedStoryCount += 1;
+                                        epic.totalPoints += story_points;
+
+                                        switch (issue.fields.status.statusCategory.name) {
+                                            case "To Do":
+                                                epic.toDoPoints += story_points;
+                                                break;
+                                            case "In Progress":
+                                                epic.inProgressPoints += story_points;
+                                                break;
+                                            case "Done":
+                                                epic.donePoints += story_points;
+                                                break;
+                                        }
+                                        epic.percentTodo = Math.floor((epic.toDoPoints / epic.totalPoints) * 100);
+                                        epic.percentInProgress = Math.floor((epic.inProgressPoints / epic.totalPoints) * 100);
+                                        epic.percentComplete = Math.floor((epic.donePoints / epic.totalPoints) * 100);
+                                    }
+                                });
+
+                                callback(epics);
+                            });
+                        });
                     });
                 });
             }
         }
     };
 
-    var DashboardItemConfigurationView = function() {
+    var DashboardItemConfigurationView = function () {
         return {
-            template: function(value) {
+            template: function (value) {
                 return _.template($('#dashboardItemConfigTemplate').html())(value);
             },
-            addProjects: function(config, addVersions) {
-                AP.require(['request'], function(request) {
+            addProjects: function (config, addVersions) {
+                AP.require(['request'], function (request) {
                     request({
                         url: '/rest/api/2/project',
-                        success: function(response) {
+                        success: function (response) {
                             var projects = JSON.parse(response);
                             var selectedProject = $('#selectedProject');
-                            $.each(projects, function(index, project) {
+                            $.each(projects, function (index, project) {
                                 var select = $('<option>', {value: project.id}).text(project.name);
                                 if (config && config.project == project.id) {
                                     selectedProject.append(select.attr('selected', 'selected'));
@@ -167,10 +253,10 @@
             },
             addVersions: function (config) {
                 var currentProject = $('#selectedProject').find(':selected').val();
-                AP.require(['request'], function(request) {
+                AP.require(['request'], function (request) {
                     request({
                         url: '/rest/api/2/project/' + currentProject,
-                        success: function(response) {
+                        success: function (response) {
                             var selectedVersion = $('#selectedVersion');
                             selectedVersion.empty();
                             var versions = JSON.parse(response).versions;
@@ -185,23 +271,23 @@
                     })
                 });
             },
-            render: function(config) {
+            render: function (config) {
                 if (config) {
-                    $('#issues-in-project').html(this.template({itemTitle : config.title}));
+                    $('#issues-in-project').html(this.template({itemTitle: config.title}));
                 } else {
-                    $('#issues-in-project').html(this.template({itemTitle : 'Issues for project'}));
+                    $('#issues-in-project').html(this.template({itemTitle: 'Issues for project'}));
                 }
                 this.addProjects(config, this.addVersions);
 
                 $('#selectedProject').change(config, this.addVersions);
-                $('#saveConfiguration').click(function(e) {
+                $('#saveConfiguration').click(function (e) {
                     e.preventDefault();
                     var service = new DashboardItemConfigurationService();
                     var $title = $('#itemTitle').val();
                     var $project = $('#selectedProject').find(':selected').val();
                     var $version = $('#selectedVersion').find(':selected').val();
                     var configuration = {project: $project, title: $title, version: $version};
-                    service.save(configuration, function() {
+                    service.save(configuration, function () {
                         new IssueTableView().render(configuration);
                     });
                 });
@@ -209,26 +295,26 @@
         }
     };
 
-    var DashboardItemConfigurationService = function() {
+    var DashboardItemConfigurationService = function () {
         return {
-            getConfiguration: function(configuredCallback, errorCallback) {
-                AP.require(['request'], function(request) {
+            getConfiguration: function (configuredCallback, errorCallback) {
+                AP.require(['request'], function (request) {
                     request({
                         url: '/rest/api/2/dashboard/{{{dashboard}}}/items/{{{dashboardItem}}}/properties/itemkey',
-                        success: function(response) {
+                        success: function (response) {
                             configuredCallback(JSON.parse(response).value);
                         }
                     });
                 });
             },
-            isConfigured : function(configuredCallback, notConfiguredCallback) {
+            isConfigured: function (configuredCallback, notConfiguredCallback) {
                 var that = this;
-                AP.require(['request'], function(request) {
+                AP.require(['request'], function (request) {
                     request({
                         url: '/rest/api/2/dashboard/{{{dashboard}}}/items/{{{dashboardItem}}}/properties',
-                        success: function(response) {
+                        success: function (response) {
                             var arrayOfProperties = JSON.parse(response).keys;
-                            var configured = _.find(arrayOfProperties, function(property) {
+                            var configured = _.find(arrayOfProperties, function (property) {
                                 return "itemkey" == property.key;
                             });
                             if (configured) {
@@ -240,8 +326,8 @@
                     });
                 });
             },
-            save : function(configuration, successCallback) {
-                AP.require(['request'], function(request) {
+            save: function (configuration, successCallback) {
+                AP.require(['request'], function (request) {
                     request({
                         url: '/rest/api/2/dashboard/{{{dashboard}}}/items/{{{dashboardItem}}}/properties/itemkey',
                         type: 'PUT',
@@ -254,13 +340,13 @@
         }
     };
 
-    var DashboardItemView = function() {
+    var DashboardItemView = function () {
         return {
-            render: function() {
+            render: function () {
                 var service = new DashboardItemConfigurationService();
-                service.isConfigured(function(config) {
+                service.isConfigured(function (config) {
                     new IssueTableView().render(config)
-                }, function() {
+                }, function () {
                     new DashboardItemConfigurationView().render();
                 });
             }
@@ -268,8 +354,8 @@
     };
 
     AP.require(['jira'], function (jira) {
-        jira.DashboardItem.onDashboardItemEdit(function() {
-            new DashboardItemConfigurationService().getConfiguration(function(config) {
+        jira.DashboardItem.onDashboardItemEdit(function () {
+            new DashboardItemConfigurationService().getConfiguration(function (config) {
                 new DashboardItemConfigurationView().render(config);
             });
         });

@@ -1,41 +1,269 @@
 /* add-on styles */
 .intro-header h1 {
-  font-size: 48px;
-  line-height: 60px;
-  padding-top: 20px;
+    font-size: 48px;
+    line-height: 60px;
+    padding-top: 20px;
 }
+
 .intro-header p.subtitle {
-  font-size: 24px;
-  line-height: 30px;
-  padding-bottom: 20px;
+    font-size: 24px;
+    line-height: 30px;
+    padding-bottom: 20px;
 }
+
 .main-panel .aui-page-panel-item {
-  padding: 20px 40px 20px 0;
-  height: 100px;
+    padding: 20px 40px 20px 0;
+    height: 100px;
 }
+
 .ghx-classification-progress,
-.ghx-classification-progress>li {
+.ghx-classification-progress > li {
     display: block;
     margin: 0;
     padding: 0;
     width: 100%
 }
+
 .ghx-classification-progress,
 .ghx-classification-progress:first-child {
     background: #e5e5e5;
     margin-top: 5px;
 }
+
 .ghx-version-column .ghx-classification-item.ghx-open .ghx-classification-progress:first-child {
     margin-top: 10px
 }
+
 .ghx-classification-item:hover .ghx-classification-progress,
 .ghx-classification-item.ghx-selected .ghx-classification-progress {
     background: #ccd9ea
 }
-.ghx-classification-progress>li {
+
+.ghx-classification-progress > li {
     height: 5px;
 }
+
 .ghx-classification-progress .ghx-implemented {
     background-color: #3b73af;
     max-width: 100%
+}
+
+.ag-progress, .ag-progress > li {
+    list-style: none;
+    margin: 0;
+    padding: 0
+}
+
+.ag-progress {
+    height: 40px;
+    width: 100%
+}
+
+.ag-progress.ag-progress-short {
+    height: 5px
+}
+
+.ag-progress li:first-child {
+    border-radius: 3px 0px 0px 3px
+}
+
+.ag-progress li:last-child {
+    border-radius: 0px 3px 3px 0px
+}
+
+.ag-progress li {
+    color: #fff;
+    display: inline-block;
+    height: inherit;
+    overflow: hidden
+}
+
+.ag-progress li a {
+    color: #fff
+}
+
+.ag-progress li a:hover {
+    color: inherit
+}
+
+.ag-progress.ag-none li {
+    color: #fff;
+    display: inline-block;
+    height: inherit;
+    overflow: hidden
+}
+
+li.ag-todo {
+    background: #4a6785
+}
+
+li.ag-todo:hover {
+    background-color: #537495
+}
+
+li.ag-inprogress {
+    color: #815b3a;
+    background: #f6c342
+}
+
+li.ag-inprogress:hover {
+    background-color: #f7cb5a
+}
+
+li.ag-inprogress a {
+    color: #815b3a
+}
+
+li.ag-inprogress a:hover {
+    color: inherit
+}
+
+li.ag-done {
+    background: #14892c
+}
+
+li.ag-done:hover {
+    background-color: #179f33
+}
+
+li.ag-none {
+    background: #707070
+}
+
+li.ag-none:hover {
+    background-color: #7d7d7d
+}
+
+.ag-none li {
+    background: #e9e9e9
+}
+
+ul.ag-none, .ag-none li {
+    height: 3px;
+    width: 100%
+}
+
+.ag-progress .ag-status-info {
+    display: inline-block;
+    height: inherit;
+    overflow: hidden;
+    position: relative;
+    width: 100%
+}
+
+.ag-progress .ag-status-info b {
+    bottom: 10px;
+    left: 10px;
+    position: absolute
+}
+
+.ag-meta-group {
+    border-spacing: 5px;
+    padding-top: 5px;
+    display: table;
+    table-layout: fixed;
+    width: 100%
+}
+
+.ag-meta-group + .ag-meta-group {
+    margin-top: 30px
+}
+
+.ag-meta-section {
+    display: table-cell;
+    text-align: center;
+    overflow: hidden
+}
+
+.left-align {
+    text-align: left
+}
+
+.ag-avatar img {
+    height: 32px
+}
+
+.ag-meta-section a:first-child .ag-avatar {
+    margin-left: 0
+}
+
+.ag-section-list, .ag-section-list li {
+    list-style: none;
+    line-height: 1.5;
+    margin: 0;
+    padding: 0
+}
+
+.ag-scope-increase {
+    color: #d04437
+}
+
+a:hover .ag-scope-increase {
+    color: inherit
+}
+
+.ag-assignee-name {
+    line-height: 32px;
+    margin-left: 10px;
+    vertical-align: text-top
+}
+
+.ag-avatar {
+    display: inline-block;
+    margin: 0 5px 5px
+}
+
+.ag-avatar img {
+    border-radius: 3px
+}
+
+.ag-label, .ag-progress .ag-status-info, .ag-name-lane {
+    font-size: 14px
+}
+
+.ag-metric-value, .ag-status-group {
+    font-size: 32px
+}
+
+.ag-metric-value sup {
+    font-size: 50%
+}
+
+@media (max-width: 450px) { {
+    padding: 0
+}
+
+    .ag-progress {
+        height: 40px
+    }
+
+    .ag-name-board, .ag-label, .ag-progress .ag-status-info, .ag-name-lane {
+        font-size: 12px
+    }
+
+    .ag-status-group {
+        font-size: 14px
+    }
+
+    .ag-metric-value {
+        font-size: 16.8px
+    }
+}
+
+@media (min-width: 450px) and (max-width: 1600px) {
+    .ag-progress {
+        height: 50px
+    }
+
+    .ag-status-group {
+        font-size: 19.2px
+    }
+
+    .ag-metric-value {
+        font-size: 19.2px
+    }
+}
+
+-dialog-decorator {
+    padding: 20px !important
 }

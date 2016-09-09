@@ -31,7 +31,7 @@
             <a class="issue-link" data-issue-key="<%=epic.key%>" href="{{hostBaseUrl}}/browse/<%=epic.key%>"><%=epic.key%></a>
         </td>
         <td headers="status">
-            <span class="jira-issue-status-lozenge aui-lozenge jira-issue-status-lozenge-blue-gray jira-issue-status-lozenge-new aui-lozenge-subtle jira-issue-status-lozenge-max-width-medium" data-tooltip="<span class=&quot;jira-issue-status-tooltip-title&quot;><%=epic.fields.status.statusCategory.name%></span>" original-title=""><%=epic.fields.status.statusCategory.name%></span>
+            <span class="aui-lozenge <%=epic.lozengeColorClass%>"><%=epic.fields.status.statusCategory.name%></span>
         </td>
         <td headers="progress">
 
@@ -176,6 +176,20 @@
                         getEpicList(function (epicsJson) {
                             $.each(epicsJson, function (i, e) {
                                 epics[e.key] = e;
+
+                                e.lozengeColorClass = "";
+                                switch (e.fields.status.statusCategory.name) {
+                                    case "To Do":
+                                        e.lozengeColorClass = "aui-lozenge-complete";
+                                        break;
+                                    case "In Progress":
+                                        e.lozengeColorClass = "aui-lozenge-current";
+                                        break;
+                                    case "Done":
+                                        e.lozengeColorClass = "aui-lozenge-success";
+                                        break;
+                                }
+
                                 e.stories = [];
                                 e.storyCount = 0;
                                 e.estimatedStoryCount = 0;

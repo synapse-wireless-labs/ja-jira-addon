@@ -33,7 +33,7 @@
         <td headers="status">
             <span class="aui-lozenge <%=epic.lozengeColorClass%>"><%=epic.fields.status.statusCategory.name%></span>
         </td>
-        <td style="width: 100%" headers="progress">
+        <td style="min-width: 300px" headers="progress">
             <ul class="ag-progress">
                 <li class="ag-todo <% if (epic.toDoPoints==0){print(" hidden");}%>" style="width:<%=epic.percentTodo%>%">
                     <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory =%22To Do%22 AND %22Epic Link%22 = <%=epic.key%>" class="ag-status-info inlineToDoDialog" target="_blank">

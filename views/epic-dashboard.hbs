@@ -28,13 +28,22 @@
 <script type="text/underscore-template" id="issueTableRow">
     <tr>
         <td headers="key">
-            <a class="issue-link" data-issue-key="<%=epic.key%>" href="{{hostBaseUrl}}/browse/<%=epic.key%>"><%=epic.key%></a>
+            <a class="issue-link" data-issue-key="<%=epic.key%>" href="{{hostBaseUrl}}/browse/<%=epic.key%>" target="_blank"><%=epic.key%></a>
         </td>
         <td headers="summary">
-            <p><a class="issue-link" data-issue-key="<%=epic.key%>" href="{{hostBaseUrl}}/browse/<%=epic.key%>"><%=epic.fields.summary%></a></p>
+            <p><a class="issue-link" data-issue-key="<%=epic.key%>" href="{{hostBaseUrl}}/browse/<%=epic.key%>" target="_blank"><%=epic.fields.summary%></a></p>
         </td>
         <td headers="status">
             <span class="aui-lozenge aui-lozenge-subtle <%=epic.lozengeColorClass%>"><%=epic.fields.status.statusCategory.name%></span>
+        </td>
+        <td headers="unestimatedStories">
+            <% if (epic.totalPoints > 0) { %>
+                <a class="issue-link" data-issue-key="<%=epic.key%>" href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=%22Epic Link%22 = <%=epic.key%> and %22Story Points%22 is empty" target="_blank">
+                    <%=epic.unestimatedStoryCount%> out of <%=epic.storyCount%> (<%=epic.percentUnestimatedStories%>%)</a>
+                </a>
+            <% } else { %>
+                N/A
+            <% } %>
         </td>
         <td style="min-width: 300px" headers="progress">
             <ul class="ag-progress">
@@ -63,6 +72,7 @@
             <th id="key">Key</th>
             <th id="summary">Summary</th>
             <th id="status">Status</th>
+            <th id="unestimatedStories">Unestimated Stories</th>
             <th id="progress">Progress</th>
         </thead>
         <tbody></tbody>
@@ -198,6 +208,8 @@
                                 e.stories = [];
                                 e.storyCount = 0;
                                 e.estimatedStoryCount = 0;
+                                e.unestimatedStoryCount = 0;
+                                e.percentUnestimatedStories = 0;
                                 e.totalPoints = 0;
                                 e.toDoPoints = 0;
                                 e.inProgressPoints = 0;
@@ -237,6 +249,8 @@
                                     epic.percentTodo = (epic.toDoPoints / epic.totalPoints) * 100;
                                     epic.percentInProgress = (epic.inProgressPoints / epic.totalPoints) * 100;
                                     epic.percentComplete = (epic.donePoints / epic.totalPoints) * 100;
+                                    epic.unestimatedStoryCount = epic.storyCount - epic.estimatedStoryCount;
+                                    epic.percentUnestimatedStories = (epic.unestimatedStoryCount / epic.storyCount) * 100;
                                 });
 
                                 callback(epics);

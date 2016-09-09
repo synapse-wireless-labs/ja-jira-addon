@@ -30,8 +30,11 @@
         <td headers="key">
             <a class="issue-link" data-issue-key="<%=epic.key%>" href="{{hostBaseUrl}}/browse/<%=epic.key%>"><%=epic.key%></a>
         </td>
+        <td headers="summary">
+            <p><a class="issue-link" data-issue-key="<%=epic.key%>" href="{{hostBaseUrl}}/browse/<%=epic.key%>"><%=epic.fields.summary%></a></p>
+        </td>
         <td headers="status">
-            <span class="aui-lozenge <%=epic.lozengeColorClass%>"><%=epic.fields.status.statusCategory.name%></span>
+            <span class="aui-lozenge aui-lozenge-subtle <%=epic.lozengeColorClass%>"><%=epic.fields.status.statusCategory.name%></span>
         </td>
         <td style="min-width: 300px" headers="progress">
             <ul class="ag-progress">
@@ -52,18 +55,15 @@
                 </li>
             </ul>
         </td>
-        <td headers="summary">
-            <p><a class="issue-link" data-issue-key="<%=epic.key%>" href="{{hostBaseUrl}}/browse/<%=epic.key%>"><%=epic.fields.summary%></a></p>
-        </td>
     </tr>
 </script>
 <script type="text/underscore-template" id="issuesTableTemplate">
     <table id='issuesTable' class='aui'>
         <thead>
             <th id="key">Key</th>
+            <th id="summary">Summary</th>
             <th id="status">Status</th>
             <th id="progress">Progress</th>
-            <th id="summary">Summary</th>
         </thead>
         <tbody></tbody>
     </table>

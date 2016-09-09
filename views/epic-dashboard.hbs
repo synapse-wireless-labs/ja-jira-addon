@@ -131,9 +131,7 @@
 
             },
             addVersions: function (config) {
-                var $selectedProject = $('#selectedProject');
-                var currentProject = $selectedProject.find(':selected').val();
-                console.log(currentProject);
+                var currentProject = $('#selectedProject').find(':selected').val();
                 AP.require(['request'], function(request) {
                     request({
                         url: '/rest/api/2/project/' + currentProject,
@@ -159,9 +157,8 @@
                     $('#issues-in-project').html(this.template({itemTitle : 'Issues for project'}));
                 }
                 this.addProjects(config, this.addVersions);
-                this.addVersions(config);
 
-                $('#selectedProject').change(this.addVersions, config);
+                $('#selectedProject').change(config, this.addVersions);
                 $('#saveConfiguration').click(function(e) {
                     e.preventDefault();
                     var service = new DashboardItemConfigurationService();

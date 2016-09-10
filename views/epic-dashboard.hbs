@@ -78,6 +78,9 @@
         <tbody></tbody>
     </table>
 </script>
+<script type="text/underscore-template" id="noIssuesTemplate">
+    <span>No matching Epics found.</span>
+</script>
 <script type="text/underscore-template" id="dashboardItemConfigTemplate">
     <form class='aui'>
         <div class='field-group'>
@@ -101,6 +104,12 @@
 
     var IssueTableView = function () {
         return {
+            sizeDict: function (d) {
+                c=0;
+                for (i in d)
+                    ++c;
+                return c
+            },
             setTitle: function (config) {
                 if (config) {
                     AP.require(['jira'], function (jira) {
@@ -115,16 +124,25 @@
             template: function (context) {
                 return _.template($('#issuesTableTemplate').html())(context);
             },
+            template2: function (context) {
+                return _.template($('#noIssuesTemplate').html())(context);
+            },
             render: function (configuration) {
-                $('#issues-in-project').html(this.template());
                 this.setTitle(configuration);
+                view = this;
 
                 new IssueSearchService(configuration.project, configuration.version)
-                        .getEpics(function(epics){
-                            var epicTable = $('#issuesTable tbody');
-                            $.each(epics, function (i, $epic) {
-                                epicTable.append(_.template($('#issueTableRow').html())({epic: $epic}));
-                            });
+                        .getEpics(function (epics) {
+                            if (view.sizeDict(epics) > 0) {
+                                $('#issues-in-project').html(view.template());
+                                var epicTable = $('#issuesTable tbody');
+                                $.each(epics, function (i, $epic) {
+                                    epicTable.append(_.template($('#issueTableRow').html())({epic: $epic}));
+                                });
+                            }
+                            else {
+                                $('#issues-in-project').html(view.template2());
+                            }
                         })
                 }
             }
@@ -137,7 +155,7 @@
                     var epics={};
 
                     var getEpicList = function(callback) {
-                        var jql = encodeURIComponent('project = ' + project + ' AND fixVersion = "' + version + '" AND issuetype = Epic');
+                        var jql = encodeURIComponent('project = ' + project + ' AND fixVersion = ' + version + ' AND issuetype = Epic');
 
                         request({
                             url: '/rest/api/2/search?jql=' + jql,
@@ -176,16 +194,22 @@
                             $.each(epics, function (i, epic) {
                                 keylist.push(epic.key);
                             });
-                            var jql = encodeURIComponent('project = ' + project + ' AND fixVersion = "' + version + '" AND "Epic Link" in (' + keylist.join(',') + ')');
-                            var fields = encodeURIComponent([epic_link_id,story_points_id,'status','key'].join(','));
+                            if (keylist.length > 0) {
+                                var jql = encodeURIComponent('project = ' + project + ' AND fixVersion = ' + version + ' AND "Epic Link" in (' + keylist.join(',') + ')');
+                                var fields = encodeURIComponent([epic_link_id,story_points_id,'status','key'].join(','));
 
-                            request({
-                                url: '/rest/api/2/search?jql=' + jql + '&fields=' + fields + '&maxResults=500',
-                                success: function (response) {
-                                    var issues = JSON.parse(response).issues;
-                                    callback(issues);
-                                }
-                            });
+                                request({
+                                    url: '/rest/api/2/search?jql=' + jql + '&fields=' + fields + '&maxResults=500',
+                                    success: function (response) {
+                                        var issues = JSON.parse(response).issues;
+                                        callback(issues);
+                                    }
+                                });
+                            }
+                            else {
+                                var issues = {};
+                                callback(issues);
+                            }
                         };
 
                         getEpicList(function (epicsJson) {

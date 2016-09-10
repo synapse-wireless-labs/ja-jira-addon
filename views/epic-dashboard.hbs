@@ -37,7 +37,7 @@
             <span class="aui-lozenge aui-lozenge-subtle <%=epic.lozengeColorClass%>"><%=epic.fields.status.statusCategory.name%></span>
         </td>
         <td headers="unestimatedStories">
-            <% if (epic.totalPoints > 0) { %>
+            <% if (epic.storyCount > 0) { %>
                 <a class="issue-link" data-issue-key="<%=epic.key%>" href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=%22Epic Link%22 = <%=epic.key%> and %22Story Points%22 is empty" target="_blank">
                     <%=epic.unestimatedStoryCount%> issue<% if (epic.unestimatedStoryCount != 1) print("s") %>
                 </a>

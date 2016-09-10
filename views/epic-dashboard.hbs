@@ -47,21 +47,31 @@
         </td>
         <td style="min-width: 300px" headers="progress">
             <ul class="ag-progress">
-                <li <% if (epic.totalPoints > 0) { %> class="ag-todo" style="width:<%=epic.percentTodo%>%" <% } else { %>" class="ag-empty" style="width:100%"<% } %> >
-                    <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory =%22To Do%22 AND %22Epic Link%22 = <%=epic.key%>" class="ag-status-info inlineToDoDialog" target="_blank">
-                        <b><% if (epic.totalPoints > 0) { %> <%=epic.toDoPoints%> <% } else { %>None<% } %></b>
-                    </a>
-                </li>
-                <li class="ag-inprogress <% if (epic.inProgressPoints==0){print(" hidden");}%>" style="width:<%=epic.percentInProgress%>%">
-                    <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory = %22In Progress%22 AND %22Epic Link%22 = <%=epic.key%>" class="ag-status-info inlineProgressDialog" target="_blank">
-                        <b><%=epic.inProgressPoints%></b>
-                    </a>
-                </li>
-                <li class="ag-done <% if (epic.donePoints==0){print(" hidden");}%>" style="width:<%=epic.percentComplete%>%">
-                    <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory = %22Done%22 AND %22Epic Link%22 = <%=epic.key%>" class="ag-status-info inlineProgressDialog" target="_blank">
-                        <b><%=epic.donePoints%></b>
-                    </a>
-                </li>
+                <% if (epic.totalPoints == 0) { %>
+                    <li class="ag-empty" style="width:100%"><a><b>None</b></a></li>
+                <% } else { %>
+                    <% if (epic.toDoPoints > 0) { %>
+                        <li class="ag-todo" style="width:<%=epic.percentTodo%>%">
+                            <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory =%22To Do%22 AND %22Epic Link%22 = <%=epic.key%>" target="_blank">
+                                <b><%=epic.toDoPoints%></b>
+                            </a>
+                        </li>
+                    <% } %>
+                    <% if (epic.toDoPoints > 0) { %>
+                        <li class="ag-inprogress" style="width:<%=epic.percentInProgress%>%">
+                            <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory = %22In Progress%22 AND %22Epic Link%22 = <%=epic.key%>" target="_blank">
+                                <b><%=epic.inProgressPoints%></b>
+                            </a>
+                        </li>
+                    <% } %>
+                    <% if (epic.toDoPoints > 0) { %>
+                        <li class="ag-done " style="width:<%=epic.percentComplete%>%">
+                            <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory = %22Done%22 AND %22Epic Link%22 = <%=epic.key%>" target="_blank">
+                                <b><%=epic.donePoints%></b>
+                            </a>
+                        </li>
+                    <% } %>
+                <% } %>
             </ul>
         </td>
     </tr>
@@ -275,7 +285,7 @@
                                     epic.percentInProgress = (epic.inProgressPoints / epic.totalPoints) * 100;
                                     epic.percentComplete = (epic.donePoints / epic.totalPoints) * 100;
                                     epic.unestimatedStoryCount = epic.storyCount - epic.estimatedStoryCount;
-                                    epic.percentUnestimatedStories = (epic.unestimatedStoryCount / epic.storyCount) * 100;
+                                    epic.percentUnestimatedStories = Math.floor((epic.unestimatedStoryCount / epic.storyCount) * 100);
                                 });
 
                                 callback(epics);

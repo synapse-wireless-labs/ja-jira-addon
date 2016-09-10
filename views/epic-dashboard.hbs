@@ -97,6 +97,7 @@
         </div>
         <div class='buttons-container'>
             <button type='submit' id='saveConfiguration' class='aui-button'>Save</button>
+            <button type='submit' id='cancelConfiguration' class='aui-button aui-button-link cancel'>Cancel</button>
         </div>
     </form>
 </script>
@@ -349,6 +350,13 @@
                     var configuration = {project: $project, title: $title, version: $version};
                     service.save(configuration, function () {
                         new IssueTableView().render(configuration);
+                    });
+                });
+                $('#cancelConfiguration').click(function (e) {
+                    e.preventDefault();
+                    var service = new DashboardItemConfigurationService();
+                    service.getConfiguration( function (config) {
+                        new IssueTableView().render(config)
                     });
                 });
             }

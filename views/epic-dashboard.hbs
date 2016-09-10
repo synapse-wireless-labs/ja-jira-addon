@@ -55,10 +55,10 @@
                 <% if (epic.totalPoints == 0) { %>
                     <li class="ag-empty" style="width:100%"><a class="ag-status-info"><b>None</b></a></li>
                 <% } else { %>
-                    <% if (epic.toDoPoints > 0) { %>
-                        <li class="ag-todo" style="width:<%=epic.percentTodo%>%">
-                            <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory =%22To Do%22 AND %22Epic Link%22 = <%=epic.key%>" class="ag-status-info" target="_blank">
-                                <b><%=epic.toDoPoints%></b>
+                    <% if (epic.donePoints > 0) { %>
+                        <li class="ag-done " style="width:<%=epic.percentComplete%>%">
+                            <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory = %22Done%22 AND %22Epic Link%22 = <%=epic.key%>"  class="ag-status-info" target="_blank">
+                                <b><%=epic.donePoints%></b>
                             </a>
                         </li>
                     <% } %>
@@ -69,10 +69,10 @@
                             </a>
                         </li>
                     <% } %>
-                    <% if (epic.donePoints > 0) { %>
-                        <li class="ag-done " style="width:<%=epic.percentComplete%>%">
-                            <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory = %22Done%22 AND %22Epic Link%22 = <%=epic.key%>"  class="ag-status-info" target="_blank">
-                                <b><%=epic.donePoints%></b>
+                    <% if (epic.toDoPoints > 0) { %>
+                        <li class="ag-todo" style="width:<%=epic.percentTodo%>%">
+                            <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory =%22To Do%22 AND %22Epic Link%22 = <%=epic.key%>" class="ag-status-info" target="_blank">
+                                <b><%=epic.toDoPoints%></b>
                             </a>
                         </li>
                     <% } %>

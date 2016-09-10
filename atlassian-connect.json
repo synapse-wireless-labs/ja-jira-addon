@@ -1,6 +1,6 @@
 {
-  "key": "ja-report-addon",
-  "name": "Agile Report Add-on",
+  "key": "ja-jira-agile-reporting-addon",
+  "name": "Agile Reporting Add-on",
   "description": "Provide helpful macros for reporting on Agile projects",
   "vendor": {
     "name": "Synapse Wireless Labs",
@@ -26,17 +26,16 @@
     "jiraDashboardItems": [
       {
         "name": {
-          "value": "Epic Dashboard"
+          "value": "Epic Release Report"
         },
         "url": "/epic-dashboard?dashboard={dashboard.id}&dashboardItem={dashboardItem.id}",
         "key": "iframe-requests",
         "description": {
-          "value": "Jay is cool"
+          "value": "For a given Project and Version, displays a bar chart of each Epic's progress, sorted by status and duedate."
         },
-        "thumbnailUrl": "http://content.sportslogos.net/logos/32/755/full/hyoflhueqc3u3whapwey2gjnj.png",
+        "thumbnailUrl": "{{localBaseUrl}}/thumbnail.png",
         "configurable": true
       }
     ]
   }
 }
-

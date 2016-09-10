@@ -39,7 +39,7 @@
         <td headers="unestimatedStories">
             <% if (epic.totalPoints > 0) { %>
                 <a class="issue-link" data-issue-key="<%=epic.key%>" href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=%22Epic Link%22 = <%=epic.key%> and %22Story Points%22 is empty" target="_blank">
-                    <%=epic.unestimatedStoryCount%> out of <%=epic.storyCount%> (<%=epic.percentUnestimatedStories%>%)</a>
+                    <%=epic.unestimatedStoryCount%>/<%=epic.storyCount%> (<%=epic.percentUnestimatedStories%>%)</a>
                 </a>
             <% } else { %>
                 N/A
@@ -82,7 +82,7 @@
             <th id="key">Key</th>
             <th id="summary">Summary</th>
             <th id="status">Status</th>
-            <th id="unestimatedStories">Unestimated Stories</th>
+            <th id="unestimatedStories">Unestimated</th>
             <th id="progress">Progress</th>
         </thead>
         <tbody></tbody>

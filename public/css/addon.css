@@ -35,11 +35,13 @@
 }
 
 .ag-progress li:first-child {
-    border-radius: 3px 0px 0px 3px
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
 }
 
 .ag-progress li:last-child {
-    border-radius: 0px 3px 3px 0px
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
 }
 
 .ag-progress li {

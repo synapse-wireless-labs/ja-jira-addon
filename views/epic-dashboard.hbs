@@ -48,7 +48,7 @@
         <td style="min-width: 300px" headers="progress">
             <ul class="ag-progress">
                 <% if (epic.totalPoints == 0) { %>
-                    <li class="ag-empty" style="width:100%"><a><b>None</b></a></li>
+                    <li class="ag-empty" style="width:100%"><a class="ag-status-info"><b>None</b></a></li>
                 <% } else { %>
                     <% if (epic.toDoPoints > 0) { %>
                         <li class="ag-todo" style="width:<%=epic.percentTodo%>%">

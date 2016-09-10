@@ -52,21 +52,21 @@
                 <% } else { %>
                     <% if (epic.toDoPoints > 0) { %>
                         <li class="ag-todo" style="width:<%=epic.percentTodo%>%">
-                            <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory =%22To Do%22 AND %22Epic Link%22 = <%=epic.key%>" target="_blank">
+                            <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory =%22To Do%22 AND %22Epic Link%22 = <%=epic.key%>" class="ag-status-info" target="_blank">
                                 <b><%=epic.toDoPoints%></b>
                             </a>
                         </li>
                     <% } %>
                     <% if (epic.toDoPoints > 0) { %>
                         <li class="ag-inprogress" style="width:<%=epic.percentInProgress%>%">
-                            <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory = %22In Progress%22 AND %22Epic Link%22 = <%=epic.key%>" target="_blank">
+                            <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory = %22In Progress%22 AND %22Epic Link%22 = <%=epic.key%>"  class="ag-status-info" target="_blank">
                                 <b><%=epic.inProgressPoints%></b>
                             </a>
                         </li>
                     <% } %>
                     <% if (epic.toDoPoints > 0) { %>
                         <li class="ag-done " style="width:<%=epic.percentComplete%>%">
-                            <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory = %22Done%22 AND %22Epic Link%22 = <%=epic.key%>" target="_blank">
+                            <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory = %22Done%22 AND %22Epic Link%22 = <%=epic.key%>"  class="ag-status-info" target="_blank">
                                 <b><%=epic.donePoints%></b>
                             </a>
                         </li>

@@ -33,7 +33,7 @@
         "description": {
           "value": "For a given Project and Version, displays a bar chart of each Epic's progress, sorted by status and duedate."
         },
-        "thumbnailUrl": "{{localBaseUrl}}/thumbnail.png",
+        "thumbnailUrl": "{{localBaseUrl}}/Thumbnail.PNG",
         "configurable": true
       }
     ]

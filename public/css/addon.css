@@ -25,7 +25,7 @@
 .ag-progress {
     display: flex;
     height: 18px;
-    width: 100%
+    width: 100%;
     -webkit-margin-before: 0;
     -webkit-margin-after: 0;
 }
@@ -42,6 +42,14 @@
 .ag-progress li:last-child {
     border-top-right-radius: 3px;
     border-bottom-right-radius: 3px;
+}
+
+.aui-iconfont-warning {
+    color: #f6c342;
+}
+
+.aui-iconfont-error {
+    color: #d04437;
 }
 
 .ag-progress li {
@@ -251,8 +259,4 @@ a:hover .ag-scope-increase {
     .ag-metric-value {
         font-size: 19.2px
     }
-}
-
--dialog-decorator {
-    padding: 20px !important
 }

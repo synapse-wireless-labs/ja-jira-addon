@@ -25,6 +25,26 @@
         </div>
     </div>
 </section>
+<script type="text/underscore-template" id="issuesHeaderTemplate">
+    <span></span>
+</script>
+<script type="text/underscore-template" id="noIssuesTemplate">
+    <span>No Epics found in <%=config.projectName%> for <%=config.versionName%>.</span>
+</script>
+<script type="text/underscore-template" id="issuesTableTemplate">
+    <span id="issuesHeader"></span>
+    <table id='issuesTable' class='aui'>
+        <thead>
+            <th id="key">Key</th>
+            <th id="summary">Summary</th>
+            <th id="status">Status</th>
+            <th id="unestimatedStories">Unestimated</th>
+            <th id="progress">Progress</th>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <span id="issuesFooter"></span>
+</script>
 <script type="text/underscore-template" id="issueTableRow">
     <tr>
         <td headers="key">
@@ -81,20 +101,13 @@
         </td>
     </tr>
 </script>
-<script type="text/underscore-template" id="issuesTableTemplate">
-    <table id='issuesTable' class='aui'>
-        <thead>
-            <th id="key">Key</th>
-            <th id="summary">Summary</th>
-            <th id="status">Status</th>
-            <th id="unestimatedStories">Unestimated</th>
-            <th id="progress">Progress</th>
-        </thead>
-        <tbody></tbody>
-    </table>
-</script>
-<script type="text/underscore-template" id="noIssuesTemplate">
-    <span>No matching Epics found.</span>
+<script type="text/underscore-template" id="issuesFooterTemplate">
+    <span>
+        <b>Summary of</b>
+        <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=project = %22<%=config.projectName%>%22 AND %22fixVersion%22 = %22<%=config.versionName%>%22 AND issuetype = Epic" target="_blank">
+            <%=config.projectName%> Epics in <%=config.versionName%>
+        </a>
+    </span>
 </script>
 <script type="text/underscore-template" id="dashboardItemConfigTemplate">
     <form class='aui'>
@@ -120,12 +133,6 @@
 
     var IssueTableView = function () {
         return {
-            sizeDict: function (d) {
-                c=0;
-                for (i in d)
-                    ++c;
-                return c
-            },
             setTitle: function (config) {
                 if (config) {
                     AP.require(['jira'], function (jira) {
@@ -137,27 +144,31 @@
                     });
                 }
             },
-            template: function (context) {
-                return _.template($('#issuesTableTemplate').html())(context);
-            },
-            template2: function (context) {
-                return _.template($('#noIssuesTemplate').html())(context);
-            },
+
             render: function (configuration) {
                 this.setTitle(configuration);
                 view = this;
 
+                var sizeDict = function (d) {
+                    c=0;
+                    for (i in d)
+                        ++c;
+                    return c
+                };
+
                 new IssueSearchService(configuration.project, configuration.version)
-                        .getEpics(function (epics) {
-                            if (view.sizeDict(epics) > 0) {
-                                $('#issues-in-project').html(view.template());
+                        .getEpics(function (epics, context) {
+                            if (sizeDict(epics) > 0) {
+                                $('#issues-in-project').html(_.template($('#issuesTableTemplate').html())(context));
+                                $('#issuesHeader').html(_.template($('#issuesHeaderTemplate').html())(context));
                                 var epicTable = $('#issuesTable tbody');
                                 $.each(epics, function (i, $epic) {
                                     epicTable.append(_.template($('#issueTableRow').html())({epic: $epic}));
                                 });
+                                $('#issuesFooter').html(_.template($('#issuesFooterTemplate').html())({config: configuration}));
                             }
                             else {
-                                $('#issues-in-project').html(view.template2());
+                                $('#issues-in-project').html(_.template($('#noIssuesTemplate').html())({config: configuration}));
                             }
                         })
                 }
@@ -361,8 +372,10 @@
                     var service = new DashboardItemConfigurationService();
                     var $title = $('#itemTitle').val();
                     var $project = $('#selectedProject').find(':selected').val();
+                    var $projectName = $('#selectedProject').find(':selected').text();
                     var $version = $('#selectedVersion').find(':selected').val();
-                    var configuration = {project: $project, title: $title, version: $version};
+                    var $versionName = $('#selectedVersion').find(':selected').text();
+                    var configuration = {title: $title, project: $project, projectName: $projectName, version: $version, versionName: $versionName};
                     service.save(configuration, function () {
                         new IssueTableView().render(configuration);
                     });

@@ -26,13 +26,67 @@
     </div>
 </section>
 <script type="text/underscore-template" id="issuesHeaderTemplate">
-    <span></span>
+    <div>
+        <table id='issuesHeaderTable' class='aui'>
+            <tr>
+                <td>
+                </td>
+                <td>
+                    <h2>Summary of Epics in <b><%=release.projectName%></b> for <b><%=release.versionName%></b></h2>
+                </td>
+                <td>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Overall:
+                </td>
+                <td>
+                    <ul class="ag-progress">
+                        <% if (release.totalPoints == 0) { %>
+                            <li class="ag-empty" style="width:100%"><a class="ag-status-info"><b>None</b></a></li>
+                        <% } else { %>
+                            <% if (release.donePoints > 0) { %>
+                                <li class="ag-done " style="width:<%=release.percentComplete%>%">
+                                    <b><%=release.donePoints%></b>
+                                </li>
+                            <% } %>
+                            <% if (release.inProgressPoints > 0) { %>
+                                <li class="ag-inprogress" style="width:<%=release.percentInProgress%>%">
+                                    <b><%=release.inProgressPoints%></b>
+                                </li>
+                            <% } %>
+                            <% if (release.toDoPoints > 0) { %>
+                                <li class="ag-todo" style="width:<%=release.percentTodo%>%">
+                                    <b><%=release.toDoPoints%></b>
+                                </li>
+                            <% } %>
+                        <% } %>
+                    </ul>
+                </td>
+                <td>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <i>start_date</i>
+                </td>
+                <td>
+                    TIMELINE GOES HERE
+                </td>
+                <td>
+                    <i>end_date</i>
+                </td>
+            </tr>
+        </table>
+    </div>
 </script>
 <script type="text/underscore-template" id="noIssuesTemplate">
     <span>No Epics found in <%=config.projectName%> for <%=config.versionName%>.</span>
 </script>
 <script type="text/underscore-template" id="issuesTableTemplate">
-    <span id="issuesHeader"></span>
+    <div id="issuesHeader"></div>
+    <span><br></span>
     <table id='issuesTable' class='aui'>
         <thead>
             <th id="key">Key</th>
@@ -43,7 +97,8 @@
         </thead>
         <tbody></tbody>
     </table>
-    <span id="issuesFooter"></span>
+    <span><br></span>
+    <div id="issuesFooter"></div>
 </script>
 <script type="text/underscore-template" id="issueTableRow">
     <tr>
@@ -102,12 +157,12 @@
     </tr>
 </script>
 <script type="text/underscore-template" id="issuesFooterTemplate">
-    <span>
+    <div>
         <b>Summary of</b>
         <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=project = %22<%=config.projectName%>%22 AND %22fixVersion%22 = %22<%=config.versionName%>%22 AND issuetype = Epic" target="_blank">
             <%=config.projectName%> Epics in <%=config.versionName%>
         </a>
-    </span>
+    </div>
 </script>
 <script type="text/underscore-template" id="dashboardItemConfigTemplate">
     <form class='aui'>
@@ -157,14 +212,41 @@
                 };
 
                 new IssueSearchService(configuration.project, configuration.version)
-                        .getEpics(function (epics, context) {
+                        .getEpics(function (epics) {
                             if (sizeDict(epics) > 0) {
-                                $('#issues-in-project').html(_.template($('#issuesTableTemplate').html())(context));
-                                $('#issuesHeader').html(_.template($('#issuesHeaderTemplate').html())(context));
+                                var $release = {};
+
+                                $release.projectName = configuration.projectName;
+                                $release.versionName = configuration.versionName;
+                                $release.toDoPoints = 0;
+                                $release.inProgressPoints = 0;
+                                $release.donePoints = 0;
+                                $release.percentTodo = 0;
+                                $release.percentInProgress = 0;
+                                $release.percentDone = 0;
+
+                                $.each(epics, function (i, $epic) {
+                                    $release.toDoPoints += $epic.toDoPoints;
+                                    $release.inProgressPoints += $epic.inProgressPoints;
+                                    $release.donePoints += $epic.donePoints;
+                                });
+
+                                $release.totalPoints = $release.toDoPoints + $release.inProgressPoints + $release.donePoints;
+
+                                if ($release.totalPoints > 0) {
+                                    $release.percentTodo = ($release.toDoPoints / $release.totalPoints) * 100;
+                                    $release.percentInProgress = ($release.inProgressPoints / $release.totalPoints) * 100;
+                                    $release.percentDone = ($release.donePoints / $release.totalPoints) * 100;
+                                }
+
+                                $('#issues-in-project').html(_.template($('#issuesTableTemplate').html())({}));
+                                $('#issuesHeader').html(_.template($('#issuesHeaderTemplate').html())({release: $release}));
+
                                 var epicTable = $('#issuesTable tbody');
                                 $.each(epics, function (i, $epic) {
                                     epicTable.append(_.template($('#issueTableRow').html())({epic: $epic}));
                                 });
+
                                 $('#issuesFooter').html(_.template($('#issuesFooterTemplate').html())({config: configuration}));
                             }
                             else {

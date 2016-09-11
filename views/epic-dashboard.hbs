@@ -69,13 +69,14 @@
             </tr>
             <tr>
                 <td>
-                    <i>start_date</i>
+                    <i><%=release.startDate%></i>
                 </td>
                 <td>
-                    TIMELINE GOES HERE
+                    <%=release.totalDays%> = <%=release.daysPast%> + <%=release.daysRemaining%><br>
+                    100% = <%=release.percentDaysDone%> + <%=release.percentDaysRemaining%>
                 </td>
                 <td>
-                    <i>end_date</i>
+                    <i><%=release.endDate%></i>
                 </td>
             </tr>
         </table>
@@ -212,12 +213,21 @@
                 };
 
                 new IssueSearchService(configuration.project, configuration.version)
-                        .getEpics(function (epics) {
+                        .getEpics(function (epics, startDate, endDate) {
                             if (sizeDict(epics) > 0) {
                                 var $release = {};
 
                                 $release.projectName = configuration.projectName;
                                 $release.versionName = configuration.versionName;
+
+                                $release.startDate = startDate.toDateString();
+                                $release.endDate = endDate.toDateString();
+                                $release.totalDays = 0;
+                                $release.daysPast = 0;
+                                $release.daysRemaining = 0;
+                                $release.percentDaysDone = 0;
+                                $release.percentDaysRemaining = 0;
+
                                 $release.toDoPoints = 0;
                                 $release.inProgressPoints = 0;
                                 $release.donePoints = 0;
@@ -232,6 +242,23 @@
                                 });
 
                                 $release.totalPoints = $release.toDoPoints + $release.inProgressPoints + $release.donePoints;
+
+                                msPerDay = 1000 * 60 * 60 * 24;
+                                today = new Date();
+
+                                if (endDate > startDate) {
+                                    $release.totalDays = Math.floor((endDate - startDate) / msPerDay);
+                                }
+                                if (today > startDate) {
+                                    $release.daysPast = Math.floor((today - startDate) / msPerDay);
+                                }
+                                if (endDate > today) {
+                                    $release.daysRemaining = Math.floor((endDate - today) / msPerDay);
+                                }
+                                if ($release.totalDays > 0) {
+                                    $release.percentDaysDone = ($release.daysPast / $release.totalDays) * 100;
+                                    $release.percentDaysRemaining = ($release.daysRemaining / $release.totalDays) * 100;
+                                }
 
                                 if ($release.totalPoints > 0) {
                                     $release.percentTodo = ($release.toDoPoints / $release.totalPoints) * 100;
@@ -275,6 +302,32 @@
                         });
                     };
 
+                    var getReleaseDates = function(callback) {
+                        var releaseStartDate = new Date();
+                        var releaseEndDate = new Date();
+
+                        request({
+                            url: 'rest/api/2/project/' + project + '/versions',
+                            success: function (response) {
+                                //alert("got the API successfully!")
+                                var versions = JSON.parse(response);
+                                $.each(versions, function (i, v) {
+                                    if (v.id == version) {
+                                        releaseStartDate = v.userStartDate;
+                                        releaseEndDate = v.userReleaseDate;
+                                        //alert(releaseStartDate + ',' + releaseEndDate);
+                                    }
+                                });
+
+                                callback(releaseStartDate, releaseEndDate);
+                            },
+                            error: function (response) {
+                                //alert("unable to get version dates from project!")
+                                callback(releaseStartDate, releaseEndDate);
+                            }
+                        });
+                    };
+
                     var getCustomIds = function(callback) {
                         var story_points_id = '';
                         var epic_link_id = '';
@@ -296,97 +349,100 @@
                         });
                     };
 
-                    getCustomIds(function (story_points_id, epic_link_id) {
+                    getReleaseDates(function (release_start_date, release_end_date) {
 
-                        var getIssuesFromEpics = function(callback) {
-                            var keylist = [];
-                            $.each(epics, function (i, epic) {
-                                keylist.push(epic.key);
-                            });
-                            if (keylist.length > 0) {
-                                var jql = encodeURIComponent('project = ' + project + ' AND fixVersion = ' + version + ' AND "Epic Link" in (' + keylist.join(',') + ')');
-                                var fields = encodeURIComponent([epic_link_id,story_points_id,'status','key'].join(','));
+                        getCustomIds(function (story_points_id, epic_link_id) {
 
-                                request({
-                                    url: '/rest/api/2/search?jql=' + jql + '&fields=' + fields + '&maxResults=500',
-                                    success: function (response) {
-                                        var issues = JSON.parse(response).issues;
-                                        callback(issues);
-                                    }
+                            var getIssuesFromEpics = function (callback) {
+                                var keylist = [];
+                                $.each(epics, function (i, epic) {
+                                    keylist.push(epic.key);
                                 });
-                            }
-                            else {
-                                var issues = {};
-                                callback(issues);
-                            }
-                        };
+                                if (keylist.length > 0) {
+                                    var jql = encodeURIComponent('project = ' + project + ' AND fixVersion = ' + version + ' AND "Epic Link" in (' + keylist.join(',') + ')');
+                                    var fields = encodeURIComponent([epic_link_id, story_points_id, 'status', 'key'].join(','));
 
-                        getEpicList(function (epicsJson) {
-                            $.each(epicsJson, function (i, e) {
-                                epics[e.key] = e;
-
-                                e.lozengeColorClass = "";
-                                switch (e.fields.status.statusCategory.name) {
-                                    case "To Do":
-                                        e.lozengeColorClass = "aui-lozenge-complete";
-                                        break;
-                                    case "In Progress":
-                                        e.lozengeColorClass = "aui-lozenge-current";
-                                        break;
-                                    case "Done":
-                                        e.lozengeColorClass = "aui-lozenge-success";
-                                        break;
-                                }
-
-                                e.stories = [];
-                                e.storyCount = 0;
-                                e.estimatedStoryCount = 0;
-                                e.unestimatedStoryCount = 0;
-                                e.percentUnestimatedStories = 0;
-                                e.totalPoints = 0;
-                                e.toDoPoints = 0;
-                                e.inProgressPoints = 0;
-                                e.donePoints = 0;
-                                e.percentTodo = 0;
-                                e.percentInProgress = 0;
-                                e.percentComplete = 0;
-
-                            });
-
-                            getIssuesFromEpics(function (issuesJson) {
-                                $.each(issuesJson, function (i, issue) {
-                                    epic = epics[issue.fields[epic_link_id]];
-                                    epic.stories.push(issue.key);
-                                    epic.storyCount += 1;
-
-                                    story_points = issue.fields[story_points_id];
-                                    if (story_points) {
-                                        epic.estimatedStoryCount += 1;
-                                        epic.totalPoints += story_points;
-
-                                        switch (issue.fields.status.statusCategory.name) {
-                                            case "To Do":
-                                                epic.toDoPoints += story_points;
-                                                break;
-                                            case "In Progress":
-                                                epic.inProgressPoints += story_points;
-                                                break;
-                                            case "Done":
-                                                epic.donePoints += story_points;
-                                                break;
+                                    request({
+                                        url: '/rest/api/2/search?jql=' + jql + '&fields=' + fields + '&maxResults=500',
+                                        success: function (response) {
+                                            var issues = JSON.parse(response).issues;
+                                            callback(issues);
                                         }
+                                    });
+                                }
+                                else {
+                                    var issues = {};
+                                    callback(issues);
+                                }
+                            };
+
+                            getEpicList(function (epicsJson) {
+                                $.each(epicsJson, function (i, e) {
+                                    epics[e.key] = e;
+
+                                    e.lozengeColorClass = "";
+                                    switch (e.fields.status.statusCategory.name) {
+                                        case "To Do":
+                                            e.lozengeColorClass = "aui-lozenge-complete";
+                                            break;
+                                        case "In Progress":
+                                            e.lozengeColorClass = "aui-lozenge-current";
+                                            break;
+                                        case "Done":
+                                            e.lozengeColorClass = "aui-lozenge-success";
+                                            break;
                                     }
+
+                                    e.stories = [];
+                                    e.storyCount = 0;
+                                    e.estimatedStoryCount = 0;
+                                    e.unestimatedStoryCount = 0;
+                                    e.percentUnestimatedStories = 0;
+                                    e.totalPoints = 0;
+                                    e.toDoPoints = 0;
+                                    e.inProgressPoints = 0;
+                                    e.donePoints = 0;
+                                    e.percentTodo = 0;
+                                    e.percentInProgress = 0;
+                                    e.percentComplete = 0;
+
                                 });
 
-                                $.each(epicsJson, function (i, epic) {
-                                    epic.percentTodo = (epic.toDoPoints / epic.totalPoints) * 100;
-                                    epic.percentInProgress = (epic.inProgressPoints / epic.totalPoints) * 100;
-                                    epic.percentComplete = (epic.donePoints / epic.totalPoints) * 100;
-                                    epic.unestimatedStoryCount = epic.storyCount - epic.estimatedStoryCount;
-                                    epic.percentUnestimatedStories = Math.floor((epic.unestimatedStoryCount / epic.storyCount) * 100);
-                                });
+                                getIssuesFromEpics(function (issuesJson) {
+                                    $.each(issuesJson, function (i, issue) {
+                                        epic = epics[issue.fields[epic_link_id]];
+                                        epic.stories.push(issue.key);
+                                        epic.storyCount += 1;
 
-                                callback(epics);
+                                        story_points = issue.fields[story_points_id];
+                                        if (story_points) {
+                                            epic.estimatedStoryCount += 1;
+                                            epic.totalPoints += story_points;
+
+                                            switch (issue.fields.status.statusCategory.name) {
+                                                case "To Do":
+                                                    epic.toDoPoints += story_points;
+                                                    break;
+                                                case "In Progress":
+                                                    epic.inProgressPoints += story_points;
+                                                    break;
+                                                case "Done":
+                                                    epic.donePoints += story_points;
+                                                    break;
+                                            }
+                                        }
+                                    });
+
+                                    $.each(epicsJson, function (i, epic) {
+                                        epic.percentTodo = (epic.toDoPoints / epic.totalPoints) * 100;
+                                        epic.percentInProgress = (epic.inProgressPoints / epic.totalPoints) * 100;
+                                        epic.percentComplete = (epic.donePoints / epic.totalPoints) * 100;
+                                        epic.unestimatedStoryCount = epic.storyCount - epic.estimatedStoryCount;
+                                        epic.percentUnestimatedStories = Math.floor((epic.unestimatedStoryCount / epic.storyCount) * 100);
+                                    });
+
+                                    callback(epics, release_start_date, release_end_date);
+                                });
                             });
                         });
                     });

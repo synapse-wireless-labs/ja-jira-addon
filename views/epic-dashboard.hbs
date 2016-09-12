@@ -42,21 +42,21 @@
                     <td>
                         <ul class="ag-progress">
                             <% if (release.totalPoints == 0) { %>
-                                <li class="ag-empty" style="width:100%"><a class="ag-status-info"><b>None</b></a></li>
+                                <li class="ag-empty" style="width:100%"><span class="ag-status-info"><b>None</b></span></li>
                             <% } else { %>
                                 <% if (release.donePoints > 0) { %>
                                     <li class="ag-done " style="width:<%=release.percentComplete%>%">
-                                        <b><%=release.donePoints%></b>
+                                        <span class="ag-status-info"><b><%=release.donePoints%></b></span>
                                     </li>
                                 <% } %>
                                 <% if (release.inProgressPoints > 0) { %>
                                     <li class="ag-inprogress" style="width:<%=release.percentInProgress%>%">
-                                        <b><%=release.inProgressPoints%></b>
+                                        <span class="ag-status-info"><b><%=release.inProgressPoints%></b></span>
                                     </li>
                                 <% } %>
                                 <% if (release.toDoPoints > 0) { %>
                                     <li class="ag-todo" style="width:<%=release.percentTodo%>%">
-                                        <b><%=release.toDoPoints%></b>
+                                        <span class="ag-status-info"><b><%=release.toDoPoints%></b></span>
                                     </li>
                                 <% } %>
                             <% } %>

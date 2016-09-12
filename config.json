@@ -7,7 +7,7 @@
         //Use 'unauthorized.hbs' template for displaying an error page
         "errorTemplate": true,
         // this should be your test instance URL:
-        "localBaseUrl" : "https://babdac3c.ngrok.io",
+        "localBaseUrl" : "https://01b68104.ngrok.io",
         // alassian-connect-express currently integrates with JugglingDB for persistence
         // to store the host client information (i.e., client key, host public
         // key, etc). When no adapter is specified, it defaults to JugglingDB's

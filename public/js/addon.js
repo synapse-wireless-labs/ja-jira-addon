@@ -49,10 +49,6 @@ $( document ).ready(function() {
                                      $release.endDate = endDate.toDateString();
                                  }
 
-
-
-                                $release.startDate = startDate.toDateString();
-                                $release.endDate = endDate.toDateString();
                                 $release.totalDays = 0;
                                 $release.daysPast = 0;
                                 $release.daysRemaining = 0;
@@ -135,7 +131,7 @@ $( document ).ready(function() {
                         var releaseEndDate = new Date(0);
 
                         request({
-                            url: 'rest/api/2/project/' + project + '/versions',
+                            url: '/rest/api/2/project/' + project + '/versions',
                             success: function (response) {
                                 //alert("got the API successfully!")
                                 var versions = JSON.parse(response);
@@ -232,7 +228,7 @@ $( document ).ready(function() {
                                     e.donePoints = 0;
                                     e.percentTodo = 0;
                                     e.percentInProgress = 0;
-                                    e.percentComplete = 0;
+                                    e.percentDone = 0;
 
                                 });
 
@@ -264,7 +260,7 @@ $( document ).ready(function() {
                                     $.each(epicsJson, function (i, epic) {
                                         epic.percentTodo = (epic.toDoPoints / epic.totalPoints) * 100;
                                         epic.percentInProgress = (epic.inProgressPoints / epic.totalPoints) * 100;
-                                        epic.percentComplete = (epic.donePoints / epic.totalPoints) * 100;
+                                        epic.percentDone = (epic.donePoints / epic.totalPoints) * 100;
                                         epic.unestimatedStoryCount = epic.storyCount - epic.estimatedStoryCount;
                                         epic.percentUnestimatedStories = Math.floor((epic.unestimatedStoryCount / epic.storyCount) * 100);
                                     });

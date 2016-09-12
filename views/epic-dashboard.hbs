@@ -46,7 +46,7 @@
                                 <li class="ag-empty" style="width:100%"><span class="ag-status-info"><b>None</b></span></li>
                             <% } else { %>
                                 <% if (release.donePoints > 0) { %>
-                                    <li class="ag-done " style="width:<%=release.percentComplete%>%">
+                                    <li class="ag-done " style="width:<%=release.percentDone%>%">
                                         <span class="ag-status-info"><b><%=release.donePoints%></b></span>
                                     </li>
                                 <% } %>
@@ -134,7 +134,7 @@
                     <li class="ag-empty" style="width:100%"><span class="ag-status-info"><b>None</b></span></li>
                 <% } else { %>
                     <% if (epic.donePoints > 0) { %>
-                        <li class="ag-done " style="width:<%=epic.percentComplete%>%">
+                        <li class="ag-done " style="width:<%=epic.percentDone%>%">
                             <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory = %22Done%22 AND %22Epic Link%22 = <%=epic.key%>"  class="ag-status-info" target="_blank">
                                 <b><%=epic.donePoints%></b>
                             </a>

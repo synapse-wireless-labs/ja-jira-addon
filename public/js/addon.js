@@ -1,6 +1,13 @@
 /* add-on script */
 $( document ).ready(function() {
 
+    var sizeDict = function (d) {
+        c=0;
+        for (i in d)
+            ++c;
+        return c
+    };
+
     var askJIRA = function (url) {
         return new RSVP.Promise(function (worked, failed) {
             AP.require(['request'], function (request) {
@@ -29,13 +36,6 @@ $( document ).ready(function() {
 
             render: function (configuration) {
                 this.setTitle(configuration);
-
-                var sizeDict = function (d) {
-                    c=0;
-                    for (i in d)
-                        ++c;
-                    return c
-                };
 
                 $('#addon-header').html(_.template($('#addonHeaderTemplate').html())({}));
                 $('#addon-footer').html(_.template($('#addonFooterTemplate').html())({config: configuration}));
@@ -205,16 +205,21 @@ $( document ).ready(function() {
         }
 
         function askJIRAforIssues() {
-            var epicKeys = [];
-            $.each(epics, function (i, epic) {
-                epicKeys.push(epic.key);
-            });
+            if (sizeDict(epics) == 0) {
+                RSVP.resolve({});
+            }
+            else {
+                var epicKeys = [];
+                $.each(epics, function (i, epic) {
+                    epicKeys.push(epic.key);
+                });
 
-            var jql = encodeURIComponent('project = ' + project + ' AND fixVersion = ' + version + ' AND "Epic Link" in (' + epicKeys.join(',') + ')');
-            var fields = encodeURIComponent([epic_link_id, story_points_id, 'status', 'key'].join(','));
-            var maxResults = 500;
+                var jql = encodeURIComponent('project = ' + project + ' AND fixVersion = ' + version + ' AND "Epic Link" in (' + epicKeys.join(',') + ')');
+                var fields = encodeURIComponent([epic_link_id, story_points_id, 'status', 'key'].join(','));
+                var maxResults = 500;
 
-            return askJIRA('/rest/api/2/search?jql=' + jql + '&fields=' + fields + '&maxResults=' + maxResults);
+                return askJIRA('/rest/api/2/search?jql=' + jql + '&fields=' + fields + '&maxResults=' + maxResults);
+            }
         }
 
         function processIssues (response) {

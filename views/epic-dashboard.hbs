@@ -12,6 +12,7 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     <script src="//aui-cdn.atlassian.com/aui-adg/5.6.11/js/aui.js" type="text/javascript"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <script src="https://cdn.jsdelivr.net/rsvp/3.0.6/rsvp.min.js"></script>
     <script src="{{hostBaseUrl}}/atlassian-connect/all.js"></script>
 </head>
 
@@ -20,85 +21,87 @@
     <div class="aui-page-panel ac-content">
         <div class="aui-page-panel-inner">
             <section class="aui-page-panel-content">
-                <div id="issues-in-project" class="aui-item">
-                </div>
+                <div id="addon-header"></div>
+                <div id="epics-in-release" class="aui-item"></div>
+                <div id="addon-footer"></div>
             </section>
         </div>
     </div>
 </section>
-<script type="text/underscore-template" id="issuesHeaderTemplate">
-    <div>
-        <table id='issuesHeaderTable' class='aui'>
-            <thead>
-                <th></th>
-                <th>
-                    <h2>Summary of Epics in <b><%=release.projectName%></b> for <b><%=release.versionName%></b></h2>
-                </th>
-            </thead>
-            <tbody>
-                <tr>
-                    <td style="max-width: 75px">
-                        Overall Progress:
-                    </td>
-                    <td>
-                        <ul class="ag-progress">
-                            <% if (release.totalPoints == 0) { %>
-                                <li class="ag-empty" style="width:100%"><span class="ag-status-info"><b>None</b></span></li>
-                            <% } else { %>
-                                <% if (release.donePoints > 0) { %>
-                                    <li class="ag-done " style="width:<%=release.percentDone%>%">
-                                        <span class="ag-status-info"><b><%=release.donePoints%></b></span>
-                                    </li>
-                                <% } %>
-                                <% if (release.inProgressPoints > 0) { %>
-                                    <li class="ag-inprogress" style="width:<%=release.percentInProgress%>%">
-                                        <span class="ag-status-info"><b><%=release.inProgressPoints%></b></span>
-                                    </li>
-                                <% } %>
-                                <% if (release.toDoPoints > 0) { %>
-                                    <li class="ag-todo" style="width:<%=release.percentTodo%>%">
-                                        <span class="ag-status-info"><b><%=release.toDoPoints%></b></span>
-                                    </li>
-                                <% } %>
-                            <% } %>
-                        </ul>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="max-width: 75px">
-                        Overall Schedule:<br>
-                        <i><%=release.startDate%></i> - <i><%=release.endDate%></i>
-                    </td>
-                    <td>
-                        <ul class="ag-progress">
-                            <% if (release.totalDays == 0) { %>
-                                <li class="ag-empty" style="width:100%"><span class="ag-status-info"><b>Release Schedule Not Available</b></span></li>
-                            <% } else { %>
-                                <% if (release.daysPast > 0) { %>
-                                    <li class="ag-past" style="width:<%=release.percentDaysPast%>%">
-                                        <span class="ag-status-info"><b><%=release.daysPast%> Days</b></span>
-                                    </li>
-                                <% } %>
-                                <% if (release.daysRemaining > 0) { %>
-                                    <li class="ag-future" style="width:<%=release.percentDaysRemaining%>%">
-                                        <span class="ag-status-info"><b><%=release.daysRemaining%> Days</b></span>
-                                    </li>
-                                <% } %>
-                            <% } %>
-                        </ul>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+
+<!--Templates for Add-on Header-->
+<script type="text/underscore-template" id="addonHeaderTemplate">
+    <table id='addon-header-table' class='aui'>
+        <thead></thead>
+        <tbody></tbody>
+    </table>
 </script>
+<script type="text/underscore-template" id="addonHeaderTitleTemplate">
+    <th></th>
+    <th><h2>Summary of Epics in <b><%=config.projectName%></b> for <b><%=config.versionName%></b></h2></th>
+</script>
+<script type="text/underscore-template" id="addonHeaderOverallRowTemplate">
+    <tr>
+        <td style="max-width: 75px">Overall Progress:</td>
+        <td>
+            <ul class="ag-progress">
+                <% if (release.totalPoints == 0) { %>
+                    <li class="ag-empty" style="width:100%"><span class="ag-status-info"><b>None</b></span></li>
+                <% } else { %>
+                    <% if (release.donePoints > 0) { %>
+                        <li class="ag-done" style="width:<%=release.percentDone%>%">
+                            <span class="ag-status-info"><b><%=release.donePoints%></b></span>
+                        </li>
+                    <% } %>
+                    <% if (release.inProgressPoints > 0) { %>
+                        <li class="ag-inprogress" style="width:<%=release.percentInProgress%>%">
+                            <span class="ag-status-info"><b><%=release.inProgressPoints%></b></span>
+                        </li>
+                    <% } %>
+                    <% if (release.toDoPoints > 0) { %>
+                        <li class="ag-todo" style="width:<%=release.percentTodo%>%">
+                            <span class="ag-status-info"><b><%=release.toDoPoints%></b></span>
+                        </li>
+                    <% } %>
+                <% } %>
+            </ul>
+        </td>
+    </tr>
+</script>
+<script type="text/underscore-template" id="addonHeaderDateRowTemplate">
+    <tr>
+        <td style="max-width: 75px">
+            Overall Schedule:<br>
+            <i><%=release.startDate%></i> - <i><%=release.endDate%></i>
+        </td>
+        <td>
+            <ul class="ag-progress">
+                <% if (release.totalDays == 0) { %>
+                    <li class="ag-empty" style="width:100%"><span class="ag-status-info"><b>Release Schedule Not Available</b></span></li>
+                <% } else { %>
+                    <% if (release.daysPast > 0) { %>
+                        <li class="ag-past" style="width:<%=release.percentDaysPast%>%">
+                            <span class="ag-status-info"><b><%=release.daysPast%> Days</b></span>
+                        </li>
+                    <% } %>
+                    <% if (release.daysRemaining > 0) { %>
+                        <li class="ag-future" style="width:<%=release.percentDaysRemaining%>%">
+                            <span class="ag-status-info"><b><%=release.daysRemaining%> Days</b></span>
+                        </li>
+                    <% } %>
+                <% } %>
+            </ul>
+        </td>
+    </tr>
+</script>
+
+<!--Templates for Epic Table-->
 <script type="text/underscore-template" id="noIssuesTemplate">
     <span>No Epics found in <%=config.projectName%> for <%=config.versionName%>.</span>
 </script>
-<script type="text/underscore-template" id="issuesTableTemplate">
-    <div id="issuesHeader"></div>
+<script type="text/underscore-template" id="epicTableTemplate">
     <span><br></span>
-    <table id='issuesTable' class='aui'>
+    <table id='epic-table' class='aui'>
         <thead>
             <th id="key">Key</th>
             <th id="summary">Summary</th>
@@ -109,9 +112,8 @@
         <tbody></tbody>
     </table>
     <span><br></span>
-    <div id="issuesFooter"></div>
 </script>
-<script type="text/underscore-template" id="issueTableRow">
+<script type="text/underscore-template" id="epicTableRow">
     <tr>
         <td headers="key">
             <a class="issue-link" data-issue-key="<%=epic.key%>" href="{{hostBaseUrl}}/browse/<%=epic.key%>" target="_blank"><%=epic.key%></a>
@@ -167,7 +169,10 @@
         </td>
     </tr>
 </script>
-<script type="text/underscore-template" id="issuesFooterTemplate">
+
+
+<!--Templates for Add-on Footer-->
+<script type="text/underscore-template" id="addonFooterTemplate">
     <div>
         <b>Summary of</b>
         <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=project = %22<%=config.projectName%>%22 AND %22fixVersion%22 = %22<%=config.versionName%>%22 AND issuetype = Epic" target="_blank">
@@ -175,6 +180,9 @@
         </a>
     </div>
 </script>
+
+
+<!--Templates for Add-on Config-->
 <script type="text/underscore-template" id="dashboardItemConfigTemplate">
     <form class='aui'>
         <div class='field-group'>
@@ -195,6 +203,8 @@
         </div>
     </form>
 </script>
+
+
 <script type="text/javascript" src="{{furl '/js/addon.js'}}"></script>
 </body>
 </html>

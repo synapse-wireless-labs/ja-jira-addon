@@ -1,6 +1,6 @@
 {
-  "key": "ja-report-addon",
-  "name": "Agile Reporting Add-on",
+  "key": "ja-alex-report-addon",
+  "name": "Alex's Agile Reporting Add-on",
   "description": "Provide helpful macros for reporting on Agile projects",
   "vendor": {
     "name": "Synapse Wireless Labs",
@@ -26,7 +26,7 @@
     "jiraDashboardItems": [
       {
         "name": {
-          "value": "Epic Release Report"
+          "value": "Alex's Epic Release Report"
         },
         "url": "/epic-dashboard?dashboard={dashboard.id}&dashboardItem={dashboardItem.id}",
         "key": "iframe-requests",

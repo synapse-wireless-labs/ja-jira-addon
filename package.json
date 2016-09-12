@@ -13,9 +13,10 @@
     "errorhandler": "^1.4.2",
     "express": "^4.13.3",
     "express-hbs": "*",
-    "jugglingdb-sqlite3": "0.0.5",
     "jugglingdb-postgres": "*",
+    "jugglingdb-sqlite3": "0.0.5",
     "morgan": "^1.6.1",
+    "rsvp": "^3.2.1",
     "static-expiry": ">=0.0.5"
   }
 }

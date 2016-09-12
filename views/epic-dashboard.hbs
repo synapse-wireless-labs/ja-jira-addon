@@ -28,57 +28,58 @@
 <script type="text/underscore-template" id="issuesHeaderTemplate">
     <div>
         <table id='issuesHeaderTable' class='aui'>
-            <tr>
-                <td>
-                </td>
-                <td>
+            <thead>
+                <th></th>
+                <th>
                     <h2>Summary of Epics in <b><%=release.projectName%></b> for <b><%=release.versionName%></b></h2>
-                </td>
-                <td>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    Overall:
-                </td>
-                <td>
-                    <ul class="ag-progress">
-                        <% if (release.totalPoints == 0) { %>
-                            <li class="ag-empty" style="width:100%"><a class="ag-status-info"><b>None</b></a></li>
-                        <% } else { %>
-                            <% if (release.donePoints > 0) { %>
-                                <li class="ag-done " style="width:<%=release.percentComplete%>%">
-                                    <b><%=release.donePoints%></b>
-                                </li>
+                </th>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="max-width: 75px">
+                        Overall Progress:
+                    </td>
+                    <td>
+                        <ul class="ag-progress">
+                            <% if (release.totalPoints == 0) { %>
+                                <li class="ag-empty" style="width:100%"><a class="ag-status-info"><b>None</b></a></li>
+                            <% } else { %>
+                                <% if (release.donePoints > 0) { %>
+                                    <li class="ag-done " style="width:<%=release.percentComplete%>%">
+                                        <b><%=release.donePoints%></b>
+                                    </li>
+                                <% } %>
+                                <% if (release.inProgressPoints > 0) { %>
+                                    <li class="ag-inprogress" style="width:<%=release.percentInProgress%>%">
+                                        <b><%=release.inProgressPoints%></b>
+                                    </li>
+                                <% } %>
+                                <% if (release.toDoPoints > 0) { %>
+                                    <li class="ag-todo" style="width:<%=release.percentTodo%>%">
+                                        <b><%=release.toDoPoints%></b>
+                                    </li>
+                                <% } %>
                             <% } %>
-                            <% if (release.inProgressPoints > 0) { %>
-                                <li class="ag-inprogress" style="width:<%=release.percentInProgress%>%">
-                                    <b><%=release.inProgressPoints%></b>
-                                </li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="max-width: 75px">
+                        Overall Schedule:<br>
+                        <i><%=release.startDate%></i> - <i><%=release.endDate%></i>
+                    </td>
+                    <td>
+                        <ul class="ag-progress">
+                            <% if (release.totalDays > 0) { %>
+                                <%=release.totalDays%> = <%=release.daysPast%> + <%=release.daysRemaining%><br>
+                                100% = <%=release.percentDaysDone%> + <%=release.percentDaysRemaining%>
+                            <% } else { %>
+                                <li class="ag-empty" style="width:100%"><span class="ag-status-info"><b>Release Schedule Not Available</b></span></li>
                             <% } %>
-                            <% if (release.toDoPoints > 0) { %>
-                                <li class="ag-todo" style="width:<%=release.percentTodo%>%">
-                                    <b><%=release.toDoPoints%></b>
-                                </li>
-                            <% } %>
-                        <% } %>
-                    </ul>
-                </td>
-                <td>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <i><%=release.startDate%></i>
-                </td>
-                <td>
-                    <%=release.totalDays%> = <%=release.daysPast%> + <%=release.daysRemaining%><br>
-                    100% = <%=release.percentDaysDone%> + <%=release.percentDaysRemaining%>
-                </td>
-                <td>
-                    <i><%=release.endDate%></i>
-                </td>
-            </tr>
+                        </ul>
+                    </td>
+                </tr>
+            </tbody>
         </table>
     </div>
 </script>
@@ -129,7 +130,7 @@
         <td style="min-width: 300px" headers="progress">
             <ul class="ag-progress">
                 <% if (epic.totalPoints == 0) { %>
-                    <li class="ag-empty" style="width:100%"><a class="ag-status-info"><b>None</b></a></li>
+                    <li class="ag-empty" style="width:100%"><span class="ag-status-info"><b>None</b></span></li>
                 <% } else { %>
                     <% if (epic.donePoints > 0) { %>
                         <li class="ag-done " style="width:<%=epic.percentComplete%>%">
@@ -203,7 +204,6 @@
 
             render: function (configuration) {
                 this.setTitle(configuration);
-                view = this;
 
                 var sizeDict = function (d) {
                     c=0;
@@ -214,14 +214,25 @@
 
                 new IssueSearchService(configuration.project, configuration.version)
                         .getEpics(function (epics, startDate, endDate) {
-                            if (sizeDict(epics) > 0) {
+                            if (sizeDict(epics) == 0) {
+                                $('#issues-in-project').html(_.template($('#noIssuesTemplate').html())({config: configuration}));
+                            }
+                            else {
                                 var $release = {};
 
                                 $release.projectName = configuration.projectName;
                                 $release.versionName = configuration.versionName;
 
-                                $release.startDate = startDate.toDateString();
-                                $release.endDate = endDate.toDateString();
+                                epoch = new Date(0);
+                                $release.startDate = "xxx xxx 00 0000";
+                                if (startDate > epoch) {
+                                    $release.startDate = startDate.toDateString();
+                                }
+                                $release.endDate = "xxx xxx 00 0000";
+                                if (endDate > epoch) {
+                                    $release.endDate = endDate.toDateString();
+                                }
+
                                 $release.totalDays = 0;
                                 $release.daysPast = 0;
                                 $release.daysRemaining = 0;
@@ -276,9 +287,6 @@
 
                                 $('#issuesFooter').html(_.template($('#issuesFooterTemplate').html())({config: configuration}));
                             }
-                            else {
-                                $('#issues-in-project').html(_.template($('#noIssuesTemplate').html())({config: configuration}));
-                            }
                         })
                 }
             }
@@ -303,8 +311,8 @@
                     };
 
                     var getReleaseDates = function(callback) {
-                        var releaseStartDate = new Date();
-                        var releaseEndDate = new Date();
+                        var releaseStartDate = new Date(0);
+                        var releaseEndDate = new Date(0);
 
                         request({
                             url: 'rest/api/2/project/' + project + '/versions',

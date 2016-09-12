@@ -17,7 +17,6 @@ $( document ).ready(function() {
 
             render: function (configuration) {
                 this.setTitle(configuration);
-                view = this;
 
                 var sizeDict = function (d) {
                     c=0;
@@ -28,11 +27,29 @@ $( document ).ready(function() {
 
                 new IssueSearchService(configuration.project, configuration.version)
                         .getEpics(function (epics, startDate, endDate) {
+                            if (sizeDict(epics) == 0) {
+                                 $('#issues-in-project').html(_.template($('#noIssuesTemplate').html())({config: configuration}));
+                             }
+                             else {
+
+                            }
                             if (sizeDict(epics) > 0) {
                                 var $release = {};
 
                                 $release.projectName = configuration.projectName;
                                 $release.versionName = configuration.versionName;
+
+                                epoch = new Date(0);
+                                $release.startDate = "xxx xxx 00 0000";
+                                 if (startDate > epoch) {
+                                     $release.startDate = startDate.toDateString();
+                                 }
+                                 $release.endDate = "xxx xxx 00 0000";
+                                 if (endDate > epoch) {
+                                     $release.endDate = endDate.toDateString();
+                                 }
+
+
 
                                 $release.startDate = startDate.toDateString();
                                 $release.endDate = endDate.toDateString();
@@ -90,9 +107,6 @@ $( document ).ready(function() {
 
                                 $('#issuesFooter').html(_.template($('#issuesFooterTemplate').html())({config: configuration}));
                             }
-                            else {
-                                $('#issues-in-project').html(_.template($('#noIssuesTemplate').html())({config: configuration}));
-                            }
                         })
                 }
             }
@@ -117,8 +131,8 @@ $( document ).ready(function() {
                     };
 
                     var getReleaseDates = function(callback) {
-                        var releaseStartDate = new Date();
-                        var releaseEndDate = new Date();
+                        var releaseStartDate = new Date(0);
+                        var releaseEndDate = new Date(0);
 
                         request({
                             url: 'rest/api/2/project/' + project + '/versions',

@@ -31,20 +31,17 @@ $( document ).ready(function() {
                                  $('#issues-in-project').html(_.template($('#noIssuesTemplate').html())({config: configuration}));
                              }
                              else {
-
-                            }
-                            if (sizeDict(epics) > 0) {
                                 var $release = {};
 
                                 $release.projectName = configuration.projectName;
                                 $release.versionName = configuration.versionName;
 
                                 epoch = new Date(0);
-                                $release.startDate = "xxx xxx 00 0000";
+                                $release.startDate = "dates";
                                  if (startDate > epoch) {
                                      $release.startDate = startDate.toDateString();
                                  }
-                                 $release.endDate = "xxx xxx 00 0000";
+                                 $release.endDate = "unknown";
                                  if (endDate > epoch) {
                                      $release.endDate = endDate.toDateString();
                                  }
@@ -52,7 +49,7 @@ $( document ).ready(function() {
                                 $release.totalDays = 0;
                                 $release.daysPast = 0;
                                 $release.daysRemaining = 0;
-                                $release.percentDaysDone = 0;
+                                $release.percentDaysPast = 0;
                                 $release.percentDaysRemaining = 0;
 
                                 $release.toDoPoints = 0;
@@ -74,16 +71,16 @@ $( document ).ready(function() {
                                 today = new Date();
 
                                 if (endDate > startDate) {
-                                    $release.totalDays = Math.floor((endDate - startDate) / msPerDay);
+                                    $release.totalDays = Math.ceil((endDate - startDate) / msPerDay) + 1;
                                 }
                                 if (today > startDate) {
-                                    $release.daysPast = Math.floor((today - startDate) / msPerDay);
+                                    $release.daysPast = Math.ceil((today - startDate) / msPerDay);
                                 }
                                 if (endDate > today) {
-                                    $release.daysRemaining = Math.floor((endDate - today) / msPerDay);
+                                    $release.daysRemaining = Math.ceil((endDate - today) / msPerDay);
                                 }
                                 if ($release.totalDays > 0) {
-                                    $release.percentDaysDone = ($release.daysPast / $release.totalDays) * 100;
+                                    $release.percentDaysPast = ($release.daysPast / $release.totalDays) * 100;
                                     $release.percentDaysRemaining = ($release.daysRemaining / $release.totalDays) * 100;
                                 }
 
@@ -133,22 +130,16 @@ $( document ).ready(function() {
                         request({
                             url: '/rest/api/2/project/' + project + '/versions',
                             success: function (response) {
-                                //alert("got the API successfully!")
                                 var versions = JSON.parse(response);
                                 $.each(versions, function (i, v) {
                                     if (v.id == version) {
-                                        releaseStartDate = v.userStartDate;
-                                        releaseEndDate = v.userReleaseDate;
-                                        //alert(releaseStartDate + ',' + releaseEndDate);
+                                        releaseStartDate = new Date(v.userStartDate || 0);
+                                        releaseEndDate = new Date(v.userReleaseDate || 0);
                                     }
                                 });
 
                                 callback(releaseStartDate, releaseEndDate);
                             },
-                            error: function (response) {
-                                //alert("unable to get version dates from project!")
-                                callback(releaseStartDate, releaseEndDate);
-                            }
                         });
                     };
 

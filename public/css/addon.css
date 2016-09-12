@@ -74,6 +74,14 @@
     overflow: hidden
 }
 
+li.ag-past {
+    background: #707070
+}
+
+li.ag-future {
+    background: #59afe1
+}
+
 li.ag-empty {
     background: #cccccc
 }

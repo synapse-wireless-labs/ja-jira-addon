@@ -71,11 +71,19 @@
                     </td>
                     <td>
                         <ul class="ag-progress">
-                            <% if (release.totalDays > 0) { %>
-                                <%=release.totalDays%> = <%=release.daysPast%> + <%=release.daysRemaining%><br>
-                                100% = <%=release.percentDaysDone%> + <%=release.percentDaysRemaining%>
-                            <% } else { %>
+                            <% if (release.totalDays == 0) { %>
                                 <li class="ag-empty" style="width:100%"><span class="ag-status-info"><b>Release Schedule Not Available</b></span></li>
+                            <% } else { %>
+                                <% if (release.daysPast > 0) { %>
+                                    <li class="ag-past" style="width:<%=release.percentDaysPast%>%">
+                                        <span class="ag-status-info"><b><%=release.daysPast%> Days</b></span>
+                                    </li>
+                                <% } %>
+                                <% if (release.daysRemaining > 0) { %>
+                                    <li class="ag-future" style="width:<%=release.percentDaysRemaining%>%">
+                                        <span class="ag-status-info"><b><%=release.daysRemaining%> Days</b></span>
+                                    </li>
+                                <% } %>
                             <% } %>
                         </ul>
                     </td>

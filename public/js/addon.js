@@ -260,9 +260,6 @@ $( document ).ready(function() {
                     .then(processReleaseDates)
                     .then(function (){
                         callback(releaseStartDate, releaseEndDate);
-                    })
-                    .catch(function(error) {
-                        alert("getReleaseDates failed");
                     });
             },
             getEpics: function (callback) {
@@ -274,9 +271,6 @@ $( document ).ready(function() {
                     .then(processIssues)
                     .then(function () {
                         callback(epics);
-                    })
-                    .catch(function(error) {
-                        alert(error);
                     });
 
             }
@@ -341,10 +335,15 @@ $( document ).ready(function() {
                     e.preventDefault();
                     var service = new DashboardItemConfigurationService();
                     var $title = $('#itemTitle').val();
-                    var $project = $('#selectedProject').find(':selected').val();
-                    var $projectName = $('#selectedProject').find(':selected').text();
-                    var $version = $('#selectedVersion').find(':selected').val();
-                    var $versionName = $('#selectedVersion').find(':selected').text();
+
+                    var $selectedProject = $('#selectedProject').find(':selected');
+                    var $project = $selectedProject.val();
+                    var $projectName = $selectedProject.text();
+
+                    var $selectedVersion = $('#selectedVersion').find(':selected');
+                    var $version = $selectedVersion.val();
+                    var $versionName = $selectedVersion.text();
+
                     var configuration = {title: $title, project: $project, projectName: $projectName, version: $version, versionName: $versionName};
                     service.save(configuration, function () {
                         new IssueTableView().render(configuration);

@@ -37,58 +37,57 @@ $( document ).ready(function() {
                     return c
                 };
 
-                $('#addon-header').html(_.template($('#addonHeaderTemplate').html())({}));
-                $('#addon-footer').html(_.template($('#addonFooterTemplate').html())({config: configuration}));
+                var $addon = $('#addon-wrapper');
+                $addon.empty();
+                $addon.html(_.template($('#addonWrapperTemplate').html())({config: configuration}));
 
-                $('#addon-header-table').find('thead').html(_.template($('#addonHeaderTitleTemplate').html())({config: configuration}));
+                var releaseInfo = {};
+                releaseInfo.projectName = configuration.projectName;
+                releaseInfo.versionName = configuration.versionName;
 
-                var $release = {};
-                $release.projectName = configuration.projectName;
-                $release.versionName = configuration.versionName;
+                releaseInfo.totalDays = 0;
+                releaseInfo.daysPast = 0;
+                releaseInfo.daysRemaining = 0;
+                releaseInfo.percentDaysPast = 0;
+                releaseInfo.percentDaysRemaining = 0;
 
-                $release.totalDays = 0;
-                $release.daysPast = 0;
-                $release.daysRemaining = 0;
-                $release.percentDaysPast = 0;
-                $release.percentDaysRemaining = 0;
-
-                $release.toDoPoints = 0;
-                $release.inProgressPoints = 0;
-                $release.donePoints = 0;
-                $release.percentTodo = 0;
-                $release.percentInProgress = 0;
-                $release.percentDone = 0;
+                releaseInfo.toDoPoints = 0;
+                releaseInfo.inProgressPoints = 0;
+                releaseInfo.donePoints = 0;
+                releaseInfo.percentTodo = 0;
+                releaseInfo.percentInProgress = 0;
+                releaseInfo.percentDone = 0;
 
                 new IssueSearchService(configuration.project, configuration.version)
                     .getReleaseDates(function (startDate, endDate) {
                         epoch = new Date(0);
-                        $release.startDate = "dates";
+                        releaseInfo.startDate = "dates";
                         if (startDate > epoch) {
-                            $release.startDate = startDate.toDateString();
+                            releaseInfo.startDate = startDate.toDateString();
                         }
-                        $release.endDate = "unknown";
+                        releaseInfo.endDate = "unknown";
                         if (endDate > epoch) {
-                            $release.endDate = endDate.toDateString();
+                            releaseInfo.endDate = endDate.toDateString();
                         }
 
                         msPerDay = 1000 * 60 * 60 * 24;
                         today = new Date();
 
                         if (endDate > startDate) {
-                            $release.totalDays = Math.floor((endDate - startDate) / msPerDay) + 1;
+                            releaseInfo.totalDays = Math.floor((endDate - startDate) / msPerDay) + 1;
                         }
                         if (today > startDate) {
-                            $release.daysPast = Math.ceil((today - startDate) / msPerDay);
+                            releaseInfo.daysPast = Math.ceil((today - startDate) / msPerDay);
                         }
                         if (endDate > today) {
-                            $release.daysRemaining = Math.ceil((endDate - today) / msPerDay);
+                            releaseInfo.daysRemaining = Math.ceil((endDate - today) / msPerDay);
                         }
-                        if ($release.totalDays > 0) {
-                            $release.percentDaysPast = ($release.daysPast / $release.totalDays) * 100;
-                            $release.percentDaysRemaining = ($release.daysRemaining / $release.totalDays) * 100;
+                        if (releaseInfo.totalDays > 0) {
+                            releaseInfo.percentDaysPast = (releaseInfo.daysPast / releaseInfo.totalDays) * 100;
+                            releaseInfo.percentDaysRemaining = (releaseInfo.daysRemaining / releaseInfo.totalDays) * 100;
                         }
 
-                        $('#addon-header-table').find('tbody').append(_.template($('#addonHeaderDateRowTemplate').html())({release: $release}));
+                        $('#addon-header-table').find('tbody').append(_.template($('#addonHeaderDateRowTemplate').html())({release: releaseInfo}));
                     });
 
                 new IssueSearchService(configuration.project, configuration.version)
@@ -99,20 +98,20 @@ $( document ).ready(function() {
                              }
                              else {
                                 $.each(epics, function (i, $epic) {
-                                    $release.toDoPoints += $epic.toDoPoints;
-                                    $release.inProgressPoints += $epic.inProgressPoints;
-                                    $release.donePoints += $epic.donePoints;
+                                    releaseInfo.toDoPoints += $epic.toDoPoints;
+                                    releaseInfo.inProgressPoints += $epic.inProgressPoints;
+                                    releaseInfo.donePoints += $epic.donePoints;
                                 });
 
-                                $release.totalPoints = $release.toDoPoints + $release.inProgressPoints + $release.donePoints;
+                                releaseInfo.totalPoints = releaseInfo.toDoPoints + releaseInfo.inProgressPoints + releaseInfo.donePoints;
 
-                                if ($release.totalPoints > 0) {
-                                    $release.percentTodo = ($release.toDoPoints / $release.totalPoints) * 100;
-                                    $release.percentInProgress = ($release.inProgressPoints / $release.totalPoints) * 100;
-                                    $release.percentDone = ($release.donePoints / $release.totalPoints) * 100;
+                                if (releaseInfo.totalPoints > 0) {
+                                    releaseInfo.percentTodo = (releaseInfo.toDoPoints / releaseInfo.totalPoints) * 100;
+                                    releaseInfo.percentInProgress = (releaseInfo.inProgressPoints / releaseInfo.totalPoints) * 100;
+                                    releaseInfo.percentDone = (releaseInfo.donePoints / releaseInfo.totalPoints) * 100;
                                 }
 
-                                $('#addon-header-table').find('tbody').prepend(_.template($('#addonHeaderOverallRowTemplate').html())({release: $release}));
+                                $('#addon-header-table').find('tbody').prepend(_.template($('#addonHeaderOverallRowTemplate').html())({release: releaseInfo}));
                                 $epicsInRelease.html(_.template($('#epicTableTemplate').html())({}));
 
                                 var epicTable = $epicsInRelease.find('tbody');
@@ -279,22 +278,19 @@ $( document ).ready(function() {
 
     var DashboardItemConfigurationView = function () {
         return {
-            template: function (value) {
-                return _.template($('#dashboardItemConfigTemplate').html())(value);
-            },
             addProjects: function (config, addVersions) {
                 AP.require(['request'], function (request) {
                     request({
                         url: '/rest/api/2/project',
                         success: function (response) {
                             var projects = JSON.parse(response);
-                            var selectedProject = $('#selectedProject');
+                            var $selectedProject = $('#selectedProject');
                             $.each(projects, function (index, project) {
                                 var select = $('<option>', {value: project.id}).text(project.name);
                                 if (config && config.project == project.id) {
-                                    selectedProject.append(select.attr('selected', 'selected'));
+                                    $selectedProject.append(select.attr('selected', 'selected'));
                                 }
-                                selectedProject.append(select);
+                                $selectedProject.append(select);
                             });
                             addVersions(config)
                         }
@@ -308,47 +304,48 @@ $( document ).ready(function() {
                     request({
                         url: '/rest/api/2/project/' + currentProject,
                         success: function (response) {
-                            var selectedVersion = $('#selectedVersion');
-                            selectedVersion.empty();
+                            var $selectedVersion = $('#selectedVersion');
+                            $selectedVersion.empty();
                             var versions = JSON.parse(response).versions;
                             $.each(versions, function (index, version) {
                                 var versionOption = $('<option>', {value: version.id}).text(version.name);
                                 if (config && config.version == version.id) {
-                                    selectedVersion.append(versionOption.attr('selected', 'selected'));
+                                    $selectedVersion.append(versionOption.attr('selected', 'selected'));
                                 }
-                                selectedVersion.append(versionOption);
+                                $selectedVersion.append(versionOption);
                             });
                         }
                     })
                 });
             },
             render: function (config) {
-                if (config) {
-                    $('#issues-in-project').html(this.template({itemTitle: config.title}));
-                } else {
-                    $('#issues-in-project').html(this.template({itemTitle: 'Issues for project'}));
-                }
+                var $addon = $('#addon-wrapper');
+                $addon.empty();
+                $addon.html(_.template($('#addonConfigTemplate').html())({itemTitle: config.title || 'Issues for project'}));
+
                 this.addProjects(config, this.addVersions);
 
                 $('#selectedProject').change(config, this.addVersions);
+
                 $('#saveConfiguration').click(function (e) {
                     e.preventDefault();
                     var service = new DashboardItemConfigurationService();
-                    var $title = $('#itemTitle').val();
+                    var title = $('#itemTitle').val();
 
                     var $selectedProject = $('#selectedProject').find(':selected');
-                    var $project = $selectedProject.val();
-                    var $projectName = $selectedProject.text();
+                    var projectId = $selectedProject.val();
+                    var projectName = $selectedProject.text();
 
                     var $selectedVersion = $('#selectedVersion').find(':selected');
-                    var $version = $selectedVersion.val();
-                    var $versionName = $selectedVersion.text();
+                    var versionId = $selectedVersion.val();
+                    var versionName = $selectedVersion.text();
 
-                    var configuration = {title: $title, project: $project, projectName: $projectName, version: $version, versionName: $versionName};
+                    var configuration = {title: title, project: projectId, projectName: projectName, version: versionId, versionName: versionName};
                     service.save(configuration, function () {
                         new IssueTableView().render(configuration);
                     });
                 });
+
                 $('#cancelConfiguration').click(function (e) {
                     e.preventDefault();
                     var service = new DashboardItemConfigurationService();

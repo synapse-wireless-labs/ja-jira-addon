@@ -20,25 +20,14 @@
 <section id="content" role="main">
     <div class="aui-page-panel ac-content">
         <div class="aui-page-panel-inner">
-            <section class="aui-page-panel-content">
-                <div id="addon-header"></div>
-                <div id="epics-in-release" class="aui-item"></div>
-                <div id="addon-footer"></div>
+            <section id="addon-wrapper" class="aui-page-panel-content">
             </section>
         </div>
     </div>
 </section>
 
 <!--Templates for Add-on Header-->
-<script type="text/underscore-template" id="addonHeaderTemplate">
-    <table id='addon-header-table' class='aui'>
-        <thead></thead>
-        <tbody></tbody>
-    </table>
-</script>
 <script type="text/underscore-template" id="addonHeaderTitleTemplate">
-    <th></th>
-    <th><h2>Summary of Epics in <b><%=config.projectName%></b> for <b><%=config.versionName%></b></h2></th>
 </script>
 <script type="text/underscore-template" id="addonHeaderOverallRowTemplate">
     <tr>
@@ -173,7 +162,22 @@
 
 <!--Templates for Add-on Footer-->
 <script type="text/underscore-template" id="addonFooterTemplate">
-    <div>
+</script>
+
+
+<!--Templates for Add-on Config-->
+<script type="text/underscore-template" id="addonWrapperTemplate">
+    <div id="addon-header">
+        <table id='addon-header-table' class='aui'>
+            <thead>
+                <th></th>
+                <th><h2>Summary of Epics in <b><%=config.projectName%></b> for <b><%=config.versionName%></b></h2></th>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <div id="epics-in-release" class="aui-item"></div>
+    <div id="addon-footer">
         <b>Summary of</b>
         <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=project = %22<%=config.projectName%>%22 AND %22fixVersion%22 = %22<%=config.versionName%>%22 AND issuetype = Epic" target="_blank">
             <%=config.projectName%> Epics in <%=config.versionName%>
@@ -181,9 +185,7 @@
     </div>
 </script>
 
-
-<!--Templates for Add-on Config-->
-<script type="text/underscore-template" id="dashboardItemConfigTemplate">
+<script type="text/underscore-template" id="addonConfigTemplate">
     <form class='aui'>
         <div class='field-group'>
             <label for='itemTitle'>Title:<span class='aui-icon icon-required'>required</span></label>

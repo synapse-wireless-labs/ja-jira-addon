@@ -124,7 +124,7 @@
                 </a>
             <% } %>
             <% if (epic.notInReleaseStoryCount > 0) { %>
-                <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=%22Epic Link%22 = <%=epic.key%> and (fixVersion is empty)" target="_blank">
+                <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=%22Epic Link%22 = <%=epic.key%> and (fixVersion is empty or fixVersion != %22<%=versionName%>%22)" target="_blank">
                     <span class="aui-icon aui-icon-small aui-iconfont-error simple-tooltip" title="<%= epic.notInReleaseStoryCount %> issues not in release" ></a>
                 </a>
             <% } %>

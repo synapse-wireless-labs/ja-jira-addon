@@ -117,7 +117,7 @@ $( document ).ready(function() {
 
                                 var epicTable = $epicsInRelease.find('tbody');
                                 $.each(epics, function (i, $epic) {
-                                    epicTable.append(_.template($('#epicTableRow').html())({epic: $epic}));
+                                    epicTable.append(_.template($('#epicTableRow').html())({epic: $epic, versionName: configuration.versionName}));
                                 });
 
                             }

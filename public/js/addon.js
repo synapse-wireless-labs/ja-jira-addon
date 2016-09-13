@@ -325,82 +325,76 @@ $( document ).ready(function() {
     };
 
     var DashboardItemConfigurationView = function () {
-        return {
-            addProjects: function (config, addVersions) {
-                AP.require(['request'], function (request) {
-                    request({
-                        url: '/rest/api/2/project',
-                        success: function (response) {
-                            var projects = JSON.parse(response);
-                            var $selectedProject = $('#selectedProject');
-                            $.each(projects, function (index, project) {
-                                var select = $('<option>', {value: project.id}).text(project.name);
-                                if (config && config.project == project.id) {
-                                    $selectedProject.append(select.attr('selected', 'selected'));
-                                }
-                                $selectedProject.append(select);
-                            });
-                            addVersions(config)
-                        }
-                    });
+        var service = new DashboardItemConfigurationService();
+
+        function addProjectsAndVersions(config) {
+            service.getProjects(function(projects){
+                var $selectedProject = $('#selectedProject');
+
+                $.each(projects, function (index, project) {
+                    var select = $('<option>', {value: project.id}).text(project.name);
+                    if (config && config.project == project.id) {
+                        $selectedProject.append(select.attr('selected', 'selected'));
+                    }
+                    $selectedProject.append(select);
                 });
 
-            },
-            addVersions: function (config) {
-                var currentProject = $('#selectedProject').find(':selected').val();
-                AP.require(['request'], function (request) {
-                    request({
-                        url: '/rest/api/2/project/' + currentProject,
-                        success: function (response) {
-                            var $selectedVersion = $('#selectedVersion');
-                            $selectedVersion.empty();
-                            var versions = JSON.parse(response).versions;
-                            $.each(versions, function (index, version) {
-                                var versionOption = $('<option>', {value: version.id}).text(version.name);
-                                if (config && config.version == version.id) {
-                                    $selectedVersion.append(versionOption.attr('selected', 'selected'));
-                                }
-                                $selectedVersion.append(versionOption);
-                            });
-                        }
-                    })
+                addVersions(config);
+            });
+        }
+
+        function addVersions(config) {
+            var currentProject = $('#selectedProject').find(':selected').val();
+            service.getVersions(currentProject, function(versions){
+                var $selectedVersion = $('#selectedVersion');
+                $selectedVersion.empty();
+
+                $.each(versions, function (index, version) {
+                    var versionOption = $('<option>', {value: version.id}).text(version.name);
+                    if (config && config.version == version.id) {
+                        $selectedVersion.append(versionOption.attr('selected', 'selected'));
+                    }
+                    $selectedVersion.append(versionOption);
                 });
-            },
+            });
+        }
+
+        function saveButtonHandler(e) {
+            e.preventDefault();
+            var title = $('#itemTitle').val();
+
+            var $selectedProject = $('#selectedProject').find(':selected');
+            var projectId = $selectedProject.val();
+            var projectName = $selectedProject.text();
+
+            var $selectedVersion = $('#selectedVersion').find(':selected');
+            var versionId = $selectedVersion.val();
+            var versionName = $selectedVersion.text();
+
+            var configuration = {title: title, project: projectId, projectName: projectName, version: versionId, versionName: versionName};
+            service.save(configuration, function () {
+                new IssueTableView().render(configuration);
+            });
+        }
+
+        function cancelButtonHandler(e) {
+            e.preventDefault();
+            service.getConfiguration( function (config) {
+                new IssueTableView().render(config)
+            });
+        }
+
+        return {
             render: function (config) {
                 var $addon = $('#addon-wrapper');
                 $addon.empty();
                 $addon.html(_.template($('#addonConfigTemplate').html())({itemTitle: config ? config.title : 'Issues for project'}));
 
-                this.addProjects(config, this.addVersions);
+                addProjectsAndVersions(config);
 
-                $('#selectedProject').change(config, this.addVersions);
-
-                $('#saveConfiguration').click(function (e) {
-                    e.preventDefault();
-                    var service = new DashboardItemConfigurationService();
-                    var title = $('#itemTitle').val();
-
-                    var $selectedProject = $('#selectedProject').find(':selected');
-                    var projectId = $selectedProject.val();
-                    var projectName = $selectedProject.text();
-
-                    var $selectedVersion = $('#selectedVersion').find(':selected');
-                    var versionId = $selectedVersion.val();
-                    var versionName = $selectedVersion.text();
-
-                    var configuration = {title: title, project: projectId, projectName: projectName, version: versionId, versionName: versionName};
-                    service.save(configuration, function () {
-                        new IssueTableView().render(configuration);
-                    });
-                });
-
-                $('#cancelConfiguration').click(function (e) {
-                    e.preventDefault();
-                    var service = new DashboardItemConfigurationService();
-                    service.getConfiguration( function (config) {
-                        new IssueTableView().render(config)
-                    });
-                });
+                $('#selectedProject').change(config, addVersions);
+                $('#saveConfiguration').click(saveButtonHandler);
+                $('#cancelConfiguration').click(cancelButtonHandler);
             }
         }
     };
@@ -409,35 +403,59 @@ $( document ).ready(function() {
         var $dashboard = $("meta[name='dashboard']").attr("content");
         var $dashboardItem = $("meta[name='dashboardItem']").attr("content");
 
+        function askJIRAForProjects() {
+            return askJIRA('/rest/api/2/project');
+        }
+
+        function askJIRAForVersions(project) {
+            return askJIRA('/rest/api/2/project/' + project);
+        }
+
+        function askJIRAforDashboardItemKey() {
+            return askJIRA('/rest/api/2/dashboard/' + $dashboard + '/items/' + $dashboardItem + '/properties/itemkey');
+        }
+
+        function askJIRAForDashboardProperties() {
+            return askJIRA('/rest/api/2/dashboard/' + $dashboard + '/items/' + $dashboardItem + '/properties');
+        }
+
+        function processDashboardProperties(properties) {
+            var configured = _.find(properties.keys, function (property) {
+                return "itemkey" == property.key;
+            });
+
+            return RSVP.resolve(configured);
+        }
+
         return {
-            getConfiguration: function (configuredCallback, errorCallback) {
-                AP.require(['request'], function (request) {
-                    request({
-                        url: '/rest/api/2/dashboard/' + $dashboard+ '/items/' + $dashboardItem + '/properties/itemkey',
-                        success: function (response) {
-                            configuredCallback(JSON.parse(response).value);
-                        }
+            getProjects: function (callback) {
+                askJIRAForProjects()
+                    .then(JSON.parse)
+                    .then( function(projects){
+                        callback(projects);
                     });
-                });
             },
-            isConfigured: function (configuredCallback, notConfiguredCallback) {
-                var that = this;
-                AP.require(['request'], function (request) {
-                    request({
-                        url: '/rest/api/2/dashboard/' + $dashboard+ '/items/' + $dashboardItem + '/properties',
-                        success: function (response) {
-                            var arrayOfProperties = JSON.parse(response).keys;
-                            var configured = _.find(arrayOfProperties, function (property) {
-                                return "itemkey" == property.key;
-                            });
-                            if (configured) {
-                                that.getConfiguration(configuredCallback)
-                            } else {
-                                notConfiguredCallback();
-                            }
-                        }
+            getVersions: function (project, callback) {
+                askJIRAForVersions(project)
+                    .then(JSON.parse)
+                    .then( function(project){
+                        callback(project.versions);
                     });
-                });
+            },
+            getConfiguration: function (callback) {
+                askJIRAforDashboardItemKey()
+                    .then(JSON.parse)
+                    .then(function (itemkey) {
+                        callback(itemkey.value);
+                    });
+            },
+            isConfigured: function (callback) {
+                askJIRAForDashboardProperties()
+                    .then(JSON.parse)
+                    .then(processDashboardProperties)
+                    .then(function(configured){
+                        callback(configured);
+                    });
             },
             save: function (configuration, successCallback) {
                 AP.require(['request'], function (request) {
@@ -457,10 +475,14 @@ $( document ).ready(function() {
         return {
             render: function () {
                 var service = new DashboardItemConfigurationService();
-                service.isConfigured(function (config) {
-                    new IssueTableView().render(config)
-                }, function () {
-                    new DashboardItemConfigurationView().render();
+                service.isConfigured(function (configured) {
+                    if (configured) {
+                        service.getConfiguration( function (config) {
+                            new IssueTableView().render(config)
+                        });
+                    } else {
+                        new DashboardItemConfigurationView().render();
+                    }
                 });
             }
         }

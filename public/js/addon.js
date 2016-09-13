@@ -161,6 +161,7 @@ $( document ).ready(function() {
                 e.estimatedStoryCount = 0;
                 e.unestimatedStoryCount = 0;
                 e.percentUnestimatedStories = 0;
+                e.notInReleaseStoryCount = 0;
                 e.totalPoints = 0;
                 e.toDoPoints = 0;
                 e.inProgressPoints = 0;
@@ -269,6 +270,35 @@ $( document ).ready(function() {
             return RSVP.resolve();
         }
 
+        function askJIRAforMoreIssues() {
+            if (sizeDict(epics) == 0) {
+                return RSVP.resolve("{}");
+            }
+            else {
+                var epicKeys = [];
+                $.each(epics, function (i, epic) {
+                    epicKeys.push(epic.key);
+                });
+
+                var jql = encodeURIComponent('project = ' + project + ' AND (fixVersion is empty or fixVersion != ' + version + ') AND "Epic Link" in (' + epicKeys.join(',') + ')');
+                var fields = encodeURIComponent([epic_link_id, story_points_id, 'status', 'key'].join(','));
+                var maxResults = 500;
+
+                return askJIRA('/rest/api/2/search?jql=' + jql + '&fields=' + fields + '&maxResults=' + maxResults);
+            }
+        }
+
+        function processMoreIssues (response) {
+            var issues = JSON.parse(response).issues || [];
+
+            $.each(issues, function (i, issue) {
+                epic = epics[issue.fields[epic_link_id]];
+                epic.notInReleaseStoryCount += 1;
+            });
+
+            return RSVP.resolve();
+        }
+
         return {
             getReleaseDates: function(callback) {
                 askJIRAforReleaseDates()
@@ -284,6 +314,8 @@ $( document ).ready(function() {
                     .then(processCustomIds)
                     .then(askJIRAforIssues)
                     .then(processIssues)
+                    .then(askJIRAforMoreIssues)
+                    .then(processMoreIssues)
                     .then(function () {
                         callback(epics);
                     });

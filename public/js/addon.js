@@ -253,15 +253,16 @@ $( document ).ready(function() {
             var maxPoints = 0;
             $.each(epics, function (i, epic) {
                 if (epic.totalPoints > maxPoints) {
-                    maxPoints = epic.totalPoints
+                    maxPoints = epic.totalPoints;
                 }
             });
 
             if (maxPoints) {
                 $.each(epics, function (i, epic) {
-                    epic.percentTodo = (epic.toDoPoints / maxPoints) * 100;
-                    epic.percentInProgress = (epic.inProgressPoints / maxPoints) * 100;
-                    epic.percentDone = (epic.donePoints / maxPoints) * 100;
+                    var epicScaledMax = (maxPoints + epic.totalPoints) / 2;
+                    epic.percentTodo = (epic.toDoPoints / epicScaledMax) * 100;
+                    epic.percentInProgress = (epic.inProgressPoints / epicScaledMax) * 100;
+                    epic.percentDone = (epic.donePoints / epicScaledMax) * 100;
                     epic.unestimatedStoryCount = epic.storyCount - epic.estimatedStoryCount;
                     epic.percentUnestimatedStories = Math.floor((epic.unestimatedStoryCount / epic.storyCount) * 100);
                 });

@@ -139,7 +139,7 @@ $( document ).ready(function() {
         }
 
         function processEpics(response) {
-            var epicsJson = JSON.parse(response).issues;
+            var epicsJson = JSON.parse(response).issues || [];
             $.each(epicsJson, function (i, e) {
                 epics[e.key] = e;
 
@@ -170,7 +170,7 @@ $( document ).ready(function() {
                 e.percentDone = 0;
 
             });
-            RSVP.resolve();
+            return RSVP.resolve();
         }
 
         function askJIRAforReleaseDates() {
@@ -178,14 +178,14 @@ $( document ).ready(function() {
         }
 
         function processReleaseDates(response) {
-            var versions = JSON.parse(response);
+            var versions = JSON.parse(response) || [];
             $.each(versions, function (i, v) {
                 if (v.id == version) {
                     releaseStartDate = new Date(v.userStartDate || 0);
                     releaseEndDate = new Date(v.userReleaseDate || 0);
                 }
             });
-            RSVP.resolve();
+            return RSVP.resolve();
         }
 
         function askJIRAforCustomIds () {
@@ -193,7 +193,7 @@ $( document ).ready(function() {
         }
 
         function processCustomIds(response) {
-            var fields = JSON.parse(response);
+            var fields = JSON.parse(response) || [];
             $.each(fields, function (i, field) {
                 if (field.name == "Story Points") {
                     story_points_id = field.id;
@@ -201,12 +201,12 @@ $( document ).ready(function() {
                     epic_link_id = field.id;
                 }
             });
-            RSVP.resolve();
+            return RSVP.resolve();
         }
 
         function askJIRAforIssues() {
             if (sizeDict(epics) == 0) {
-                RSVP.resolve({});
+                return RSVP.resolve("{}");
             }
             else {
                 var epicKeys = [];
@@ -223,7 +223,7 @@ $( document ).ready(function() {
         }
 
         function processIssues (response) {
-            var issues = JSON.parse(response).issues;
+            var issues = JSON.parse(response).issues || [];
 
             $.each(issues, function (i, issue) {
                 epic = epics[issue.fields[epic_link_id]];
@@ -257,6 +257,7 @@ $( document ).ready(function() {
                 epic.percentUnestimatedStories = Math.floor((epic.unestimatedStoryCount / epic.storyCount) * 100);
             });
 
+            return RSVP.resolve();
         }
 
         return {

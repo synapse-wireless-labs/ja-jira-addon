@@ -328,7 +328,7 @@ $( document ).ready(function() {
             render: function (config) {
                 var $addon = $('#addon-wrapper');
                 $addon.empty();
-                $addon.html(_.template($('#addonConfigTemplate').html())({itemTitle: config.title || 'Issues for project'}));
+                $addon.html(_.template($('#addonConfigTemplate').html())({itemTitle: config ? config.title : 'Issues for project'}));
 
                 this.addProjects(config, this.addVersions);
 

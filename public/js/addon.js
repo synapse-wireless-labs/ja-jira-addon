@@ -249,13 +249,22 @@ $( document ).ready(function() {
                 }
             });
 
+            var maxPoints = 0;
             $.each(epics, function (i, epic) {
-                epic.percentTodo = (epic.toDoPoints / epic.totalPoints) * 100;
-                epic.percentInProgress = (epic.inProgressPoints / epic.totalPoints) * 100;
-                epic.percentDone = (epic.donePoints / epic.totalPoints) * 100;
-                epic.unestimatedStoryCount = epic.storyCount - epic.estimatedStoryCount;
-                epic.percentUnestimatedStories = Math.floor((epic.unestimatedStoryCount / epic.storyCount) * 100);
+                if (epic.totalPoints > maxPoints) {
+                    maxPoints = epic.totalPoints
+                }
             });
+
+            if (maxPoints) {
+                $.each(epics, function (i, epic) {
+                    epic.percentTodo = (epic.toDoPoints / maxPoints) * 100;
+                    epic.percentInProgress = (epic.inProgressPoints / maxPoints) * 100;
+                    epic.percentDone = (epic.donePoints / maxPoints) * 100;
+                    epic.unestimatedStoryCount = epic.storyCount - epic.estimatedStoryCount;
+                    epic.percentUnestimatedStories = Math.floor((epic.unestimatedStoryCount / epic.storyCount) * 100);
+                });
+            }
 
             return RSVP.resolve();
         }

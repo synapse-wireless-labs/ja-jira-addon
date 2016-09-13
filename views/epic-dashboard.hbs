@@ -31,7 +31,7 @@
 </script>
 <script type="text/underscore-template" id="addonHeaderOverallRowTemplate">
     <tr>
-        <td style="max-width: 75px">Overall Progress:</td>
+        <td>Overall Progress:</td>
         <td>
             <ul class="ag-progress">
                 <% if (release.totalPoints == 0) { %>
@@ -59,7 +59,7 @@
 </script>
 <script type="text/underscore-template" id="addonHeaderDateRowTemplate">
     <tr>
-        <td style="max-width: 75px">
+        <td>
             Overall Schedule:<br>
         </td>
         <td>
@@ -95,7 +95,6 @@
     <span><br></span>
     <table id='epic-table' class='aui'>
         <thead>
-            <th id="key">Key</th>
             <th id="summary">Summary</th>
             <th id="status">Status</th>
             <th id="alerts">Alerts</th>
@@ -107,9 +106,6 @@
 </script>
 <script type="text/underscore-template" id="epicTableRow">
     <tr>
-        <td headers="key">
-            <a class="issue-link" data-issue-key="<%=epic.key%>" href="{{hostBaseUrl}}/browse/<%=epic.key%>" target="_blank"><%=epic.key%></a>
-        </td>
         <td headers="summary">
             <p><a class="issue-link" data-issue-key="<%=epic.key%>" href="{{hostBaseUrl}}/browse/<%=epic.key%>" target="_blank"><%=epic.fields.summary%></a></p>
         </td>

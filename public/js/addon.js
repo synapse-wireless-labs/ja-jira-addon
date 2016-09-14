@@ -59,7 +59,7 @@ $( document ).ready(function() {
                 releaseInfo.percentInProgress = 0;
                 releaseInfo.percentDone = 0;
 
-                new IssueSearchService(configuration.project, configuration.version)
+                new IssueSearchService(configuration.project, configuration.version, configuration.scalingEnabled)
                     .getReleaseDates(function (startDate, endDate) {
                         epoch = new Date(0);
                         releaseInfo.startDate = "dates";
@@ -91,7 +91,7 @@ $( document ).ready(function() {
                         $('#addon-header-table').find('tbody').append(_.template($('#addonHeaderDateRowTemplate').html())({release: releaseInfo}));
                     });
 
-                new IssueSearchService(configuration.project, configuration.version)
+                new IssueSearchService(configuration.project, configuration.version, configuration.scalingEnabled)
                         .getEpics(function (epics) {
                             var $epicsInRelease = $('#epics-in-release');
                             if (sizeDict(epics) == 0) {
@@ -126,7 +126,7 @@ $( document ).ready(function() {
             }
     };
 
-    var IssueSearchService = function (project, version) {
+    var IssueSearchService = function (project, version, scaling) {
         var releaseStartDate = new Date(0);
         var releaseEndDate = new Date(0);
         var epics = {};
@@ -250,23 +250,30 @@ $( document ).ready(function() {
                 }
             });
 
-            var maxPoints = 0;
             $.each(epics, function (i, epic) {
-                if (epic.totalPoints > maxPoints) {
-                    maxPoints = epic.totalPoints;
-                }
-            });
+                var scaleFactor = 1;
+                var divisor = epic.totalPoints;
 
-            if (maxPoints) {
-                $.each(epics, function (i, epic) {
-                    var epicScaledMax = (maxPoints + epic.totalPoints) / 2;
-                    epic.percentTodo = (epic.toDoPoints / epicScaledMax) * 100;
-                    epic.percentInProgress = (epic.inProgressPoints / epicScaledMax) * 100;
-                    epic.percentDone = (epic.donePoints / epicScaledMax) * 100;
-                    epic.unestimatedStoryCount = epic.storyCount - epic.estimatedStoryCount;
-                    epic.percentUnestimatedStories = Math.floor((epic.unestimatedStoryCount / epic.storyCount) * 100);
-                });
-            }
+                if (scaling) {
+                    var maxPoints = 0;
+                    $.each(epics, function (i, epic) {
+                        if (epic.totalPoints > maxPoints) {
+                            maxPoints = epic.totalPoints;
+                        }
+                    });
+                    if (maxPoints) {
+                        var scaleRatio = 0.35;
+                        scaleFactor = (epic.totalPoints + (maxPoints - epic.totalPoints) * scaleRatio) / epic.totalPoints;
+                        divisor = maxPoints;
+                    }
+                }
+
+                epic.percentTodo = (epic.toDoPoints / divisor) * 100 * scaleFactor;
+                epic.percentInProgress = (epic.inProgressPoints / divisor) * 100 * scaleFactor;
+                epic.percentDone = (epic.donePoints / divisor) * 100 * scaleFactor;
+                epic.unestimatedStoryCount = epic.storyCount - epic.estimatedStoryCount;
+                epic.percentUnestimatedStories = Math.floor((epic.unestimatedStoryCount / epic.storyCount) * 100);
+            });
 
             return RSVP.resolve();
         }
@@ -372,7 +379,17 @@ $( document ).ready(function() {
             var versionId = $selectedVersion.val();
             var versionName = $selectedVersion.text();
 
-            var configuration = {title: title, project: projectId, projectName: projectName, version: versionId, versionName: versionName};
+            var scalingEnabled = $('#enableScaling').prop("checked");
+
+            var configuration = {
+                title: title,
+                project: projectId,
+                projectName: projectName,
+                version: versionId,
+                versionName: versionName,
+                scalingEnabled: scalingEnabled
+            };
+
             service.save(configuration, function () {
                 new IssueTableView().render(configuration);
             });
@@ -392,6 +409,8 @@ $( document ).ready(function() {
                 $addon.html(_.template($('#addonConfigTemplate').html())({itemTitle: config ? config.title : 'Issues for project'}));
 
                 addProjectsAndVersions(config);
+
+                $('#enableScaling').prop("checked", config.scalingEnabled);
 
                 $('#selectedProject').change(config, addVersions);
                 $('#saveConfiguration').click(saveButtonHandler);

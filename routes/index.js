@@ -28,6 +28,12 @@ module.exports = function (app, addon) {
         }
     );
 
+    // route to handle getting the callback indicating that the add-on was successfully installed
+    app.post('/installed', addon.checkValidToken(), function (req, res) {
+        res.sendStatus(200);
+    });
+
+
     // Add any additional route handlers you need for views or REST resources here...
 
 

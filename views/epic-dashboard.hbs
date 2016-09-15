@@ -107,10 +107,10 @@
 <script type="text/underscore-template" id="epicTableRow">
     <tr>
         <td headers="summary">
-            <p><a class="issue-link" data-issue-key="<%=epic.key%>" href="{{hostBaseUrl}}/browse/<%=epic.key%>" target="_blank"><%=epic.fields.summary%></a></p>
+            <p><a class="issue-link" data-issue-key="<%=epic.key%>" href="{{hostBaseUrl}}/browse/<%=epic.key%>" target="_blank"><%=epic.summary%></a></p>
         </td>
         <td headers="status">
-            <span class="aui-lozenge aui-lozenge-subtle <%=epic.lozengeColorClass%>"><%=epic.fields.status.statusCategory.name%></span>
+            <span class="aui-lozenge aui-lozenge-subtle <%=epic.lozengeColorClass%>"><%=epic.statusCategoryName%></span>
         </td>
         <td headers="alerts">
             <% if (epic.percentUnestimatedStories > 50) { %>
@@ -231,7 +231,7 @@
     <div id="epics-in-release" class="aui-item"></div>
     <div id="addon-footer">
         <b>Summary of</b>
-        <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=project = %22<%=config.projectName%>%22 AND %22fixVersion%22 = %22<%=config.versionName%>%22 AND issuetype = Epic" target="_blank">
+        <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=project = %22<%=config.projectName%>%22 AND %22fixVersion%22 = %22<%=config.versionName%>%22 AND issuetype = Epic Order by Rank" target="_blank">
             <%=config.projectName%> Epics in <%=config.versionName%>
         </a>
     </div>

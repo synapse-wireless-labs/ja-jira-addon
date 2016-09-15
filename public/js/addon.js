@@ -88,7 +88,7 @@ $( document ).ready(function() {
                     });
 
                 new IssueSearchService(configuration.project, configuration.version, configuration.scalingEnabled)
-                    .getEpics(function (epics, issuesNotInEpics) {
+                    .getEpics(function (epics) {
                         if (sizeDict(epics) == 0) {
                              $('#addon-wrapper').html(_.template($('#noIssuesTemplate').html())({config: configuration}));
                          }
@@ -116,15 +116,23 @@ $( document ).ready(function() {
 
                             var epicTable = $epicsInRelease.find('tbody');
                             $.each(epics, function (i, $epic) {
-                                epicTable.append(_.template($('#epicTableRow').html())({epic: $epic, versionName: configuration.versionName}));
+                                if ($epic.key != "NO_EPIC")
+                                {
+                                    epicTable.append(_.template($('#epicTableRow').html())({
+                                        epic: $epic,
+                                        versionName: configuration.versionName
+                                    }));
+                                }
                             });
 
-                            if (issuesNotInEpics.storyCount) {
+                            if (epics["NO_EPIC"].storyCount) {
                                 var epicKeys = [];
                                 $.each(epics, function (i, epic) {
-                                    epicKeys.push(epic.key);
+                                    if (epic.key != "NO_EPIC") {
+                                        epicKeys.push(epic.key);
+                                    }
                                 });
-                                epicTable.append(_.template($('#epicTableLastRow').html())({issues: issuesNotInEpics, epicString: epicKeys.join(','), projectName: configuration.projectName, versionName: configuration.versionName}));
+                                epicTable.append(_.template($('#epicTableLastRow').html())({issues: epics["NO_EPIC"], epicString: epicKeys.join(','), projectName: configuration.projectName, versionName: configuration.versionName}));
                             }
                         }
                     })
@@ -150,8 +158,11 @@ $( document ).ready(function() {
             $.each(epicsJson, function (i, e) {
                 epics[e.key] = e;
 
+                e.summary = e.fields.summary;
+                e.statusCategoryName = e.fields.status.statusCategory.name;
+
                 e.lozengeColorClass = "";
-                switch (e.fields.status.statusCategory.name) {
+                switch (e.statusCategoryName) {
                     case "To Do":
                         e.lozengeColorClass = "aui-lozenge-complete";
                         break;
@@ -258,6 +269,10 @@ $( document ).ready(function() {
                 }
             });
 
+            if (sizeDict(epics) > 0) {
+                epics["NO_EPIC"] = issuesNotInEpics;
+            }
+
             $.each(epics, function (i, epic) {
                 var scaleFactor = 1;
                 var divisor = epic.totalPoints;
@@ -341,6 +356,11 @@ $( document ).ready(function() {
         function processIssuesNotInEpics (response) {
             var issues = JSON.parse(response).issues || [];
 
+            issuesNotInEpics.key = "NO_EPIC";
+            issuesNotInEpics.summary = "Issues without an Epic";
+            issuesNotInEpics.lozengeColorClass = "";
+            issuesNotInEpics.statusCategoryName = "Unknown";
+
             issuesNotInEpics.stories = [];
             issuesNotInEpics.storyCount = 0;
             issuesNotInEpics.estimatedStoryCount = 0;
@@ -379,35 +399,6 @@ $( document ).ready(function() {
                 }
             });
 
-            var scaleFactor = 1;
-            var divisor = issuesNotInEpics.totalPoints;
-
-            if (scaling) {
-                var maxPoints = 0;
-                $.each(epics, function (i, epic) {
-                    if (epic.totalPoints > maxPoints) {
-                        maxPoints = epic.totalPoints;
-                    }
-                });
-                if (maxPoints) {
-                    var scaleRatio = 0.35;
-                    scaleFactor = (issuesNotInEpics.totalPoints + (maxPoints - issuesNotInEpics.totalPoints) * scaleRatio) / issuesNotInEpics.totalPoints;
-                    divisor = maxPoints;
-                }
-            }
-
-            if (divisor) {
-                issuesNotInEpics.percentTodo = (issuesNotInEpics.toDoPoints / divisor) * 100 * scaleFactor;
-                issuesNotInEpics.percentInProgress = (issuesNotInEpics.inProgressPoints / divisor) * 100 * scaleFactor;
-                issuesNotInEpics.percentDone = (issuesNotInEpics.donePoints / divisor) * 100 * scaleFactor;
-            }
-
-            issuesNotInEpics.unestimatedStoryCount = issuesNotInEpics.storyCount - issuesNotInEpics.estimatedStoryCount;
-
-            if (issuesNotInEpics.storyCount) {
-                issuesNotInEpics.percentUnestimatedStories = Math.floor((issuesNotInEpics.unestimatedStoryCount / issuesNotInEpics.storyCount) * 100);
-            }
-
             return RSVP.resolve();
         }
 
@@ -424,14 +415,14 @@ $( document ).ready(function() {
                     .then(processEpics)
                     .then(askJIRAforCustomIds)
                     .then(processCustomIds)
-                    .then(askJIRAforIssues)
-                    .then(processIssues)
-                    .then(askJIRAforIssuesInOtherReleases)
-                    .then(processIssuesInOtherReleases)
                     .then(askJIRAforIssuesNotInEpics)
                     .then(processIssuesNotInEpics)
+                    .then(askJIRAforIssuesInOtherReleases)
+                    .then(processIssuesInOtherReleases)
+                    .then(askJIRAforIssues)
+                    .then(processIssues)
                     .then(function () {
-                        callback(epics, issuesNotInEpics);
+                        callback(epics);
                     });
 
             }

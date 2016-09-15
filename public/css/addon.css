@@ -30,8 +30,8 @@
     -webkit-margin-after: 0;
 }
 
-.ag-progress.ag-progress-short {
-    height: 5px
+ #addonHeaderTitleTemplate .ag-progress {
+    height: 27px;
 }
 
 .ag-progress li:first-child {
@@ -160,6 +160,10 @@ ul.ag-none, .ag-none li {
     line-height: 18px;
 }
 
+#addonHeaderTitleTemplate .ag-progress .ag-status-info b {
+    line-height: 27px;
+}
+
 .ag-meta-group {
     border-spacing: 5px;
     padding-top: 5px;
@@ -240,8 +244,16 @@ a:hover .ag-scope-increase {
         height: 20px
     }
 
+    #addonHeaderTitleTemplate .ag-progress {
+        height: 30px;
+    }
+
     .ag-progress .ag-status-info b {
         line-height: 20px;
+    }
+
+    #addonHeaderTitleTemplate .ag-progress .ag-status-info b {
+        line-height: 30px;
     }
 
     .ag-name-board, .ag-label, .ag-progress .ag-status-info, .ag-name-lane {
@@ -259,10 +271,19 @@ a:hover .ag-scope-increase {
 
 @media (min-width: 450px) and (max-width: 1600px) {
     .ag-progress {
-        height: 25px
+        height: 24px
     }
+
+    #addonHeaderTitleTemplate .ag-progress {
+        height: 36px;
+    }
+
     .ag-progress .ag-status-info b {
-        line-height: 25px;
+        line-height: 24px;
+    }
+
+    #addonHeaderTitleTemplate .ag-progress .ag-status-info b {
+        height: 36px;
     }
 
     .ag-status-group {

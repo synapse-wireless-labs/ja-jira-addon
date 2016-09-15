@@ -74,6 +74,10 @@
     overflow: hidden
 }
 
+li.ag-notfound {
+    background: #cccccc;
+}
+
 li.ag-past {
     background: #707070
 }

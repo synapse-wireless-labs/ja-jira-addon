@@ -238,8 +238,9 @@ $( document ).ready(function() {
                 epic.stories.push(issue.key);
                 epic.storyCount += 1;
 
-                story_points = issue.fields[story_points_id];
-                if (story_points) {
+                story_points = issue.fields[story_points_id] || -1;
+
+                if (story_points >= 0) {
                     epic.estimatedStoryCount += 1;
                     epic.totalPoints += story_points;
 

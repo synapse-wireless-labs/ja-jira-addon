@@ -92,7 +92,7 @@ $( document ).ready(function() {
                     });
 
                 new IssueSearchService(configuration.project, configuration.version, configuration.scalingEnabled)
-                        .getEpics(function (epics) {
+                        .getEpics(function (epics, issuesNotInEpics) {
                             var $epicsInRelease = $('#epics-in-release');
                             if (sizeDict(epics) == 0) {
                                  $epicsInRelease.html(_.template($('#noIssuesTemplate').html())({config: configuration}));
@@ -120,6 +120,13 @@ $( document ).ready(function() {
                                     epicTable.append(_.template($('#epicTableRow').html())({epic: $epic, versionName: configuration.versionName}));
                                 });
 
+                                if (issuesNotInEpics.storyCount) {
+                                    var epicKeys = [];
+                                    $.each(epics, function (i, epic) {
+                                        epicKeys.push(epic.key);
+                                    });
+                                    epicTable.append(_.template($('#epicTableLastRow').html())({issues: issuesNotInEpics, epicString: epicKeys.join(','), projectName: configuration.projectName, versionName: configuration.versionName}));
+                                }
                             }
                         })
                 }
@@ -130,6 +137,7 @@ $( document ).ready(function() {
         var releaseStartDate = new Date(0);
         var releaseEndDate = new Date(0);
         var epics = {};
+        var issuesNotInEpics = {};
         var story_points_id = "";
         var epic_link_id = "";
 
@@ -268,17 +276,22 @@ $( document ).ready(function() {
                     }
                 }
 
-                epic.percentTodo = (epic.toDoPoints / divisor) * 100 * scaleFactor;
-                epic.percentInProgress = (epic.inProgressPoints / divisor) * 100 * scaleFactor;
-                epic.percentDone = (epic.donePoints / divisor) * 100 * scaleFactor;
+                if (divisor) {
+                    epic.percentTodo = (epic.toDoPoints / divisor) * 100 * scaleFactor;
+                    epic.percentInProgress = (epic.inProgressPoints / divisor) * 100 * scaleFactor;
+                    epic.percentDone = (epic.donePoints / divisor) * 100 * scaleFactor;
+                }
                 epic.unestimatedStoryCount = epic.storyCount - epic.estimatedStoryCount;
-                epic.percentUnestimatedStories = Math.floor((epic.unestimatedStoryCount / epic.storyCount) * 100);
+
+                if (epic.storyCount) {
+                    epic.percentUnestimatedStories = Math.floor((epic.unestimatedStoryCount / epic.storyCount) * 100);
+                }
             });
 
             return RSVP.resolve();
         }
 
-        function askJIRAforMoreIssues() {
+        function askJIRAforIssuesInOtherReleases() {
             if (sizeDict(epics) == 0) {
                 return RSVP.resolve("{}");
             }
@@ -296,13 +309,103 @@ $( document ).ready(function() {
             }
         }
 
-        function processMoreIssues (response) {
+        function processIssuesInOtherReleases (response) {
             var issues = JSON.parse(response).issues || [];
 
             $.each(issues, function (i, issue) {
                 epic = epics[issue.fields[epic_link_id]];
                 epic.notInReleaseStoryCount += 1;
             });
+
+            return RSVP.resolve();
+        }
+
+        function askJIRAforIssuesNotInEpics() {
+            if (sizeDict(epics) == 0) {
+                return RSVP.resolve("{}");
+            }
+            else {
+                var epicKeys = [];
+                $.each(epics, function (i, epic) {
+                    epicKeys.push(epic.key);
+                });
+
+                var jql = encodeURIComponent('project = ' + project + ' AND fixVersion = ' + version + ' AND issuetype != Epic AND ("Epic Link" is empty or "Epic Link" not in (' + epicKeys.join(',') + '))');
+                var fields = encodeURIComponent([epic_link_id, story_points_id, 'status', 'key'].join(','));
+                var maxResults = 500;
+
+                return askJIRA('/rest/api/2/search?jql=' + jql + '&fields=' + fields + '&maxResults=' + maxResults);
+            }
+        }
+
+        function processIssuesNotInEpics (response) {
+            var issues = JSON.parse(response).issues || [];
+
+            issuesNotInEpics.stories = [];
+            issuesNotInEpics.storyCount = 0;
+            issuesNotInEpics.estimatedStoryCount = 0;
+            issuesNotInEpics.unestimatedStoryCount = 0;
+            issuesNotInEpics.percentUnestimatedStories = 0;
+            issuesNotInEpics.notInReleaseStoryCount = 0;
+            issuesNotInEpics.totalPoints = 0;
+            issuesNotInEpics.toDoPoints = 0;
+            issuesNotInEpics.inProgressPoints = 0;
+            issuesNotInEpics.donePoints = 0;
+            issuesNotInEpics.percentTodo = 0;
+            issuesNotInEpics.percentInProgress = 0;
+            issuesNotInEpics.percentDone = 0;
+
+            $.each(issues, function (i, issue) {
+                issuesNotInEpics.stories.push(issue.key);
+                issuesNotInEpics.storyCount += 1;
+
+                story_points = issue.fields[story_points_id];
+                if (story_points) {
+                    issuesNotInEpics.estimatedStoryCount += 1;
+                    issuesNotInEpics.totalPoints += story_points;
+
+                    switch (issue.fields.status.statusCategory.name) {
+                        case "To Do":
+                            issuesNotInEpics.toDoPoints += story_points;
+                            break;
+                        case "In Progress":
+                            issuesNotInEpics.inProgressPoints += story_points;
+                            break;
+                        case "Done":
+                            issuesNotInEpics.donePoints += story_points;
+                            break;
+                    }
+                }
+            });
+
+            var scaleFactor = 1;
+            var divisor = issuesNotInEpics.totalPoints;
+
+            if (scaling) {
+                var maxPoints = 0;
+                $.each(epics, function (i, epic) {
+                    if (epic.totalPoints > maxPoints) {
+                        maxPoints = epic.totalPoints;
+                    }
+                });
+                if (maxPoints) {
+                    var scaleRatio = 0.35;
+                    scaleFactor = (issuesNotInEpics.totalPoints + (maxPoints - issuesNotInEpics.totalPoints) * scaleRatio) / issuesNotInEpics.totalPoints;
+                    divisor = maxPoints;
+                }
+            }
+
+            if (divisor) {
+                issuesNotInEpics.percentTodo = (issuesNotInEpics.toDoPoints / divisor) * 100 * scaleFactor;
+                issuesNotInEpics.percentInProgress = (issuesNotInEpics.inProgressPoints / divisor) * 100 * scaleFactor;
+                issuesNotInEpics.percentDone = (issuesNotInEpics.donePoints / divisor) * 100 * scaleFactor;
+            }
+
+            issuesNotInEpics.unestimatedStoryCount = issuesNotInEpics.storyCount - issuesNotInEpics.estimatedStoryCount;
+
+            if (issuesNotInEpics.storyCount) {
+                issuesNotInEpics.percentUnestimatedStories = Math.floor((issuesNotInEpics.unestimatedStoryCount / issuesNotInEpics.storyCount) * 100);
+            }
 
             return RSVP.resolve();
         }
@@ -322,10 +425,12 @@ $( document ).ready(function() {
                     .then(processCustomIds)
                     .then(askJIRAforIssues)
                     .then(processIssues)
-                    .then(askJIRAforMoreIssues)
-                    .then(processMoreIssues)
+                    .then(askJIRAforIssuesInOtherReleases)
+                    .then(processIssuesInOtherReleases)
+                    .then(askJIRAforIssuesNotInEpics)
+                    .then(processIssuesNotInEpics)
                     .then(function () {
-                        callback(epics);
+                        callback(epics, issuesNotInEpics);
                     });
 
             }

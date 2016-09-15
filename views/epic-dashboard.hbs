@@ -149,8 +149,59 @@
                     <% } %>
                     <% if (epic.toDoPoints > 0) { %>
                         <li class="ag-todo" style="width:<%=epic.percentTodo%>%">
-                            <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory =%22To Do%22 AND %22Epic Link%22 = <%=epic.key%>" class="ag-status-info" target="_blank">
+                            <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory = %22To Do%22 AND %22Epic Link%22 = <%=epic.key%>" class="ag-status-info" target="_blank">
                                 <b><%=epic.toDoPoints%></b>
+                            </a>
+                        </li>
+                    <% } %>
+                <% } %>
+            </ul>
+        </td>
+    </tr>
+</script>
+<script type="text/underscore-template" id="epicTableLastRow">
+    <tr>
+        <td headers="summary">
+            <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=project = %22<%=projectName%>%22 AND %22fixVersion%22 = %22<%=versionName%>%22 AND issuetype != Epic AND (%22Epic Link%22 is empty OR %22Epic Link%22 not in (<%=epicString%>))" class="ag-status-info" target="_blank">
+                Issues without an Epic
+            </a>
+        </td>
+        <td headers="status">
+        </td>
+        <td headers="alerts">
+            <% if (issues.percentUnestimatedStories > 50) { %>
+                <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=project = %22<%=projectName%>%22 AND %22fixVersion%22 = %22<%=versionName%>%22 AND issuetype != Epic AND (%22Epic Link%22 is empty OR %22Epic Link%22 not in (<%=epicString%>)) and %22Story Points%22 is empty" target="_blank">
+                    <span class="aui-icon aui-icon-small aui-iconfont-error simple-tooltip" title="<%= issues.percentUnestimatedStories %>% unestimated issues"></span>
+                </a>
+            <% } else if (issues.percentUnestimatedStories > 20) { %>
+                <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=project = %22<%=projectName%>%22 AND %22fixVersion%22 = %22<%=versionName%>%22 AND issuetype != Epic AND (%22Epic Link%22 is empty OR %22Epic Link%22 not in (<%=epicString%>)) and %22Story Points%22 is empty" target="_blank">
+                    <span class="aui-icon aui-icon-small aui-iconfont-warning simple-tooltip" title="<%= issues.percentUnestimatedStories %>% unestimated issues"></span>
+                </a>
+            <% } %>
+        </td>
+        <td style="min-width: 300px" headers="progress">
+            <ul class="ag-progress">
+                <% if (issues.totalPoints == 0) { %>
+                    <li class="ag-empty" style="width:100%"><span class="ag-status-info"><b>None</b></span></li>
+                <% } else { %>
+                    <% if (issues.donePoints > 0) { %>
+                        <li class="ag-done " style="width:<%=issues.percentDone%>%">
+                            <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=project = %22<%=projectName%>%22 AND %22fixVersion%22 = %22<%=versionName%>%22 AND statusCategory = %22Done%22 AND issuetype != Epic AND (%22Epic Link%22 is empty OR %22Epic Link%22 not in (<%=epicString%>))" class="ag-status-info" target="_blank">
+                                <b><%=issues.donePoints%></b>
+                            </a>
+                        </li>
+                    <% } %>
+                    <% if (issues.inProgressPoints > 0) { %>
+                        <li class="ag-inprogress" style="width:<%=issues.percentInProgress%>%">
+                            <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=project = %22<%=projectName%>%22 AND %22fixVersion%22 = %22<%=versionName%>%22 AND statusCategory = %22In Progress%22 AND issuetype != Epic AND (%22Epic Link%22 is empty OR %22Epic Link%22 not in (<%=epicString%>))" class="ag-status-info" target="_blank">
+                                <b><%=issues.inProgressPoints%></b>
+                            </a>
+                        </li>
+                    <% } %>
+                    <% if (issues.toDoPoints > 0) { %>
+                        <li class="ag-todo" style="width:<%=issues.percentTodo%>%">
+                            <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=project = %22<%=projectName%>%22 AND %22fixVersion%22 = %22<%=versionName%>%22 AND statusCategory = %22To Do%22 AND issuetype != Epic AND (%22Epic Link%22 is empty OR %22Epic Link%22 not in (<%=epicString%>))" class="ag-status-info" target="_blank">
+                                <b><%=issues.toDoPoints%></b>
                             </a>
                         </li>
                     <% } %>

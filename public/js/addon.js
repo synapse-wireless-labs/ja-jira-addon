@@ -359,7 +359,8 @@ $( document ).ready(function() {
                 issuesNotInEpics.stories.push(issue.key);
                 issuesNotInEpics.storyCount += 1;
 
-                story_points = issue.fields[story_points_id];
+                var story_points = issue.fields[story_points_id] === null ? -1 : issue.fields[story_points_id];
+
                 if (story_points) {
                     issuesNotInEpics.estimatedStoryCount += 1;
                     issuesNotInEpics.totalPoints += story_points;

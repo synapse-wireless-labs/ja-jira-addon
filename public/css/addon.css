@@ -24,14 +24,14 @@
 
 .ag-progress {
     display: flex;
-    height: 18px;
+    height: 24px;
     width: 100%;
     -webkit-margin-before: 0;
     -webkit-margin-after: 0;
 }
 
  #addon-header .ag-progress {
-    height: 27px;
+    height: 36px;
 }
 
 .ag-progress li:first-child {
@@ -157,11 +157,11 @@ ul.ag-none, .ag-none li {
     display: block;
     text-align: center;
     vertical-align: middle;
-    line-height: 18px;
+    line-height: 24px;
 }
 
 #addon-header .ag-progress .ag-status-info b {
-    line-height: 27px;
+    line-height: 36px;
 }
 
 .ag-meta-group {
@@ -236,59 +236,3 @@ a:hover .ag-scope-increase {
     font-size: 50%
 }
 
-@media (max-width: 450px) {
-
-    .ag-progress {
-        height: 20px
-    }
-
-    #addon-header .ag-progress {
-        height: 30px;
-    }
-
-    .ag-progress .ag-status-info b {
-        line-height: 20px;
-    }
-
-    #addon-header .ag-progress .ag-status-info b {
-        line-height: 30px;
-    }
-
-    .ag-name-board, .ag-label, .ag-progress .ag-status-info, .ag-name-lane {
-        font-size: 12px
-    }
-
-    .ag-status-group {
-        font-size: 14px
-    }
-
-    .ag-metric-value {
-        font-size: 16.8px
-    }
-}
-
-@media (min-width: 450px) and (max-width: 1600px) {
-    .ag-progress {
-        height: 24px
-    }
-
-    #addon-header .ag-progress {
-        height: 36px;
-    }
-
-    .ag-progress .ag-status-info b {
-        line-height: 24px;
-    }
-
-    #addon-header .ag-progress .ag-status-info b {
-        line-height: 36px;
-    }
-
-    .ag-status-group {
-        font-size: 19.2px
-    }
-
-    .ag-metric-value {
-        font-size: 19.2px
-    }
-}

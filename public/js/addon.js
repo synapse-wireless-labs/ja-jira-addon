@@ -37,10 +37,8 @@ $( document ).ready(function() {
             render: function (configuration) {
                 this.setTitle(configuration);
 
-
                 var $addon = $('#addon-wrapper');
                 $addon.empty();
-                $addon.html(_.template($('#addonWrapperTemplate').html())({config: configuration}));
 
                 var releaseInfo = {};
                 releaseInfo.projectName = configuration.projectName;
@@ -87,48 +85,49 @@ $( document ).ready(function() {
                             releaseInfo.percentDaysPast = (releaseInfo.daysPast / releaseInfo.totalDays) * 100;
                             releaseInfo.percentDaysRemaining = (releaseInfo.daysRemaining / releaseInfo.totalDays) * 100;
                         }
-
-                        $('#addon-header-table').find('tbody').append(_.template($('#addonHeaderDateRowTemplate').html())({release: releaseInfo}));
                     });
 
                 new IssueSearchService(configuration.project, configuration.version, configuration.scalingEnabled)
-                        .getEpics(function (epics, issuesNotInEpics) {
-                            var $epicsInRelease = $('#epics-in-release');
-                            if (sizeDict(epics) == 0) {
-                                 $epicsInRelease.html(_.template($('#noIssuesTemplate').html())({config: configuration}));
-                             }
-                             else {
-                                $.each(epics, function (i, $epic) {
-                                    releaseInfo.toDoPoints += $epic.toDoPoints;
-                                    releaseInfo.inProgressPoints += $epic.inProgressPoints;
-                                    releaseInfo.donePoints += $epic.donePoints;
-                                });
+                    .getEpics(function (epics, issuesNotInEpics) {
+                        if (sizeDict(epics) == 0) {
+                             $('#addon-wrapper').html(_.template($('#noIssuesTemplate').html())({config: configuration}));
+                         }
+                         else {
+                            $.each(epics, function (i, $epic) {
+                                releaseInfo.toDoPoints += $epic.toDoPoints;
+                                releaseInfo.inProgressPoints += $epic.inProgressPoints;
+                                releaseInfo.donePoints += $epic.donePoints;
+                            });
 
-                                releaseInfo.totalPoints = releaseInfo.toDoPoints + releaseInfo.inProgressPoints + releaseInfo.donePoints;
+                            releaseInfo.totalPoints = releaseInfo.toDoPoints + releaseInfo.inProgressPoints + releaseInfo.donePoints;
 
-                                if (releaseInfo.totalPoints > 0) {
-                                    releaseInfo.percentTodo = (releaseInfo.toDoPoints / releaseInfo.totalPoints) * 100;
-                                    releaseInfo.percentInProgress = (releaseInfo.inProgressPoints / releaseInfo.totalPoints) * 100;
-                                    releaseInfo.percentDone = (releaseInfo.donePoints / releaseInfo.totalPoints) * 100;
-                                }
-
-                                $('#addon-header-table').find('tbody').prepend(_.template($('#addonHeaderOverallRowTemplate').html())({release: releaseInfo}));
-                                $epicsInRelease.html(_.template($('#epicTableTemplate').html())({}));
-
-                                var epicTable = $epicsInRelease.find('tbody');
-                                $.each(epics, function (i, $epic) {
-                                    epicTable.append(_.template($('#epicTableRow').html())({epic: $epic, versionName: configuration.versionName}));
-                                });
-
-                                if (issuesNotInEpics.storyCount) {
-                                    var epicKeys = [];
-                                    $.each(epics, function (i, epic) {
-                                        epicKeys.push(epic.key);
-                                    });
-                                    epicTable.append(_.template($('#epicTableLastRow').html())({issues: issuesNotInEpics, epicString: epicKeys.join(','), projectName: configuration.projectName, versionName: configuration.versionName}));
-                                }
+                            if (releaseInfo.totalPoints > 0) {
+                                releaseInfo.percentTodo = (releaseInfo.toDoPoints / releaseInfo.totalPoints) * 100;
+                                releaseInfo.percentInProgress = (releaseInfo.inProgressPoints / releaseInfo.totalPoints) * 100;
+                                releaseInfo.percentDone = (releaseInfo.donePoints / releaseInfo.totalPoints) * 100;
                             }
-                        })
+
+                            $('#addon-wrapper').html(_.template($('#addonWrapperTemplate').html())({config: configuration}));
+                            $('#addon-header-table').find('tbody').append(_.template($('#addonHeaderDateRowTemplate').html())({release: releaseInfo}));
+                            $('#addon-header-table').find('tbody').prepend(_.template($('#addonHeaderOverallRowTemplate').html())({release: releaseInfo}));
+
+                            var $epicsInRelease = $('#epics-in-release');
+                            $epicsInRelease.html(_.template($('#epicTableTemplate').html())({}));
+
+                            var epicTable = $epicsInRelease.find('tbody');
+                            $.each(epics, function (i, $epic) {
+                                epicTable.append(_.template($('#epicTableRow').html())({epic: $epic, versionName: configuration.versionName}));
+                            });
+
+                            if (issuesNotInEpics.storyCount) {
+                                var epicKeys = [];
+                                $.each(epics, function (i, epic) {
+                                    epicKeys.push(epic.key);
+                                });
+                                epicTable.append(_.template($('#epicTableLastRow').html())({issues: issuesNotInEpics, epicString: epicKeys.join(','), projectName: configuration.projectName, versionName: configuration.versionName}));
+                            }
+                        }
+                    })
                 }
             }
     };

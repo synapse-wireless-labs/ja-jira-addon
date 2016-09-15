@@ -142,7 +142,7 @@ $( document ).ready(function() {
         var epic_link_id = "";
 
         function askJIRAforEpics() {
-            var jql = encodeURIComponent('project = ' + project + ' AND fixVersion = ' + version + ' AND issuetype = Epic ORDER BY status, duedate');
+            var jql = encodeURIComponent('project = ' + project + ' AND fixVersion = ' + version + ' AND issuetype = Epic ORDER BY Rank');
             return askJIRA('/rest/api/2/search?jql=' + jql);
         }
 

@@ -16,7 +16,7 @@ A collection of JIRA plugins to make our lives easier.
 ![](https://ja-report-addon.snapcloud.net/Thumbnail.PNG)
 
 * JIRA Dashboard widget
-* For the specified Project and Version, this widget will display a bar chart of each Epic's progress, sorted by status and duedate
+* For the specified Project and Version, this widget will display a bar chart of each Epic's progress, sorted by Rank. (Epic Rank is set by dragging and dropping the Epics on the Epic column of the Board backlog.)
 
 ### To Deploy
 
@@ -37,3 +37,7 @@ As a JIRA administrator, browse to *Gear Icon | Add-ons*, then choose *Manage ad
 ### Things to Remember
 
 * The first time you run the node app, the database will get set up. The first time a JIRA instance connects to your app, the app will store authentication information in the database. If you chance certain things with the atlassian-connect.json file, the database will be out of sync and the app will start returning 400 errors. You will need to clean the database to recover.
+
+### Caveats
+
+* As of 2016/09/04, when searching for JIRA issues without Story Points, issues that do not allow Story Points will not be found.

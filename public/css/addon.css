@@ -83,7 +83,8 @@ li.ag-future {
 }
 
 li.ag-empty {
-    background: #cccccc
+    background: #ffffff;
+    color: #7d7d7d;
 }
 
 li.ag-todo {

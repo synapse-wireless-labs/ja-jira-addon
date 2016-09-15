@@ -236,9 +236,7 @@ a:hover .ag-scope-increase {
     font-size: 50%
 }
 
-@media (max-width: 450px) { {
-    padding: 0
-}
+@media (max-width: 450px) {
 
     .ag-progress {
         height: 20px
@@ -283,7 +281,7 @@ a:hover .ag-scope-increase {
     }
 
     #addon-header .ag-progress .ag-status-info b {
-        height: 36px;
+        line-height: 36px;
     }
 
     .ag-status-group {

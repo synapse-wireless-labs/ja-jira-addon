@@ -38,6 +38,21 @@ As a JIRA administrator, browse to *Gear Icon | Add-ons*, then choose *Manage ad
 
 * The first time you run the node app, the database will get set up. The first time a JIRA instance connects to your app, the app will store authentication information in the database. If you chance certain things with the atlassian-connect.json file, the database will be out of sync and the app will start returning 400 errors. You will need to clean the database to recover.
 
-### Caveats
+### Potential Enhancements
 
-* As of 2016/09/04, when searching for JIRA issues without Story Points, issues that do not allow Story Points will not be found.
+* Add custom fields for Epic Risk Level and Epic Risk Notes
+* Make table sorted (see https://docs.atlassian.com/aui/5.7.1/docs/sortableTable.html)
+* Add a key for what the colors mean in the bar chart
+* add selector for sort order (currently hard-coded to Rank)
+* Add auto-refresh option (need advice from Atlassian)
+* Consider changing add-on name to be more descriptive (requires flushing live postgres database)
+
+### Known Issues
+
+* Issue types that do not allow Story Points to be set will count as unestimated issues, even though estimating them is not possible
+* Dashboard widget scroll slightly, but only on Windows (only verified in Chrome)
+
+### Atlassian Caveats
+
+* As of September 2016, when searching for JIRA issues without Story Points, issues that do not allow Story Points will not be found.
+* As of September 2016, when trying to refresh the add-on's iframe, the auth credentials will expire after 6 minutes (how to refresh?)

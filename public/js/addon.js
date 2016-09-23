@@ -35,6 +35,14 @@ $( document ).ready(function() {
             },
 
             render: function (configuration) {
+
+                if (configuration.refreshEnabled) {
+                    // this only works until the add-on's initial authentication times out...
+                    // setInterval(function () {
+                    //     location.reload();
+                    // }, 15 * 60 * 1000);
+                }
+
                 this.setTitle(configuration);
 
                 var $addon = $('#addon-wrapper');
@@ -478,13 +486,16 @@ $( document ).ready(function() {
 
             var scalingEnabled = $('#enableScaling').prop("checked");
 
+            var refreshEnabled = $('#enableRefresh').prop("checked");
+
             var configuration = {
                 title: title,
                 project: projectId,
                 projectName: projectName,
                 version: versionId,
                 versionName: versionName,
-                scalingEnabled: scalingEnabled
+                scalingEnabled: scalingEnabled,
+                refreshEnabled: refreshEnabled
             };
 
             service.save(configuration, function () {
@@ -508,6 +519,9 @@ $( document ).ready(function() {
                 addProjectsAndVersions(config);
 
                 $('#enableScaling').prop("checked", config.scalingEnabled);
+                //$('#enableRefresh').prop("checked", config.refreshEnabled);
+                $('#enableRefresh').prop("checked", false);
+                $('#enableRefresh').attr("disabled", true);
 
                 $('#selectedProject').change(config, addVersions);
                 $('#saveConfiguration').click(saveButtonHandler);

@@ -44,7 +44,7 @@
             "value" : "Epic Risk Level"
         },
         "description" : {
-            "value" : "Is this Epic at risk for this release?"
+            "value" : "For Epic Release Report Dashboard widget - is this Epic at risk for this release?"
         },
         "type": "single_select",
         "extractions": [{
@@ -59,7 +59,7 @@
             "value" : "Epic Risk Description"
         },
         "description" : {
-            "value" : "Statement regarding current Epic Risk Level"
+            "value" : "For Epic Release Report Dashboard widget - brief statement annotating current Epic Risk Level"
         },
         "type": "text"
       }

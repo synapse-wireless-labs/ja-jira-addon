@@ -155,6 +155,46 @@ $( document ).ready(function() {
         var issuesNotInEpics = {};
         var story_points_id = "";
         var epic_link_id = "";
+        var epic_risk_level_id = "";
+        var epic_risk_description_id = "";
+
+        function askJIRAforReleaseDates() {
+            return askJIRA('/rest/api/2/project/' + project + '/versions');
+        }
+
+        function processReleaseDates(response) {
+            var versions = JSON.parse(response) || [];
+            $.each(versions, function (i, v) {
+                if (v.id == version) {
+                    releaseStartDate = new Date(v.userStartDate || 0);
+                    releaseEndDate = new Date(v.userReleaseDate || 0);
+                }
+            });
+            return RSVP.resolve();
+        }
+
+        function askJIRAforCustomIds () {
+            return askJIRA('/rest/api/2/field');
+        }
+
+        function processCustomIds(response) {
+            var fields = JSON.parse(response) || [];
+            $.each(fields, function (i, field) {
+                if (field.name == "Story Points") {
+                    story_points_id = field.id;
+                }
+                else if (field.name == "Epic Link") {
+                    epic_link_id = field.id;
+                }
+                else if (field.name == "Epic Risk Level") {
+                    epic_risk_level_id = field.id;
+                }
+                else if (field.name == "Epic Risk Description") {
+                    epic_risk_description_id = field.id;
+                }
+            });
+            return RSVP.resolve();
+        }
 
         function askJIRAforEpics() {
             var jql = encodeURIComponent('project = ' + project + ' AND fixVersion = ' + version + ' AND issuetype = Epic ORDER BY Rank');
@@ -182,6 +222,27 @@ $( document ).ready(function() {
                         break;
                 }
 
+                e.riskLevel = "";
+                if (e.fields[epic_risk_level_id]) {
+                    e.riskLevel = e.fields[epic_risk_level_id].value;
+                }
+                e.riskDescription = e.fields[epic_risk_description_id] || "";
+
+                switch (e.riskLevel) {
+                    case "High":
+                        e.riskLozengeClass = "aui-lozenge-error";
+                        break;
+                    case "Medium":
+                        e.riskLozengeClass = "aui-lozenge-current";
+                        break;
+                    case "Low":
+                        e.riskLozengeClass = "aui-lozenge-success";
+                        break;
+                    default:
+                        e.riskLozengeClass = "aui-lozenge-default";
+                        break;
+                }
+
                 e.stories = [];
                 e.storyCount = 0;
                 e.estimatedStoryCount = 0;
@@ -196,37 +257,6 @@ $( document ).ready(function() {
                 e.percentInProgress = 0;
                 e.percentDone = 0;
 
-            });
-            return RSVP.resolve();
-        }
-
-        function askJIRAforReleaseDates() {
-            return askJIRA('/rest/api/2/project/' + project + '/versions');
-        }
-
-        function processReleaseDates(response) {
-            var versions = JSON.parse(response) || [];
-            $.each(versions, function (i, v) {
-                if (v.id == version) {
-                    releaseStartDate = new Date(v.userStartDate || 0);
-                    releaseEndDate = new Date(v.userReleaseDate || 0);
-                }
-            });
-            return RSVP.resolve();
-        }
-
-        function askJIRAforCustomIds () {
-            return askJIRA('/rest/api/2/field');
-        }
-
-        function processCustomIds(response) {
-            var fields = JSON.parse(response) || [];
-            $.each(fields, function (i, field) {
-                if (field.name == "Story Points") {
-                    story_points_id = field.id;
-                } else if (field.name == "Epic Link") {
-                    epic_link_id = field.id;
-                }
             });
             return RSVP.resolve();
         }
@@ -368,6 +398,9 @@ $( document ).ready(function() {
             issuesNotInEpics.summary = "Issues without an Epic";
             issuesNotInEpics.lozengeColorClass = "";
             issuesNotInEpics.statusCategoryName = "Unknown";
+            issuesNotInEpics.riskLevel = "";
+            issuesNotInEpics.riskDescription = "";
+            issuesNotInEpics.riskLozengeClass = "aui-lozenge-default";
 
             issuesNotInEpics.stories = [];
             issuesNotInEpics.storyCount = 0;
@@ -419,10 +452,10 @@ $( document ).ready(function() {
                     });
             },
             getEpics: function (callback) {
-                askJIRAforEpics()
-                    .then(processEpics)
-                    .then(askJIRAforCustomIds)
+                    askJIRAforCustomIds()
                     .then(processCustomIds)
+                    .then(askJIRAforEpics)
+                    .then(processEpics)
                     .then(askJIRAforIssuesNotInEpics)
                     .then(processIssuesNotInEpics)
                     .then(askJIRAforIssuesInOtherReleases)

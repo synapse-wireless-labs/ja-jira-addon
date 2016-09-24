@@ -22,6 +22,9 @@ A collection of JIRA plugins to make our lives easier.
 
 ``eb deploy`` in the working directory
 
+* You will need to install the AWS EB CLI first: http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb-cli3-install.html
+* You will need to setup EB for your project using ``eb init``
+
 ### To Develop
 
 Follow these guidelines:
@@ -35,15 +38,15 @@ You may need to install:
 * node
 * ngrok
 
-Don't forget to install the dependencies ('npm install') the first time!
+Don't forget to install the dependencies (``npm install``) the first time!
 
-To run the app locally, use 'npm start'. Then you will need to use ngrok to make it available on the public internet.
+To run the app locally, use ``npm start``. Then you will need to use ngrok to make it available on the public internet.
 
 Once it's accessible online, you can add it to your JIRA test instance, and after that you can see it in a JIRA dashboard.
 
 ### To Install
 
-As a JIRA administrator, browse to *Gear Icon | Add-ons*, then choose *Manage add-ons* from the left menu. Click the *Upload add-on* link, and enter https://ja-report-addon.snapcloud.net/.
+As a JIRA administrator, browse to *Gear Icon | Add-ons*, then choose *Manage add-ons* from the left menu. Click the *Upload add-on* link, and enter ``https://ja-report-addon.snapcloud.net/``.
 
 ### Things to Remember
 
@@ -56,7 +59,7 @@ As a JIRA administrator, browse to *Gear Icon | Add-ons*, then choose *Manage ad
 * Make table sorted (see https://docs.atlassian.com/aui/5.7.1/docs/sortableTable.html)
 * Add a key for what the colors mean in the bar chart
 * add selector for sort order (currently hard-coded to Rank)
-* Add auto-refresh option (need advice from Atlassian)
+* Add auto-refresh option (partially implemented, need advice from Atlassian)
 * Consider changing add-on name to be more descriptive (requires flushing live postgres database)
 
 ### Known Issues
@@ -67,4 +70,4 @@ As a JIRA administrator, browse to *Gear Icon | Add-ons*, then choose *Manage ad
 ### Atlassian Caveats
 
 * As of September 2016, when searching for JIRA issues without Story Points, issues that do not allow Story Points will not be found.
-* As of September 2016, when trying to refresh the add-on's iframe, the auth credentials will expire after 6 minutes (how to refresh?)
+* As of September 2016, when trying to refresh the add-on's iframe, the auth credentials will expire after 6 minutes. (How to refresh?)

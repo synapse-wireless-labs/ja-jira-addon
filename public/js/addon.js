@@ -636,8 +636,10 @@ $( document ).ready(function() {
 
                 addProjectsAndVersions(config);
 
-                $('#enableScaling').prop("checked", config.scalingEnabled);
-                //$('#enableRefresh').prop("checked", config.refreshEnabled);
+                if (config) {
+                    $('#enableScaling').prop("checked", config.scalingEnabled);
+                    //$('#enableRefresh').prop("checked", config.refreshEnabled);
+                }
                 $('#enableRefresh').prop("checked", false);
                 $('#enableRefresh').attr("disabled", true);
 

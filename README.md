@@ -16,7 +16,7 @@ A collection of JIRA plugins to make our lives easier.
 ![](https://ja-report-addon.snapcloud.net/Thumbnail.PNG)
 
 * JIRA Dashboard widget
-* For the specified Project and Version, this widget will display a bar chart of each Epic's progress, sorted by Rank by default. (Epic Rank is set by dragging and dropping the Epics on the Epic column of the Board backlog.)
+* For the specified Project and Version, this widget will display a bar chart of each Epic's progress, sorted (by default) by Rank high to low. (Epic Rank is set by dragging and dropping the Epics on the Epic column of the Board backlog.)
 * This add-on adds two new custom fields, Epic Risk Level and Epic Risk Description - you will need to add these fields to the applicable projects and screens.
 
 ### Widget Configuration

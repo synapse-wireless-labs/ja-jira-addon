@@ -2,8 +2,8 @@
 $( document ).ready(function() {
 
     var sizeDict = function (d) {
-        c=0;
-        for (i in d)
+        var c = 0;
+        for (var i in d)
             ++c;
         return c
     };
@@ -65,9 +65,9 @@ $( document ).ready(function() {
                 releaseInfo.percentInProgress = 0;
                 releaseInfo.percentDone = 0;
 
-                new IssueSearchService(configuration.project, configuration.version, configuration.scalingEnabled)
+                new IssueSearchService(configuration.project, configuration.version, configuration.scalingEnabled, configuration.sortFieldName, configuration.sortOrder)
                     .getReleaseDates(function (startDate, endDate) {
-                        epoch = new Date(0);
+                        var epoch = new Date(0);
                         releaseInfo.startDate = "dates";
                         if (startDate > epoch) {
                             releaseInfo.startDate = startDate.toDateString();
@@ -77,8 +77,8 @@ $( document ).ready(function() {
                             releaseInfo.endDate = endDate.toDateString();
                         }
 
-                        msPerDay = 1000 * 60 * 60 * 24;
-                        today = new Date();
+                        var msPerDay = 1000 * 60 * 60 * 24;
+                        var today = new Date();
 
                         if (endDate > startDate) {
                             releaseInfo.totalDays = Math.floor((endDate - startDate) / msPerDay) + 1;
@@ -95,7 +95,7 @@ $( document ).ready(function() {
                         }
                     });
 
-                new IssueSearchService(configuration.project, configuration.version, configuration.scalingEnabled)
+                new IssueSearchService(configuration.project, configuration.version, configuration.scalingEnabled, configuration.sortFieldName, configuration.sortOrder)
                     .getEpics(function (epics) {
                         if (sizeDict(epics) == 0) {
                              $('#addon-wrapper').html(_.template($('#noIssuesTemplate').html())({config: configuration}));
@@ -116,8 +116,9 @@ $( document ).ready(function() {
                             }
 
                             $('#addon-wrapper').html(_.template($('#addonWrapperTemplate').html())({config: configuration}));
-                            $('#addon-header-table').find('tbody').append(_.template($('#addonHeaderDateRowTemplate').html())({release: releaseInfo}));
-                            $('#addon-header-table').find('tbody').prepend(_.template($('#addonHeaderOverallRowTemplate').html())({release: releaseInfo}));
+                            var tbody = $('#addon-header-table').find('tbody');
+                            tbody.append(_.template($('#addonHeaderDateRowTemplate').html())({release: releaseInfo}));
+                            tbody.prepend(_.template($('#addonHeaderOverallRowTemplate').html())({release: releaseInfo}));
 
                             var $epicsInRelease = $('#epics-in-release');
                             $epicsInRelease.html(_.template($('#epicTableTemplate').html())({}));
@@ -148,7 +149,7 @@ $( document ).ready(function() {
             }
     };
 
-    var IssueSearchService = function (project, version, scaling) {
+    var IssueSearchService = function (project, version, scaling, sortFieldName, sortOrder) {
         var releaseStartDate = new Date(0);
         var releaseEndDate = new Date(0);
         var epics = {};
@@ -216,7 +217,8 @@ $( document ).ready(function() {
         }
 
         function askJIRAforEpics() {
-            var jql = encodeURIComponent('project = ' + project + ' AND fixVersion = ' + version + ' AND issuetype = Epic ORDER BY Rank');
+            var jqlString = 'project = ' + project + ' AND fixVersion = ' + version + ' AND issuetype = Epic ORDER BY ' + sortFieldName + " " + sortOrder;
+            var jql = encodeURIComponent(jqlString);
             return askJIRA('/rest/api/2/search?jql=' + jql);
         }
 
@@ -302,7 +304,7 @@ $( document ).ready(function() {
             var issues = JSON.parse(response).issues || [];
 
             $.each(issues, function (i, issue) {
-                epic = epics[issue.fields[epic_link_id]];
+                var epic = epics[issue.fields[epic_link_id]];
                 epic.stories.push(issue.key);
                 epic.storyCount += 1;
 
@@ -390,7 +392,7 @@ $( document ).ready(function() {
             var issues = JSON.parse(response).issues || [];
 
             $.each(issues, function (i, issue) {
-                epic = epics[issue.fields[epic_link_id]];
+                var epic = epics[issue.fields[epic_link_id]];
                 epic.notInReleaseStoryCount += 1;
             });
 
@@ -517,6 +519,7 @@ $( document ).ready(function() {
                 });
 
                 addVersions(config);
+                addEpicSortFields(config);
             });
         }
 
@@ -536,6 +539,47 @@ $( document ).ready(function() {
             });
         }
 
+        function addEpicSortFields(config) {
+            var currentProject = $('#selectedProject').find(':selected').val();
+            service.getEpicFields(function(fields){
+                $.each(fields.projects, function (index, projectdata) {
+                    if (projectdata.id === currentProject) {
+                        $.each(projectdata.issuetypes, function(index, issuetype){
+                            if (issuetype.name === "Epic") {
+                                var $selectedField = $('#selectedField');
+                                $selectedField.empty();
+
+                                var defaultFieldOption = $('<option>', {value: "TBD"}).text("Rank");
+                                $selectedField.append(defaultFieldOption.attr('selected', 'selected'));
+                                $selectedField.append(defaultFieldOption);
+
+                               $.each(issuetype.fields, function(index, field){
+                                    var fieldOption = $('<option>', {value: field.key}).text(field.name);
+                                    if (config && config.sortFieldName === field.name) {
+                                        $selectedField.append(fieldOption.attr('selected', 'selected'));
+                                    }
+                                    $selectedField.append(fieldOption);
+                                });
+                            }
+                        });
+                    }
+                });
+
+                var $sortOrder = $('#sortOrder');
+                $sortOrder.empty();
+
+                var defaultSortOption = $('<option>', {value: "ASC"}).text("Ascending");
+                $sortOrder.append(defaultSortOption.attr('selected', 'selected'));
+                $sortOrder.append(defaultSortOption);
+
+                var sortOption1 = $('<option>', {value: "DESC"}).text("Descending");
+                if (config && config.sortOrder === "DESC") {
+                    $sortOrder.append(sortOption1.attr('selected', 'selected'));
+                }
+                $sortOrder.append(sortOption1);
+            });
+        }
+
         function saveButtonHandler(e) {
             e.preventDefault();
             var title = $('#itemTitle').val();
@@ -548,6 +592,13 @@ $( document ).ready(function() {
             var versionId = $selectedVersion.val();
             var versionName = $selectedVersion.text();
 
+            var $selectedField = $('#selectedField').find(':selected');
+            var sortFieldKey = $selectedField.val();
+            var sortFieldName = $selectedField.text();
+
+            var $sortOrder = $('#sortOrder').find(':selected');
+            var sortOrder = $sortOrder.val();
+
             var scalingEnabled = $('#enableScaling').prop("checked");
 
             var refreshEnabled = $('#enableRefresh').prop("checked");
@@ -558,6 +609,9 @@ $( document ).ready(function() {
                 projectName: projectName,
                 version: versionId,
                 versionName: versionName,
+                sortFieldKey: sortFieldKey,
+                sortFieldName: sortFieldName,
+                sortOrder: sortOrder,
                 scalingEnabled: scalingEnabled,
                 refreshEnabled: refreshEnabled
             };
@@ -588,6 +642,7 @@ $( document ).ready(function() {
                 $('#enableRefresh').attr("disabled", true);
 
                 $('#selectedProject').change(config, addVersions);
+                $('#selectedProject').change(config, addEpicSortFields);
                 $('#saveConfiguration').click(saveButtonHandler);
                 $('#cancelConfiguration').click(cancelButtonHandler);
             }
@@ -604,6 +659,10 @@ $( document ).ready(function() {
 
         function askJIRAForVersions(project) {
             return askJIRA('/rest/api/2/project/' + project);
+        }
+
+        function askJIRAForEpicFields() {
+            return askJIRA('/rest/api/2/issue/createmeta?expand=projects.issuetypes.fields');
         }
 
         function askJIRAforDashboardItemKey() {
@@ -635,6 +694,13 @@ $( document ).ready(function() {
                     .then(JSON.parse)
                     .then( function(project){
                         callback(project.versions);
+                    });
+            },
+            getEpicFields: function (callback) {
+                askJIRAForEpicFields()
+                    .then(JSON.parse)
+                    .then( function (fields){
+                        callback(fields);
                     });
             },
             getConfiguration: function (callback) {

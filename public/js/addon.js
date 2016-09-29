@@ -157,6 +157,7 @@ $( document ).ready(function() {
         var epic_link_id = "";
         var epic_risk_level_id = "";
         var epic_risk_description_id = "";
+        var countableIssueTypes = [];
 
         function askJIRAforReleaseDates() {
             return askJIRA('/rest/api/2/project/' + project + '/versions');
@@ -191,6 +192,24 @@ $( document ).ready(function() {
                 }
                 else if (field.name == "Epic Risk Description") {
                     epic_risk_description_id = field.id;
+                }
+            });
+            return RSVP.resolve();
+        }
+
+        function askJIRAforProjectIssueTypesAndFields () {
+            return askJIRA('/rest/api/2/issue/createmeta?expand=projects.issuetypes.fields');
+        }
+
+        function processProjectIssueTypesAndFields(response) {
+            var issuetypesandfields = JSON.parse(response) || [];
+            $.each(issuetypesandfields.projects, function (i, projectdata) {
+                if (projectdata.id === project) {
+                    $.each(projectdata.issuetypes, function (i, issuetype) {
+                        if (issuetype.fields[story_points_id]) {
+                            countableIssueTypes.push(issuetype.id);
+                        }
+                    });
                 }
             });
             return RSVP.resolve();
@@ -272,7 +291,7 @@ $( document ).ready(function() {
                 });
 
                 var jql = encodeURIComponent('project = ' + project + ' AND fixVersion = ' + version + ' AND "Epic Link" in (' + epicKeys.join(',') + ')');
-                var fields = encodeURIComponent([epic_link_id, story_points_id, 'status', 'key'].join(','));
+                var fields = encodeURIComponent([epic_link_id, story_points_id, 'status', 'key', 'issuetype'].join(','));
                 var maxResults = 500;
 
                 return askJIRA('/rest/api/2/search?jql=' + jql + '&fields=' + fields + '&maxResults=' + maxResults);
@@ -303,6 +322,11 @@ $( document ).ready(function() {
                         case "Done":
                             epic.donePoints += story_points;
                             break;
+                    }
+                }
+                else {
+                    if (countableIssueTypes.indexOf(issue.fields.issuetype.id) < 0) {
+                        epic.storyCount -= 1;
                     }
                 }
             });
@@ -384,7 +408,7 @@ $( document ).ready(function() {
                 });
 
                 var jql = encodeURIComponent('project = ' + project + ' AND fixVersion = ' + version + ' AND issuetype != Epic AND ("Epic Link" is empty or "Epic Link" not in (' + epicKeys.join(',') + '))');
-                var fields = encodeURIComponent([epic_link_id, story_points_id, 'status', 'key'].join(','));
+                var fields = encodeURIComponent([epic_link_id, story_points_id, 'status', 'key', 'issuetype'].join(','));
                 var maxResults = 500;
 
                 return askJIRA('/rest/api/2/search?jql=' + jql + '&fields=' + fields + '&maxResults=' + maxResults);
@@ -422,7 +446,7 @@ $( document ).ready(function() {
 
                 var story_points = issue.fields[story_points_id] === null ? -1 : issue.fields[story_points_id];
 
-                if (story_points) {
+                if (story_points >= 0) {
                     issuesNotInEpics.estimatedStoryCount += 1;
                     issuesNotInEpics.totalPoints += story_points;
 
@@ -436,6 +460,11 @@ $( document ).ready(function() {
                         case "Done":
                             issuesNotInEpics.donePoints += story_points;
                             break;
+                    }
+                }
+                else {
+                    if (countableIssueTypes.indexOf(issue.fields.issuetype.id) < 0) {
+                        issuesNotInEpics.storyCount -= 1;
                     }
                 }
             });
@@ -454,6 +483,8 @@ $( document ).ready(function() {
             getEpics: function (callback) {
                     askJIRAforCustomIds()
                     .then(processCustomIds)
+                    .then(askJIRAforProjectIssueTypesAndFields)
+                    .then(processProjectIssueTypesAndFields)
                     .then(askJIRAforEpics)
                     .then(processEpics)
                     .then(askJIRAforIssuesNotInEpics)

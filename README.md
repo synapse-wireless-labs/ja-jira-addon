@@ -64,10 +64,9 @@ As a JIRA administrator, browse to *Gear Icon | Add-ons*, then choose *Manage ad
 
 ### Known Issues
 
-* Issue types that do not allow Story Points to be set will count as unestimated issues, even though estimating them is not possible
 * Dashboard widget scroll slightly, but only on Windows (only verified in Chrome)
 
 ### Atlassian Caveats
 
-* As of September 2016, when searching for JIRA issues without Story Points, issues that do not allow Story Points will not be found.
+* As of September 2016, when searching for JIRA issues according to Story Points value, using ``"Story Points" is empty`` will not find issues that do not allow Story Points to be set.
 * As of September 2016, when trying to refresh the add-on's iframe, the auth credentials will expire after 6 minutes. (How to refresh?)

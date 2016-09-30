@@ -69,7 +69,6 @@ As a JIRA administrator, browse to *Gear Icon | Add-ons*, then choose *Manage ad
 * Add a key for what the colors mean in the bar chart
 * Add auto-refresh option (partially implemented, need advice from Atlassian)
 * Consider changing add-on name to be more descriptive (requires flushing live postgres database, though)
-* Find a way to display a Risk Description that does not have a specific Risk Level
 
 ### Known Issues
 

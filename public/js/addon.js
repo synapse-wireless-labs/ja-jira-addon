@@ -270,6 +270,10 @@ $( document ).ready(function() {
                         break;
                 }
 
+                if (e.riskDescription && !e.riskLevel) {
+                    e.riskLevel = "Note";
+                }
+
                 e.stories = [];
                 e.storyCount = 0;
                 e.estimatedStoryCount = 0;

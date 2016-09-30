@@ -101,10 +101,15 @@ $( document ).ready(function() {
                              $('#addon-wrapper').html(_.template($('#noIssuesTemplate').html())({config: configuration}));
                          }
                          else {
+                            var hasRisks = false;
                             $.each(epics, function (i, $epic) {
                                 releaseInfo.toDoPoints += $epic.toDoPoints;
                                 releaseInfo.inProgressPoints += $epic.inProgressPoints;
                                 releaseInfo.donePoints += $epic.donePoints;
+
+                                if ($epic.riskLevel || $epic.riskDescription) {
+                                    hasRisks = true;
+                                }
                             });
 
                             releaseInfo.totalPoints = releaseInfo.toDoPoints + releaseInfo.inProgressPoints + releaseInfo.donePoints;
@@ -121,7 +126,7 @@ $( document ).ready(function() {
                             tbody.prepend(_.template($('#addonHeaderOverallRowTemplate').html())({release: releaseInfo}));
 
                             var $epicsInRelease = $('#epics-in-release');
-                            $epicsInRelease.html(_.template($('#epicTableTemplate').html())({}));
+                            $epicsInRelease.html(_.template($('#epicTableTemplate').html())({hasRisks: hasRisks}));
 
                             var epicTable = $epicsInRelease.find('tbody');
                             $.each(epics, function (i, $epic) {
@@ -129,7 +134,8 @@ $( document ).ready(function() {
                                 {
                                     epicTable.append(_.template($('#epicTableRow').html())({
                                         epic: $epic,
-                                        versionName: configuration.versionName
+                                        versionName: configuration.versionName,
+                                        hasRisks: hasRisks
                                     }));
                                 }
                             });
@@ -141,7 +147,7 @@ $( document ).ready(function() {
                                         epicKeys.push(epic.key);
                                     }
                                 });
-                                epicTable.append(_.template($('#epicTableLastRow').html())({issues: epics["NO_EPIC"], epicString: epicKeys.join(','), projectName: configuration.projectName, versionName: configuration.versionName}));
+                                epicTable.append(_.template($('#epicTableLastRow').html())({issues: epics["NO_EPIC"], epicString: epicKeys.join(','), projectName: configuration.projectName, versionName: configuration.versionName, hasRisks: hasRisks}));
                             }
                         }
                     })

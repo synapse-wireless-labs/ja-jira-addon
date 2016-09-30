@@ -17,16 +17,16 @@ A collection of JIRA plugins to make our lives easier.
 
 * JIRA Dashboard widget
 * For the specified Project and Version, this widget will display a bar chart of each Epic's progress, sorted (by default) by Rank high to low. (Epic Rank is set by dragging and dropping the Epics on the Epic column of the Board backlog.)
-* This add-on adds two new custom fields, Epic Risk Level and Epic Risk Description - you will need to add these fields to the applicable projects and screens.
+* This add-on adds two new custom fields, Epic Risk Level and Epic Risk Description. These fields are optional - if you want to use them, then you will need to add these fields to the applicable projects and screens. If you choose not to use them, the Risk column will not be displayed.
 
 ### Widget Configuration
 
-* Title
-* Project
-* Release
-* Sort by
-* Scaling
-* Auto refresh - not currently implemented (see Atlassian Caveats below)
+* **Title** - the title that will be displayed for this widget on the Dashboard
+* **Project** - the JIRA Project that the report will be generated from
+* **Release** - the Release (ie, version) that the report will be generated on
+* **Sort by** - which Epic field will control the sort order of the report
+* **Scaling** - which direction to sort the report
+* *Auto refresh* - not currently implemented (see Atlassian Caveats below)
 
 ### To Deploy
 
@@ -69,6 +69,7 @@ As a JIRA administrator, browse to *Gear Icon | Add-ons*, then choose *Manage ad
 * Add a key for what the colors mean in the bar chart
 * Add auto-refresh option (partially implemented, need advice from Atlassian)
 * Consider changing add-on name to be more descriptive (requires flushing live postgres database, though)
+* Find a way to display a Risk Description that does not have a specific Risk Level
 
 ### Known Issues
 

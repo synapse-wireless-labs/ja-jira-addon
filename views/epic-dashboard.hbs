@@ -97,7 +97,9 @@
         <thead>
             <th id="summary">Summary</th>
             <th id="status">Status</th>
-            <th id="risk">Risk</th>
+            <% if (hasRisks) { %>
+                <th id="risk">Risk</th>
+            <% } %>
             <th id="alerts">Alerts</th>
             <th id="progress">Progress</th>
         </thead>
@@ -113,11 +115,13 @@
         <td headers="status">
             <span class="aui-lozenge aui-lozenge-subtle <%=epic.lozengeColorClass%>"><%=epic.statusCategoryName%></span>
         </td>
-        <td headers="risk">
-            <% if (epic.riskLevel) { %>
-                <span class="aui-lozenge <%=epic.riskLozengeClass%> simple-tooltip" title="<%=epic.riskDescription%>"><%=epic.riskLevel%></span>
-            <% } %>
-        </td>
+        <% if (hasRisks) { %>
+            <td headers="risk">
+                <% if (epic.riskLevel) { %>
+                    <span class="aui-lozenge <%=epic.riskLozengeClass%> simple-tooltip" title="<%=epic.riskDescription%>"><%=epic.riskLevel%></span>
+                <% } %>
+            </td>
+        <% } %>
         <td headers="alerts">
             <% if (epic.percentUnestimatedStories > 50) { %>
                 <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=%22Epic Link%22 = <%=epic.key%> and %22Story Points%22 is empty" target="_blank">
@@ -174,8 +178,10 @@
         </td>
         <td headers="status">
         </td>
-        <td headers="risk">
-        </td>
+        <% if (hasRisks) { %>
+            <td headers="risk">
+            </td>
+        <% } %>
         <td headers="alerts">
             <% if (issues.percentUnestimatedStories > 50) { %>
                 <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=project = %22<%=projectName%>%22 AND %22fixVersion%22 = %22<%=versionName%>%22 AND issuetype != Epic AND (%22Epic Link%22 is empty OR %22Epic Link%22 not in (<%=epicString%>)) and %22Story Points%22 is empty" target="_blank">

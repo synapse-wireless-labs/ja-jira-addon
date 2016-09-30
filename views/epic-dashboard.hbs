@@ -100,7 +100,9 @@
             <% if (hasRisks) { %>
                 <th id="risk">Risk</th>
             <% } %>
-            <th id="alerts">Alerts</th>
+            <% if (hasAlerts) { %>
+                <th id="alerts">Alerts</th>
+            <% } %>
             <th id="progress">Progress</th>
         </thead>
         <tbody></tbody>
@@ -122,22 +124,24 @@
                 <% } %>
             </td>
         <% } %>
-        <td headers="alerts">
-            <% if (epic.percentUnestimatedStories > 50) { %>
-                <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=%22Epic Link%22 = <%=epic.key%> and %22Story Points%22 is empty" target="_blank">
-                    <span class="aui-icon aui-icon-small aui-iconfont-error simple-tooltip" title="<%= epic.percentUnestimatedStories %>% unestimated issues"></span>
-                </a>
-            <% } else if (epic.percentUnestimatedStories > 20) { %>
-                <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=%22Epic Link%22 = <%=epic.key%> and %22Story Points%22 is empty" target="_blank">
-                    <span class="aui-icon aui-icon-small aui-iconfont-warning simple-tooltip" title="<%= epic.percentUnestimatedStories %>% unestimated issues"></span>
-                </a>
-            <% } %>
-            <% if (epic.notInReleaseStoryCount > 0) { %>
-                <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=%22Epic Link%22 = <%=epic.key%> and (fixVersion is empty or fixVersion != %22<%=versionName%>%22)" target="_blank">
-                    <span class="aui-icon aui-icon-small aui-iconfont-error simple-tooltip" title="<%= epic.notInReleaseStoryCount %> issues not in release" ></a>
-                </a>
-            <% } %>
-        </td>
+        <% if (hasAlerts) { %>
+            <td headers="alerts">
+                <% if (epic.percentUnestimatedStories > epic.percentUnestimatedErrorThreshold) { %>
+                    <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=%22Epic Link%22 = <%=epic.key%> and %22Story Points%22 is empty" target="_blank">
+                        <span class="aui-icon aui-icon-small aui-iconfont-error simple-tooltip" title="<%= epic.percentUnestimatedStories %>% unestimated issues"></span>
+                    </a>
+                <% } else if (epic.percentUnestimatedStories > epic.percentUnestimatedWarningThreshold) { %>
+                    <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=%22Epic Link%22 = <%=epic.key%> and %22Story Points%22 is empty" target="_blank">
+                        <span class="aui-icon aui-icon-small aui-iconfont-warning simple-tooltip" title="<%= epic.percentUnestimatedStories %>% unestimated issues"></span>
+                    </a>
+                <% } %>
+                <% if (epic.notInReleaseStoryCount > epic.notInReleaseThreshold) { %>
+                    <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=%22Epic Link%22 = <%=epic.key%> and (fixVersion is empty or fixVersion != %22<%=versionName%>%22)" target="_blank">
+                        <span class="aui-icon aui-icon-small aui-iconfont-error simple-tooltip" title="<%= epic.notInReleaseStoryCount %> issues not in release" ></a>
+                    </a>
+                <% } %>
+            </td>
+        <% } %>
         <td style="min-width: 300px" headers="progress">
             <ul class="ag-progress">
                 <% if (epic.totalPoints == 0) { %>
@@ -182,17 +186,19 @@
             <td headers="risk">
             </td>
         <% } %>
-        <td headers="alerts">
-            <% if (issues.percentUnestimatedStories > 50) { %>
-                <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=project = %22<%=projectName%>%22 AND %22fixVersion%22 = %22<%=versionName%>%22 AND issuetype != Epic AND (%22Epic Link%22 is empty OR %22Epic Link%22 not in (<%=epicString%>)) and %22Story Points%22 is empty" target="_blank">
-                    <span class="aui-icon aui-icon-small aui-iconfont-error simple-tooltip" title="<%= issues.percentUnestimatedStories %>% unestimated issues"></span>
-                </a>
-            <% } else if (issues.percentUnestimatedStories > 20) { %>
-                <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=project = %22<%=projectName%>%22 AND %22fixVersion%22 = %22<%=versionName%>%22 AND issuetype != Epic AND (%22Epic Link%22 is empty OR %22Epic Link%22 not in (<%=epicString%>)) and %22Story Points%22 is empty" target="_blank">
-                    <span class="aui-icon aui-icon-small aui-iconfont-warning simple-tooltip" title="<%= issues.percentUnestimatedStories %>% unestimated issues"></span>
-                </a>
-            <% } %>
-        </td>
+        <% if (hasAlerts) { %>
+            <td headers="alerts">
+                <% if (issues.percentUnestimatedStories > issues.percentUnestimatedErrorThreshold) { %>
+                    <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=project = %22<%=projectName%>%22 AND %22fixVersion%22 = %22<%=versionName%>%22 AND issuetype != Epic AND (%22Epic Link%22 is empty OR %22Epic Link%22 not in (<%=epicString%>)) and %22Story Points%22 is empty" target="_blank">
+                        <span class="aui-icon aui-icon-small aui-iconfont-error simple-tooltip" title="<%= issues.percentUnestimatedStories %>% unestimated issues"></span>
+                    </a>
+                <% } else if (issues.percentUnestimatedStories > issues.percentUnestimatedWarningThreshold) { %>
+                    <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=project = %22<%=projectName%>%22 AND %22fixVersion%22 = %22<%=versionName%>%22 AND issuetype != Epic AND (%22Epic Link%22 is empty OR %22Epic Link%22 not in (<%=epicString%>)) and %22Story Points%22 is empty" target="_blank">
+                        <span class="aui-icon aui-icon-small aui-iconfont-warning simple-tooltip" title="<%= issues.percentUnestimatedStories %>% unestimated issues"></span>
+                    </a>
+                <% } %>
+            </td>
+        <% } %>
         <td style="min-width: 300px" headers="progress">
             <ul class="ag-progress">
                 <% if (issues.totalPoints == 0) { %>

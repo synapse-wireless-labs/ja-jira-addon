@@ -102,6 +102,7 @@ $( document ).ready(function() {
                          }
                          else {
                             var hasRisks = false;
+                            var hasAlerts = false;
                             $.each(epics, function (i, $epic) {
                                 releaseInfo.toDoPoints += $epic.toDoPoints;
                                 releaseInfo.inProgressPoints += $epic.inProgressPoints;
@@ -109,6 +110,12 @@ $( document ).ready(function() {
 
                                 if ($epic.riskLevel || $epic.riskDescription) {
                                     hasRisks = true;
+                                }
+
+                                if ($epic.percentUnestimatedStories > $epic.percentUnestimatedErrorThreshold
+                                    || $epic.percentUnestimatedStories > $epic.percentUnestimatedWarningThreshold
+                                    || $epic.notInReleaseStoryCount > $epic.notInReleaseThreshold) {
+                                    hasAlerts = true;
                                 }
                             });
 
@@ -126,7 +133,7 @@ $( document ).ready(function() {
                             tbody.prepend(_.template($('#addonHeaderOverallRowTemplate').html())({release: releaseInfo}));
 
                             var $epicsInRelease = $('#epics-in-release');
-                            $epicsInRelease.html(_.template($('#epicTableTemplate').html())({hasRisks: hasRisks}));
+                            $epicsInRelease.html(_.template($('#epicTableTemplate').html())({hasRisks: hasRisks, hasAlerts: hasAlerts}));
 
                             var epicTable = $epicsInRelease.find('tbody');
                             $.each(epics, function (i, $epic) {
@@ -135,7 +142,8 @@ $( document ).ready(function() {
                                     epicTable.append(_.template($('#epicTableRow').html())({
                                         epic: $epic,
                                         versionName: configuration.versionName,
-                                        hasRisks: hasRisks
+                                        hasRisks: hasRisks,
+                                        hasAlerts: hasAlerts
                                     }));
                                 }
                             });
@@ -147,7 +155,7 @@ $( document ).ready(function() {
                                         epicKeys.push(epic.key);
                                     }
                                 });
-                                epicTable.append(_.template($('#epicTableLastRow').html())({issues: epics["NO_EPIC"], epicString: epicKeys.join(','), projectName: configuration.projectName, versionName: configuration.versionName, hasRisks: hasRisks}));
+                                epicTable.append(_.template($('#epicTableLastRow').html())({issues: epics["NO_EPIC"], epicString: epicKeys.join(','), projectName: configuration.projectName, versionName: configuration.versionName, hasRisks: hasRisks, hasAlerts: hasAlerts}));
                             }
                         }
                     })
@@ -276,10 +284,16 @@ $( document ).ready(function() {
 
                 e.stories = [];
                 e.storyCount = 0;
+
                 e.estimatedStoryCount = 0;
                 e.unestimatedStoryCount = 0;
                 e.percentUnestimatedStories = 0;
+                e.percentUnestimatedWarningThreshold = 20;
+                e.percentUnestimatedErrorThreshold = 50;
+
                 e.notInReleaseStoryCount = 0;
+                e.notInReleaseThreshold = 0;
+
                 e.totalPoints = 0;
                 e.toDoPoints = 0;
                 e.inProgressPoints = 0;
@@ -444,6 +458,8 @@ $( document ).ready(function() {
             issuesNotInEpics.unestimatedStoryCount = 0;
             issuesNotInEpics.percentUnestimatedStories = 0;
             issuesNotInEpics.notInReleaseStoryCount = 0;
+            issuesNotInEpics.percentUnestimatedWarningThreshold = 20;
+            issuesNotInEpics.percentUnestimatedErrorThreshold = 50;
             issuesNotInEpics.totalPoints = 0;
             issuesNotInEpics.toDoPoints = 0;
             issuesNotInEpics.inProgressPoints = 0;

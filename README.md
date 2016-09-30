@@ -72,7 +72,7 @@ As a JIRA administrator, browse to *Gear Icon | Add-ons*, then choose *Manage ad
 
 ### Known Issues
 
-* Dashboard widget scroll slightly, but only on Windows (only verified in Chrome)
+* Dashboard widget scrolls slightly, but only on Windows (only verified in Chrome)
 
 ### Atlassian Caveats
 

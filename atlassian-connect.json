@@ -36,33 +36,6 @@
         "thumbnailUrl": "{{localBaseUrl}}/Thumbnail.PNG",
         "configurable": true
       }
-    ],
-    "jiraIssueFields": [
-      {
-        "key" : "epic-risk-level-field",
-        "name" : {
-            "value" : "Epic Risk Level"
-        },
-        "description" : {
-            "value" : "For Epic Release Report Dashboard widget - is this Epic at risk for this release?"
-        },
-        "type": "single_select",
-        "extractions": [{
-            "path": "category",
-            "type": "string",
-            "name": "category"
-        }]
-      },
-      {
-        "key" : "epic-risk-description-field",
-        "name" : {
-            "value" : "Epic Risk Description"
-        },
-        "description" : {
-            "value" : "For Epic Release Report Dashboard widget - brief statement annotating current Epic Risk Level"
-        },
-        "type": "text"
-      }
     ]
   }
 }

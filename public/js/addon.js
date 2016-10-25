@@ -242,19 +242,27 @@ $( document ).ready(function() {
                 epics[e.key] = e;
 
                 e.summary = e.fields.summary;
-                e.statusCategoryName = e.fields.status.statusCategory.name;
 
-                e.lozengeColorClass = "";
-                switch (e.statusCategoryName) {
-                    case "To Do":
-                        e.lozengeColorClass = "aui-lozenge-complete";
+                switch (e.fields.status.name) {
+                    case "Deferred":
+                        e.statusCategoryName = "Deferred";
+                        e.lozengeColorClass = "aui-lozenge-error";
                         break;
-                    case "In Progress":
-                        e.lozengeColorClass = "aui-lozenge-current";
-                        break;
-                    case "Done":
-                        e.lozengeColorClass = "aui-lozenge-success";
-                        break;
+                    default:
+                        e.statusCategoryName = e.fields.status.statusCategory.name;
+                        switch (e.statusCategoryName) {
+                            case "To Do":
+                                e.lozengeColorClass = "aui-lozenge-complete";
+                                break;
+                            case "In Progress":
+                                e.lozengeColorClass = "aui-lozenge-current";
+                                break;
+                            case "Done":
+                                e.lozengeColorClass = "aui-lozenge-success";
+                                break;
+                            default:
+                                e.lozengeColorClass = "";
+                    }
                 }
 
                 e.riskLevel = "";
@@ -274,8 +282,7 @@ $( document ).ready(function() {
                         e.riskLozengeClass = "aui-lozenge-success";
                         break;
                     default:
-                        e.riskLozengeClass = "aui-lozenge-default";
-                        break;
+                        e.riskLozengeClass = "";
                 }
 
                 if (e.riskDescription && !e.riskLevel) {

@@ -27,6 +27,10 @@ A collection of JIRA plugins to make our lives easier.
 * **Scaling** - which direction to sort the report
 * *Auto refresh* - not currently implemented (see Atlassian Caveats below)
 
+### JIRA Configuration
+
+This widget does not require any special configuration of your JIRA instance or workflows. However, if you choose to add a ``Deferred`` status to your Epic workflow, then this widget will highlight that status in red, rather than in the default colors of green, yellow, and blue.
+
 ### To Deploy
 
 ``eb deploy`` in the working directory

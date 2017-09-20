@@ -326,15 +326,15 @@ $( document ).ready(function() {
                 var jql = encodeURIComponent('project = ' + project + ' AND fixVersion = ' + version + ' AND "Epic Link" in (' + epicKeys.join(',') + ')');
                 var fields = encodeURIComponent([epic_link_id, story_points_id, 'status', 'key', 'issuetype'].join(','));
 
-                askJIRA('/rest/api/2/search?jql=' + jql + '&fields=' + fields + '&startAt=' + (startAt || 0))
-                .then(function (response) {
-                    var response = JSON.parse(response);
-                    var next = response.startAt + repsonse.maxResults;
+                return askJIRA('/rest/api/2/search?jql=' + jql + '&fields=' + fields + '&startAt=' + (startAt || 0))
+                .then(function (rsp) {
+                    var response = JSON.parse(rsp);
+                    var next = response.startAt + response.maxResults;
                     var totalIssues = result ? result.concat(response.issues) : response.issues;
 
                   return response.total >= next
                     ? askJIRAforIssues(next, totalIssues)
-                    : totalIssues;
+                    : RSVP.resolve(totalIssues);
                 });
             }
         }

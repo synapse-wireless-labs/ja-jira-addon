@@ -313,7 +313,7 @@ $( document ).ready(function() {
             return RSVP.resolve();
         }
 
-        function askJIRAforIssues() {
+        function askJIRAforIssues(startAt, result) {
             if (sizeDict(epics) == 0) {
                 return RSVP.resolve("{}");
             }
@@ -325,15 +325,21 @@ $( document ).ready(function() {
 
                 var jql = encodeURIComponent('project = ' + project + ' AND fixVersion = ' + version + ' AND "Epic Link" in (' + epicKeys.join(',') + ')');
                 var fields = encodeURIComponent([epic_link_id, story_points_id, 'status', 'key', 'issuetype'].join(','));
-                var maxResults = 500;
 
-                return askJIRA('/rest/api/2/search?jql=' + jql + '&fields=' + fields + '&maxResults=' + maxResults);
+                askJIRA('/rest/api/2/search?jql=' + jql + '&fields=' + fields + '&startAt=' + (startAt || 0))
+                .then(function (response) {
+                    var response = JSON.parse(response);
+                    var next = response.startAt + repsonse.maxResults;
+                    var totalIssues = result ? result.concat(response.issues) : response.issues;
+
+                  return response.total >= next
+                    ? askJIRAforIssues(next, totalIssues)
+                    : totalIssues;
+                });
             }
         }
 
-        function processIssues (response) {
-            var issues = JSON.parse(response).issues || [];
-
+        function processIssues (issues) {
             $.each(issues, function (i, issue) {
                 var epic = epics[issue.fields[epic_link_id]];
                 epic.stories.push(issue.key);

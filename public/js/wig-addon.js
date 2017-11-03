@@ -558,6 +558,7 @@ $(document).ready(function () {
           then(JSON.parse).
           then(processDashboardProperties).
           then(function (configured) {
+            console.log('isConfigured: ' + configured);
             callback(configured);
           });
       },
@@ -578,7 +579,6 @@ $(document).ready(function () {
   var DashboardItemView = function () {
     return {
       render: function () {
-        console.log('render');
         var service = new DashboardItemConfigurationService();
         service.isConfigured(function (configured) {
           if (configured) {

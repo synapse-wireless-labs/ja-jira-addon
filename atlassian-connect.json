@@ -35,6 +35,18 @@
         },
         "thumbnailUrl": "{{localBaseUrl}}/Thumbnail.PNG",
         "configurable": true
+      },
+      {
+        "name": {
+          "value": "WIG Status Dashboard"
+        },
+        "url": "/wig-dashboard?dashboard={dashboard.id}&dashboardItem={dashboardItem.id}",
+        "key": "iframe-requests",
+        "description": {
+          "value": "For a given Label and Date range, displays a bar chart of each Epic's progress."
+        },
+        "thumbnailUrl": "{{localBaseUrl}}/Thumbnail.PNG",
+        "configurable": true
       }
     ]
   }

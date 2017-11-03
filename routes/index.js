@@ -77,7 +77,12 @@ module.exports = function (app, addon) {
     });
 
 
-    // Add new route handlers here...
+  app.get('/wig-dashboard', addon.authenticate(), function(req, res) {
+    res.render('wig-dashboard', {
+      dashboard: req.query['dashboard'],
+      dashboardItem: req.query['dashboardItem']
+    });
+  });
 
 
     // load any additional files you have in routes and apply those to the app

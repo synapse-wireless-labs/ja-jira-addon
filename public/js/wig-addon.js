@@ -411,7 +411,7 @@ $(document).ready(function () {
         var scaleFactor = 1;
         var divisor = epic.issueCount;
 
-        if (config.scaling) {
+        if (config.scalingEnabled) {
           var maxIssues = 0;
           $.each(epics, function (i, epic) {
             if (epic.issueCount > maxIssues) {

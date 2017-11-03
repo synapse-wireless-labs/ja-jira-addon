@@ -20,6 +20,51 @@ $(document).ready(function () {
     });
   };
 
+  var getWigProgress = function (epics) {
+    var hasRisks = false;
+    var hasAlerts = false;
+    var toDoIssues = 0;
+    var percentTodo = 0;
+    var inProgressIssues = 0;
+    var percentInProgress = 0;
+    var doneIssues = 0;
+    var percentDone = 0;
+
+    $.each(epics, function (i, $epic) {
+      toDoIssues += $epic.toDoIssues;
+      inProgressIssues += $epic.inProgressIssues;
+      doneIssues += $epic.doneIssues;
+
+      if ($epic.riskLevel || $epic.riskDescription) {
+        hasRisks = true;
+      }
+
+      if ($epic.notInReleaseCount > $epic.notInReleaseThreshold) {
+        hasAlerts = true;
+      }
+    });
+
+    var totalIssues = toDoIssues + inProgressIssues + doneIssues;
+    if (totalIssues > 0) {
+      percentTodo = (toDoIssues / totalIssues) * 100;
+      percentInProgress = (inProgressIssues / totalIssues) * 100;
+      percentDone = (doneIssues / totalIssues) * 100;
+    }
+
+    return {
+      toDo: toDoIssues,
+      inProgress: inProgressIssues,
+      done: doneIssues,
+      total: totalIssues,
+      percentTodo: percentTodo,
+      percentInProgress: percentInProgress,
+      percentDone: percentDone,
+      hasRisks: hasRisks,
+      hasAlerts: hasAlerts
+    };
+
+  };
+
   var IssueTableView = function () {
     return {
       setTitle: function (config) {
@@ -64,51 +109,6 @@ $(document).ready(function () {
         };
       },
 
-      getWigProgress: function (epics) {
-        var hasRisks = false;
-        var hasAlerts = false;
-        var toDoIssues = 0;
-        var percentTodo = 0;
-        var inProgressIssues = 0;
-        var percentInProgress = 0;
-        var doneIssues = 0;
-        var percentDone = 0;
-
-        $.each(epics, function (i, $epic) {
-          toDoIssues += $epic.toDoIssues;
-          inProgressIssues += $epic.inProgressIssues;
-          doneIssues += $epic.doneIssues;
-
-          if ($epic.riskLevel || $epic.riskDescription) {
-            hasRisks = true;
-          }
-
-          if ($epic.notInReleaseCount > $epic.notInReleaseThreshold) {
-            hasAlerts = true;
-          }
-        });
-
-        var totalIssues = toDoIssues + inProgressIssues + doneIssues;
-        if (totalIssues > 0) {
-          percentTodo = (toDoIssues / totalIssues) * 100;
-          percentInProgress = (inProgressIssues / totalIssues) * 100;
-          percentDone = (doneIssues / totalIssues) * 100;
-        }
-
-        return {
-          toDo: toDoIssues,
-          inProgress: inProgressIssues,
-          done: doneIssues,
-          total: totalIssues,
-          percentTodo: percentTodo,
-          percentInProgress: percentInProgress,
-          percentDone: percentDone,
-          hasRisks: hasRisks,
-          hasAlerts: hasAlerts
-        };
-
-      },
-
       render: function (config) {
         console.log(JSON.stringify(config));
 
@@ -119,7 +119,7 @@ $(document).ready(function () {
         console.log(dates);
 
         new IssueSearchService(config).getEpics(function (epics) {
-          var progress = this.getWigProgress(epics);
+          var progress = getWigProgress(epics);
           var hasAlerts = progress.hasAlerts;
           var hasRisks = progress.hasRisks;
 

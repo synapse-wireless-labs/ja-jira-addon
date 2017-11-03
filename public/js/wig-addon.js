@@ -194,7 +194,7 @@ $(document).ready(function () {
     }
 
     function askJIRAforEpics () {
-      var jqlString = 'labels = ' + config.label + ' AND issuetype = Epic ORDER BY ' + sortFieldName + ' ' + sortOrder;
+      var jqlString = 'labels = ' + config.label + ' AND issuetype = Epic';
       var jql = encodeURIComponent(jqlString);
       return askJIRA('/rest/api/2/search?jql=' + jql);
     }
@@ -472,27 +472,14 @@ $(document).ready(function () {
       var endDateStr = $('#wigEndDate').val();
       var wigEndDate = new Date(endDateStr || 0);
 
-      var $selectedField = $('#selectedField').find(':selected');
-      var sortFieldKey = $selectedField.val();
-      var sortFieldName = $selectedField.text();
-
-      var $sortOrder = $('#sortOrder').find(':selected');
-      var sortOrder = $sortOrder.val();
-
       var scalingEnabled = $('#enableScaling').prop('checked');
-
-      var refreshEnabled = $('#enableRefresh').prop('checked');
 
       var configuration = {
         title: title,
         label: wigLabel,
         startDate: wigStartDate,
         endDate: wigEndDate,
-        sortFieldKey: sortFieldKey,
-        sortFieldName: sortFieldName,
-        sortOrder: sortOrder,
-        scalingEnabled: scalingEnabled,
-        refreshEnabled: refreshEnabled
+        scalingEnabled: scalingEnabled
       };
 
       service.save(configuration, function () {

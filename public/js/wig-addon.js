@@ -504,9 +504,6 @@ $(document).ready(function () {
 
     return {
       render: function (config) {
-        $('#wigStartDate').datePicker({'overrideBrowserDefault': true});
-        $('#wigEndDate').datePicker({'overrideBrowserDefault': true});
-
         var $addon = $('#addon-wrapper');
         $addon.empty();
         $addon.html(_.template($('#addonConfigTemplate').html())(
@@ -523,6 +520,8 @@ $(document).ready(function () {
 
         $('#saveConfiguration').click(saveButtonHandler);
         $('#cancelConfiguration').click(cancelButtonHandler);
+        $('#wigStartDate').datePicker({'overrideBrowserDefault': true});
+        $('#wigEndDate').datePicker({'overrideBrowserDefault': true});
       }
     };
   };

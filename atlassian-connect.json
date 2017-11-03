@@ -29,7 +29,7 @@
           "value": "Epic Release Report"
         },
         "url": "/epic-dashboard?dashboard={dashboard.id}&dashboardItem={dashboardItem.id}",
-        "key": "release-iframe-requests",
+        "key": "iframe-requests",
         "description": {
           "value": "For a given Project and Version, displays a bar chart of each Epic's progress, sorted by Rank."
         },

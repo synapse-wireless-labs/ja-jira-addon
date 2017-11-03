@@ -194,7 +194,7 @@ $(document).ready(function () {
     }
 
     function askJIRAforEpics () {
-      var jqlString = 'labels = ' + config.label + ' AND issuetype = Epic';
+      var jqlString = 'labels = "' + config.label + '" AND issuetype = Epic';
       var jql = encodeURIComponent(jqlString);
       return askJIRA('/rest/api/2/search?jql=' + jql);
     }
@@ -279,8 +279,8 @@ $(document).ready(function () {
           epicKeys.push(epic.key);
         });
 
-        var jql = encodeURIComponent('labels = ' + config.label +
-          ' AND issuetype != Epic AND ("Epic Link" is empty or "Epic Link" not in (' +
+        var jql = encodeURIComponent('labels = "' + config.label +
+          '" AND issuetype != Epic AND ("Epic Link" is empty or "Epic Link" not in (' +
           epicKeys.join(',') + '))');
         var fields = encodeURIComponent([epic_link_id, 'status', 'key', 'issuetype'].join(','));
         var maxResults = 500;
@@ -340,7 +340,7 @@ $(document).ready(function () {
           epicKeys.push(epic.key);
         });
 
-        var jql = encodeURIComponent('(labels is empty or labels != ' + config.label + ') AND "Epic Link" in (' +
+        var jql = encodeURIComponent('(labels is empty or labels != "' + config.label + '") AND "Epic Link" in (' +
           epicKeys.join(',') + ')');
         var fields = encodeURIComponent([epic_link_id, 'status', 'key'].join(','));
         var maxResults = 500;
@@ -370,7 +370,7 @@ $(document).ready(function () {
           epicKeys.push(epic.key);
         });
 
-        var jql = encodeURIComponent('labels = ' + config.label + ' AND "Epic Link" in (' + epicKeys.join(',') + ')');
+        var jql = encodeURIComponent('labels = "' + config.label + '" AND "Epic Link" in (' + epicKeys.join(',') + ')');
         var fields = encodeURIComponent([epic_link_id, 'status', 'key', 'issuetype'].join(','));
 
         return askJIRA('/rest/api/2/search?jql=' + jql + '&fields=' + fields + '&startAt=' + (startAt || 0)).

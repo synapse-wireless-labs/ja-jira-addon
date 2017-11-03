@@ -108,6 +108,8 @@ $(document).ready(function () {
       },
 
       render: function (config) {
+        console.log(JSON.stringify(config));
+
         $('#addon-wrapper').empty();
 
         this.setTitle(config);
@@ -549,7 +551,6 @@ $(document).ready(function () {
     return {
       getConfiguration: function (callback) {
         askJIRAforDashboardItemKey().then(JSON.parse).then(function (itemkey) {
-          console.log('Item Key: ' + itemkey.value);
           callback(itemkey.value);
         });
       },
@@ -558,7 +559,6 @@ $(document).ready(function () {
           then(JSON.parse).
           then(processDashboardProperties).
           then(function (configured) {
-            console.log('isConfigured: ' + configured);
             callback(configured);
           });
       },

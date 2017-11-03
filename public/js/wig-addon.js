@@ -35,25 +35,27 @@ $(document).ready(function () {
         var daysRemaining = 0;
         var percentDaysPast = 0;
         var percentDaysRemaining = 0;
+        var startDate = new Date(config.startDate);
+        var endDate = new Date(config.endDate);
         var today = new Date();
 
-        if (config.endDate > config.startDate) {
-          totalDays = Math.floor((config.endDate - config.startDate) / MS_PER_DAY) + 1;
+        if (endDate > startDate) {
+          totalDays = Math.floor((endDate - startDate) / MS_PER_DAY) + 1;
 
-          if (today > config.startDate) {
-            daysPast = Math.ceil((today - config.startDate) / MS_PER_DAY);
+          if (today > startDate) {
+            daysPast = Math.ceil((today - startDate) / MS_PER_DAY);
             percentDaysPast = (daysPast / totalDays) * 100;
           }
 
-          if (config.endDate > today) {
-            daysRemaining = Math.ceil((config.endDate - today) / MS_PER_DAY);
+          if (endDate > today) {
+            daysRemaining = Math.ceil((endDate - today) / MS_PER_DAY);
             percentDaysRemaining = (daysRemaining / totalDays) * 100;
           }
         }
 
         return {
-          startDate: config.startDate.toDateString(),
-          endDate: config.endDate.toDateString(),
+          startDate: startDate.toDateString(),
+          endDate: endDate.toDateString(),
           totalDays: totalDays,
           daysPast: daysPast,
           daysRemaining: daysRemaining,
@@ -114,6 +116,7 @@ $(document).ready(function () {
 
         this.setTitle(config);
         var dates = this.getWigDates(config);
+        console.log(dates);
 
         new IssueSearchService(config).getEpics(function (epics) {
           var progress = this.getWigProgress(epics);

@@ -29,7 +29,7 @@
           "value": "Epic Release Report"
         },
         "url": "/epic-dashboard?dashboard={dashboard.id}&dashboardItem={dashboardItem.id}",
-        "key": "iframe-requests",
+        "key": "release-iframe-requests",
         "description": {
           "value": "For a given Project and Version, displays a bar chart of each Epic's progress, sorted by Rank."
         },
@@ -41,7 +41,7 @@
           "value": "WIG Status Dashboard"
         },
         "url": "/wig-dashboard?dashboard={dashboard.id}&dashboardItem={dashboardItem.id}",
-        "key": "iframe-requests",
+        "key": "wig-iframe-requests",
         "description": {
           "value": "For a given Label and Date range, displays a bar chart of each Epic's progress."
         },

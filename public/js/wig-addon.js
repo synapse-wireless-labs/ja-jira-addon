@@ -31,15 +31,15 @@ $(document).ready(function () {
     var percentDone = 0;
 
     $.each(epics, function (i, $epic) {
-      toDoIssues += $epic.toDoIssues;
-      inProgressIssues += $epic.inProgressIssues;
-      doneIssues += $epic.doneIssues;
+      toDoIssues += $epic.toDo;
+      inProgressIssues += $epic.inProgress;
+      doneIssues += $epic.done;
 
       if ($epic.riskLevel || $epic.riskDescription) {
         hasRisks = true;
       }
 
-      if ($epic.notInReleaseCount > $epic.notInReleaseThreshold) {
+      if ($epic.notInWigCount > $epic.notInWigThreshold) {
         hasAlerts = true;
       }
     });

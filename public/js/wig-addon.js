@@ -455,85 +455,6 @@ $(document).ready(function () {
   var DashboardItemConfigurationView = function () {
     var service = new DashboardItemConfigurationService();
 
-    function addProjectsAndVersions (config) {
-      service.getProjects(function (projects) {
-        var $selectedProject = $('#selectedProject');
-
-        $.each(projects, function (index, project) {
-          var select = $('<option>', {value: project.id}).text(project.name);
-          if (config && config.project === project.id) {
-            $selectedProject.append(select.attr('selected', 'selected'));
-          }
-          $selectedProject.append(select);
-        });
-
-        addVersions(config);
-        addEpicSortFields(config);
-      });
-    }
-
-    function addVersions (config) {
-      var currentProject = $('#selectedProject').find(':selected').val();
-      service.getVersions(currentProject, function (versions) {
-        var $selectedVersion = $('#selectedVersion');
-        $selectedVersion.empty();
-
-        $.each(versions, function (index, version) {
-          var versionOption = $('<option>', {value: version.id}).
-            text(version.name);
-          if (config && config.version === version.id) {
-            $selectedVersion.append(versionOption.attr('selected', 'selected'));
-          }
-          $selectedVersion.append(versionOption);
-        });
-      });
-    }
-
-    function addEpicSortFields (config) {
-      var currentProject = $('#selectedProject').find(':selected').val();
-      service.getEpicFields(function (fields) {
-        $.each(fields.projects, function (index, projectdata) {
-          if (projectdata.id === currentProject) {
-            $.each(projectdata.issuetypes, function (index, issuetype) {
-              if (issuetype.name === 'Epic') {
-                var $selectedField = $('#selectedField');
-                $selectedField.empty();
-
-                var defaultFieldOption = $('<option>', {value: 'TBD'}).
-                  text('Rank');
-                $selectedField.append(
-                  defaultFieldOption.attr('selected', 'selected'));
-                $selectedField.append(defaultFieldOption);
-
-                $.each(issuetype.fields, function (index, field) {
-                  var fieldOption = $('<option>', {value: field.key}).
-                    text(field.name);
-                  if (config && config.sortFieldName === field.name) {
-                    $selectedField.append(
-                      fieldOption.attr('selected', 'selected'));
-                  }
-                  $selectedField.append(fieldOption);
-                });
-              }
-            });
-          }
-        });
-
-        var $sortOrder = $('#sortOrder');
-        $sortOrder.empty();
-
-        var defaultSortOption = $('<option>', {value: 'ASC'}).text('Ascending');
-        $sortOrder.append(defaultSortOption.attr('selected', 'selected'));
-        $sortOrder.append(defaultSortOption);
-
-        var sortOption1 = $('<option>', {value: 'DESC'}).text('Descending');
-        if (config && config.sortOrder === 'DESC') {
-          $sortOrder.append(sortOption1.attr('selected', 'selected'));
-        }
-        $sortOrder.append(sortOption1);
-      });
-    }
-
     function saveButtonHandler (e) {
       e.preventDefault();
       var title = $('#itemTitle').val();
@@ -657,6 +578,7 @@ $(document).ready(function () {
   var DashboardItemView = function () {
     return {
       render: function () {
+        console.log('render');
         var service = new DashboardItemConfigurationService();
         service.isConfigured(function (configured) {
           if (configured) {

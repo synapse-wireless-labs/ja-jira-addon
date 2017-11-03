@@ -549,6 +549,7 @@ $(document).ready(function () {
     return {
       getConfiguration: function (callback) {
         askJIRAforDashboardItemKey().then(JSON.parse).then(function (itemkey) {
+          console.log('Item Key: ' + itemkey.value);
           callback(itemkey.value);
         });
       },

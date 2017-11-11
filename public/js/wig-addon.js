@@ -383,7 +383,7 @@ $(document).ready(function () {
       render: function (config) {
         const $addon = $('#addon-wrapper');
         $addon.empty();
-        AP.sizeToParent();
+        AP.sizeToParent(true);
         $addon.html(_.template($('#addonConfigTemplate').html())(
           {
             title: config ? config.title : 'WIG Status',

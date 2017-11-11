@@ -218,6 +218,7 @@ $(document).ready(function () {
         e.percentTodo = 0;
         e.percentInProgress = 0;
         e.percentDone = 0;
+        return e;
       });
 
       epicKeys = epics.map(function (e) {

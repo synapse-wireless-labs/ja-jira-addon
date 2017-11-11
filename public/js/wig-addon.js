@@ -383,19 +383,20 @@ $(document).ready(function () {
       render: function (config) {
         const $addon = $('#addon-wrapper');
         $addon.empty();
+        AP.sizeToParent();
         $addon.html(_.template($('#addonConfigTemplate').html())(
           {
             title: config ? config.title : 'WIG Status',
             label: config ? config.label : 'WIG'
           }));
 
-        AJS.$('#wigStartDate').datePicker({'overrideBrowserDefault': true});
-        AJS.$('#wigEndDate').datePicker({'overrideBrowserDefault': true});
+        $('#wigStartDate').datePicker({'overrideBrowserDefault': true});
+        $('#wigEndDate').datePicker({'overrideBrowserDefault': true});
 
         if (config) {
           $('#enableScaling').prop('checked', config.scalingEnabled);
-          AJS.$('#wigStartDate').datePicker('setDate', new Date(config.startDate));
-          AJS.$('#wigEndDate').datePicker('setDate', new Date(config.endDate));
+          $('#wigStartDate').datePicker('setDate', new Date(config.startDate));
+          $('#wigEndDate').datePicker('setDate', new Date(config.endDate));
         }
 
         $('#saveConfiguration').click(saveButtonHandler);

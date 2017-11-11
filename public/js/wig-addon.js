@@ -389,13 +389,13 @@ $(document).ready(function () {
             label: config ? config.label : 'WIG'
           }));
 
-        $('#wigStartDate').datePicker({'overrideBrowserDefault': true});
-        $('#wigEndDate').datePicker({'overrideBrowserDefault': true});
+        AJS.$('#wigStartDate').datePicker({'overrideBrowserDefault': true});
+        AJS.$('#wigEndDate').datePicker({'overrideBrowserDefault': true});
 
         if (config) {
           $('#enableScaling').prop('checked', config.scalingEnabled);
-          $('#wigStartDate').datePicker('setDate', new Date(config.startDate));
-          $('#wigEndDate').datePicker('setDate', new Date(config.endDate));
+          AJS.$('#wigStartDate').datePicker('setDate', new Date(config.startDate));
+          AJS.$('#wigEndDate').datePicker('setDate', new Date(config.endDate));
         }
 
         $('#saveConfiguration').click(saveButtonHandler);

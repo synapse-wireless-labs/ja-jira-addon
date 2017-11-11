@@ -394,8 +394,8 @@ $(document).ready(function () {
 
         if (config) {
           $('#enableScaling').prop('checked', config.scalingEnabled);
-          $('#wigStartDate').datePicker('setDate', new Date(config.startDate));
-          $('#wigEndDate').datePicker('setDate', new Date(config.endDate));
+          $('#wigStartDate').datePicker('setDate', config.startDate);
+          $('#wigEndDate').datePicker('setDate', config.endDate);
         }
 
         $('#saveConfiguration').click(saveButtonHandler);

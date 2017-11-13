@@ -272,7 +272,8 @@ $(document).ready(function () {
 
       isConfigured: async function () {
         const propJSON = await AP.request(`/rest/api/2/dashboard/${db}/items/${dbItem}/properties`);
-        return JSON.parse(propJSON).keys.find(row => row.key === 'itemkey');
+        const keys = JSON.parse(propJSON);
+        return keys.keys.find(row => row.key === 'itemkey');
       },
 
       save: function (configuration, successCallback) {

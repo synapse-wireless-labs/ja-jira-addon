@@ -244,8 +244,8 @@ $(document).ready(function () {
         }));
 
         const start = $('#wigStartDate').datePicker({'overrideBrowserDefault': true});
-        start.initPolyfill();
         start.setDate(new Date(config.startDate));
+        start.datePicker('setDate', new Date(config.startDate));
         const end = $('#wigEndDate').datePicker({'overrideBrowserDefault': true});
         end.initPolyfill();
         end.setDate(new Date(config.endDate));

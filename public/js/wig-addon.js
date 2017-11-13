@@ -51,7 +51,7 @@ const getWigDates = function (config) {
   return dates;
 };
 
-$(document).ready(async function () {
+$(document).ready(function () {
 
   const IssueTableView = function () {
     function sortBySummary (a, b) {
@@ -288,6 +288,7 @@ $(document).ready(async function () {
     };
   };
 
+  async function onReady() {
   const configService = new DashboardItemConfigurationService();
   const configView = new DashboardItemConfigurationView();
 
@@ -305,4 +306,8 @@ $(document).ready(async function () {
   } else {
     configView.render();
   }
+
+  }
+
+  onReady();
 });

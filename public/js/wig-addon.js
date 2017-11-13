@@ -248,7 +248,7 @@ $(document).ready(function () {
         $start.datePicker({'overrideBrowserDefault': true});
         $start.value = config.startDate;
         $end.datePicker({'overrideBrowserDefault': true});
-        end.value = config.endDate;
+        $end.value = config.endDate;
 
         if (config) {
           $('#enableScaling').prop('checked', config.scalingEnabled);
@@ -289,25 +289,22 @@ $(document).ready(function () {
     };
   };
 
-  async function onReady() {
-  const configService = new DashboardItemConfigurationService();
-  const configView = new DashboardItemConfigurationView();
-
-  AP.require(['jira'], function (jira) {
-    jira.DashboardItem.onDashboardItemEdit(async function () {
-      const config = await configService.getConfiguration();
-      configView.render(config);
+  async function onReady () {
+    const configService = new DashboardItemConfigurationService();
+    AP.require(['jira'], function (jira) {
+      jira.DashboardItem.onDashboardItemEdit(async function () {
+        const config = await configService.getConfiguration();
+        new DashboardItemConfigurationView().render(config);
+      });
     });
-  });
 
-  const configured = await configService.isConfigured();
-  if (configured) {
-    const config = await configService.getConfiguration();
-    new IssueTableView().render(config);
-  } else {
-    configView.render();
-  }
-
+    const configured = await configService.isConfigured();
+    if (configured) {
+      const config = await configService.getConfiguration();
+      new IssueTableView().render(config);
+    } else {
+      new DashboardItemConfigurationView().render();
+    }
   }
 
   onReady();

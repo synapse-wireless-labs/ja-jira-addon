@@ -93,16 +93,16 @@ $(document).ready(function () {
     let epic_link_id = '';
 
     async function getCustomIds () {
-      const fieldsJSON = await AP.request('/rest/api/2/field');
-      const fields = JSON.parse(fieldsJSON) || [];
+      const response = await AP.request('/rest/api/2/field');
+      const fields = JSON.parse(response.body) || [];
 
       return fields.find(f => f.name === 'Epic Link').id || '';
     }
 
     async function getEpicList () {
       const jql = encodeURIComponent(`labels = "${config.label}" AND issuetype = Epic`);
-      const epicsJSON = await AP.request(`/rest/api/2/search?jql=${jql}`);
-      const epics = JSON.parse(epicsJSON).issues || [];
+      const response = await AP.request(`/rest/api/2/search?jql=${jql}`);
+      const epics = JSON.parse(response.body).issues || [];
       const statusCategoryColors = {
         'Deferred': 'aui-lozenge-error',
         'To Do': 'aui-lozenge-complete',
@@ -125,8 +125,8 @@ $(document).ready(function () {
           epics)}))`);
       const fields = encodeURIComponent([epic_link_id, 'status', 'key', 'issuetype'].join(','));
 
-      const noEpicJSON = await AP.request(`/rest/api/2/search?jql=${jql}&fields=${fields}&maxResults=${MAX_RESULTS}`);
-      const issues = JSON.parse(noEpicJSON).issues || [];
+      const response = await AP.request(`/rest/api/2/search?jql=${jql}&fields=${fields}&maxResults=${MAX_RESULTS}`);
+      const issues = JSON.parse(response.body).issues || [];
 
       const noEpic = {};
       noEpic.issues = issues.map(issue => issue.key);
@@ -142,8 +142,8 @@ $(document).ready(function () {
       const fields = encodeURIComponent([epic_link_id, 'status', 'key'].join(','));
       const maxResults = 500;
 
-      const issuesJSON = await AP.request(`/rest/api/2/search?jql=${jql}&fields=${fields}&maxResults=${maxResults}`);
-      const issues = JSON.parse(issuesJSON).issues || [];
+      const response = await AP.request(`/rest/api/2/search?jql=${jql}&fields=${fields}&maxResults=${maxResults}`);
+      const issues = JSON.parse(response.body).issues || [];
 
       epics.forEach(e => {
         epic.notInWigCount = issues.filter(i => i.fields[epic_link_id] === e.key).length;
@@ -155,8 +155,8 @@ $(document).ready(function () {
       const fields = encodeURIComponent([epic_link_id, 'status', 'key', 'issuetype'].join(','));
 
       async function askJIRAforIssues (startAt, result) {
-        const issueJSON = await AP.request(`/rest/api/2/search?jql=${jql}&fields=${fields}&startAt=${startAt || 0}`);
-        const issues = JSON.parse(issueJSON);
+        const response = await AP.request(`/rest/api/2/search?jql=${jql}&fields=${fields}&startAt=${startAt || 0}`);
+        const issues = JSON.parse(response.body);
         const next = issues.startAt + issues.maxResults;
         const totalIssues = result ? result.concat(issues.issues) : issues.issues;
 
@@ -266,13 +266,13 @@ $(document).ready(function () {
 
     return {
       getConfiguration: async function () {
-        const keyJSON = await AP.request(`/rest/api/2/dashboard/${db}/items/${dbItem}/properties/itemkey`);
-        return JSON.parse(keyJSON).key;
+        const response = await AP.request(`/rest/api/2/dashboard/${db}/items/${dbItem}/properties/itemkey`);
+        return JSON.parse(response.body).key;
       },
 
       isConfigured: async function () {
-        const propJSON = await AP.request(`/rest/api/2/dashboard/${db}/items/${dbItem}/properties`);
-        const keys = JSON.parse(propJSON);
+        const response = await AP.request(`/rest/api/2/dashboard/${db}/items/${dbItem}/properties`);
+        const keys = JSON.parse(response.body);
         return keys.keys.find(row => row.key === 'itemkey');
       },
 

@@ -13,7 +13,6 @@
     <script src="//aui-cdn.atlassian.com/aui-adg/6.0.9/js/aui.min.js" type="text/javascript"></script>
     <script src="//aui-cdn.atlassian.com/aui-adg/6.0.9/js/aui-datepicker.min.js" type="text/javascript"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-    <script src="https://cdn.jsdelivr.net/rsvp/3.0.6/rsvp.min.js"></script>
     <script src="{{hostBaseUrl}}/atlassian-connect/all.js"></script>
 </head>
 
@@ -22,100 +21,12 @@
     <div class="aui-page-panel ac-content">
         <div class="aui-page-panel-inner">
             <section id="addon-wrapper" class="aui-page-panel-content">
+                <span>No Epics found.</span>
             </section>
         </div>
     </div>
 </section>
 
-<!--Templates for Add-on Header-->
-<script type="text/underscore-template" id="addonHeaderTitleTemplate">
-</script>
-<script type="text/underscore-template" id="addonHeaderOverallRowTemplate">
-    <tr>
-        <td>Overall Progress:</td>
-        <td>
-            <ul class="ag-progress">
-                <% if (progress.total == 0) { %>
-                    <li class="ag-notfound" style="width:100%"><span class="ag-status-info"><b>None</b></span></li>
-                <% } else { %>
-                    <% if (progress.done > 0) { %>
-                        <li class="ag-done simple-tooltip" style="width:<%=progress.percentDone%>%" title="<%=progress.done%> Tasks Done">
-                            <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory = %22Done%22 AND labels = %22<%=label%>%22" class="ag-status-info" target="_blank">
-                                <b><%=progress.done%></b>
-                            </a>
-                        </li>
-                    <% } %>
-                    <% if (progress.inProgress > 0) { %>
-                        <li class="ag-inprogress simple-tooltip" style="width:<%=progress.percentInProgress%>%" title="<%=progress.inProgress%> Tasks In Progress">
-                            <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory = %22In Progress%22 AND labels = %22<%=label%>%22" class="ag-status-info" target="_blank">
-                                <b><%=progress.inProgress%></b>
-                            </a>
-                        </li>
-                    <% } %>
-                    <% if (progress.toDo > 0) { %>
-                        <li class="ag-todo simple-tooltip" style="width:<%=progress.percentTodo%>%" title="<%=progress.toDoP%> Tasks To Do">
-                            <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory = %22To Do%22 AND labels = %22<%=label%>%22" class="ag-status-info" target="_blank">
-                                <b><%=progress.toDo%></b>
-                            </a>
-                        </li>
-                    <% } %>
-                <% } %>
-            </ul>
-        </td>
-    </tr>
-</script>
-<script type="text/underscore-template" id="addonHeaderDateRowTemplate">
-    <tr>
-        <td>
-            Overall Schedule:<br>
-        </td>
-        <td>
-            <ul class="ag-progress">
-                <% if (dates.totalDays == 0) { %>
-                    <li class="ag-notfound" style="width:100%"><span class="ag-status-info"><b>Schedule Not Available</b></span></li>
-                <% } else { %>
-                    <% if (dates.daysPast > 0) { %>
-                        <li class="ag-past" style="width:<%=dates.percentDaysPast%>%">
-                            <span class="ag-status-info simple-tooltip" title="<%=dates.daysPast%> Days Past"><b><%=dates.daysPast%> Days Past</b></span>
-                        </li>
-                    <% } %>
-                    <% if (dates.daysRemaining > 0) { %>
-                        <li class="ag-future" style="width:<%=dates.percentDaysRemaining%>%">
-                            <span class="ag-status-info simple-tooltip" title="<%=dates.daysRemaining%> Days Remaining"><b><%=dates.daysRemaining%> Days Remaining</b></span>
-                        </li>
-                    <% } %>
-                <% } %>
-            </ul>
-            <div style="display: flex; width: 100%">
-            <div style="width: 50%"><small><em><%=dates.startDate%></em></small></div>
-            <div style="width: 50%"><small><em style="float: right;"><%=dates.endDate%></em></small></div>
-            </div>
-        </td>
-    </tr>
-</script>
-
-<!--Templates for Epic Table-->
-<script type="text/underscore-template" id="noIssuesTemplate">
-    <span>No Epics found.</span>
-</script>
-<script type="text/underscore-template" id="epicTableTemplate">
-    <span><br></span>
-    <table id='epic-table' class='aui'>
-        <thead>
-            <th id="summary">Summary</th>
-            <th id="status">Status</th>
-            <% if (hasRisks) { %>
-                <th id="risk">Risk</th>
-            <% } %>
-            <% if (hasAlerts) { %>
-                <th id="alerts">Alerts</th>
-            <% } %>
-            <th id="progress">Progress</th>
-        </thead>
-        <tbody></tbody>
-    </table>
-    <span><br></span>
-</script>
 <script type="text/underscore-template" id="epicTableRow">
     <tr>
         <td headers="summary">
@@ -124,16 +35,9 @@
         <td headers="status">
             <span class="aui-lozenge aui-lozenge-subtle <%=epic.lozengeColorClass%>"><%=epic.statusCategoryName%></span>
         </td>
-        <% if (hasRisks) { %>
-            <td headers="risk">
-                <% if (epic.riskLevel) { %>
-                    <span class="aui-lozenge <%=epic.riskLozengeClass%> simple-tooltip" title="<%=epic.riskDescription%>"><%=epic.riskLevel%></span>
-                <% } %>
-            </td>
-        <% } %>
         <% if (hasAlerts) { %>
             <td headers="alerts">
-                <% if (epic.notInWigCount > epic.notInWigThreshold) { %>
+                <% if (epic.notInWigCount > 0) { %>
                     <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=%22Epic Link%22 = <%=epic.key%> and (labels is empty or labels != %22<%=label%>%22)" target="_blank">
                         <span class="aui-icon aui-icon-small aui-iconfont-error simple-tooltip" title="<%= epic.notInWigCount %> issues not in wig" />
                     </a>
@@ -171,6 +75,7 @@
         </td>
     </tr>
 </script>
+
 <script type="text/underscore-template" id="epicTableLastRow">
     <tr>
         <td headers="summary">
@@ -180,10 +85,6 @@
         </td>
         <td headers="status">
         </td>
-        <% if (hasRisks) { %>
-            <td headers="risk">
-            </td>
-        <% } %>
         <% if (hasAlerts) { %>
             <td headers="alerts">
             </td>
@@ -221,26 +122,96 @@
 </script>
 
 
-<!--Templates for Add-on Footer-->
-<script type="text/underscore-template" id="addonFooterTemplate">
-</script>
-
-
-<!--Templates for Add-on Config-->
 <script type="text/underscore-template" id="addonWrapperTemplate">
     <div id="addon-header">
         <table id='addon-header-table' class='aui'>
             <thead>
                 <th></th>
-                <th><h2>Summary of Epics in <b><%=config.label%></b></h2></th>
+                <th><h2>Summary of Epics in <b><%=label%></b></h2></th>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td>Overall Progress:</td>
+                    <td>
+                        <ul class="ag-progress">
+                            <% if (progress.total == 0) { %>
+                                <li class="ag-notfound" style="width:100%"><span class="ag-status-info"><b>None</b></span></li>
+                            <% } else { %>
+                                <% if (progress.done > 0) { %>
+                                    <li class="ag-done simple-tooltip" style="width:<%=progress.percentDone%>%" title="<%=progress.done%> Tasks Done">
+                                        <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory = %22Done%22 AND labels = %22<%=label%>%22" class="ag-status-info" target="_blank">
+                                            <b><%=progress.done%></b>
+                                        </a>
+                                    </li>
+                                <% } %>
+                                <% if (progress.inProgress > 0) { %>
+                                    <li class="ag-inprogress simple-tooltip" style="width:<%=progress.percentInProgress%>%" title="<%=progress.inProgress%> Tasks In Progress">
+                                        <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory = %22In Progress%22 AND labels = %22<%=label%>%22" class="ag-status-info" target="_blank">
+                                            <b><%=progress.inProgress%></b>
+                                        </a>
+                                    </li>
+                                <% } %>
+                                <% if (progress.toDo > 0) { %>
+                                    <li class="ag-todo simple-tooltip" style="width:<%=progress.percentTodo%>%" title="<%=progress.toDoP%> Tasks To Do">
+                                        <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory = %22To Do%22 AND labels = %22<%=label%>%22" class="ag-status-info" target="_blank">
+                                            <b><%=progress.toDo%></b>
+                                        </a>
+                                    </li>
+                                <% } %>
+                            <% } %>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Overall Schedule:<br>
+                    </td>
+                    <td>
+                        <ul class="ag-progress">
+                            <% if (dates.totalDays == 0) { %>
+                                <li class="ag-notfound" style="width:100%"><span class="ag-status-info"><b>Schedule Not Available</b></span></li>
+                            <% } else { %>
+                                <% if (dates.daysPast > 0) { %>
+                                    <li class="ag-past" style="width:<%=dates.percentDaysPast%>%">
+                                        <span class="ag-status-info simple-tooltip" title="<%=dates.daysPast%> Days Past"><b><%=dates.daysPast%> Days Past</b></span>
+                                    </li>
+                                <% } %>
+                                <% if (dates.daysRemaining > 0) { %>
+                                    <li class="ag-future" style="width:<%=dates.percentDaysRemaining%>%">
+                                        <span class="ag-status-info simple-tooltip" title="<%=dates.daysRemaining%> Days Remaining"><b><%=dates.daysRemaining%> Days Remaining</b></span>
+                                    </li>
+                                <% } %>
+                            <% } %>
+                        </ul>
+                        <div style="display: flex; width: 100%">
+                        <div style="width: 50%"><small><em><%=dates.startDate%></em></small></div>
+                        <div style="width: 50%"><small><em style="float: right;"><%=dates.endDate%></em></small></div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+
+        </table>
+    </div>
+    <div id="epics-in-wig" class="aui-item">
+        <span><br></span>
+        <table id='epic-table' class='aui'>
+            <thead>
+                <th id="summary">Summary</th>
+                <th id="status">Status</th>
+                <% if (hasAlerts) { %>
+                    <th id="alerts">Alerts</th>
+                <% } %>
+                <th id="progress">Progress</th>
             </thead>
             <tbody></tbody>
         </table>
+        <span><br></span>
     </div>
-    <div id="epics-in-wig" class="aui-item"></div>
     <div id="addon-footer">
         <b>Summary of Epics in</b>
-        <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=labels = %22<%=config.label%>%22 AND issuetype = Epic" target="_blank">
+        <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=labels = %22<%=label%>%22 AND issuetype = Epic" target="_blank">
             <%=config.label%>
         </a>
     </div>
@@ -250,17 +221,15 @@
     <form class='aui'>
         <div class='field-group'>
             <label for='itemTitle'>Title:<span class='aui-icon icon-required'>required</span></label>
-            <input class='text medium-field' type='text' id='itemTitle' value='<%=title%>'/>
+            <input class='text medium-field' type='text' id='itemTitle' value='<%- title %>'/>
         </div>
         <div class='field-group'>
             <label for='wigLabel'>Label:<span class='aui-icon icon-required'>required</span></label>
-            <input class='text medium-field' type='text' id='wigLabel' value='<%=label%>'/>
+            <input class='text medium-field' type='text' id='wigLabel' value='<%- label %>'/>
         </div>
         <div class='field-group'>
             <label for='wigStartDate'>Start Date:<span class='aui-icon icon-required'>required</span></label>
             <input class='aui-date-picker' type='date' id='wigStartDate'/>
-        </div>
-        <div class='field-group'>
             <label for='wigEndDate'>End Date:<span class='aui-icon icon-required'>required</span></label>
             <input class='aui-date-picker' type='date' id='wigEndDate'/>
         </div>

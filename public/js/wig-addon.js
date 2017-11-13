@@ -51,7 +51,7 @@ const getWigDates = function (config) {
   return dates;
 };
 
-$(document).ready(function () {
+$(document).ready(async function () {
 
   const IssueTableView = function () {
     function sortBySummary (a, b) {
@@ -288,26 +288,21 @@ $(document).ready(function () {
     };
   };
 
-  async function onReady() {
-    const configView = new DashboardItemConfigurationView();
-    const configService = new DashboardItemConfigurationService();
-    const issueView = new IssueTableView();
+  const configService = new DashboardItemConfigurationService();
+  const configView = new DashboardItemConfigurationView();
 
-    AP.require(['jira'], function (jira) {
-      jira.DashboardItem.onDashboardItemEdit(async function () {
-        const config = await configService.getConfiguration();
-        configView.render(config);
-      });
-    });
-
-    const configured = await configService.isConfigured();
-    if (configured) {
+  AP.require(['jira'], function (jira) {
+    jira.DashboardItem.onDashboardItemEdit(async function () {
       const config = await configService.getConfiguration();
-      issueView.render(config);
-    } else {
-      configView.render();
-    }
-  }
+      configView.render(config);
+    });
+  });
 
-  return onReady();
+  const configured = await configService.isConfigured();
+  if (configured) {
+    const config = await configService.getConfiguration();
+    new IssueTableView().render(config);
+  } else {
+    configView.render();
+  }
 });

@@ -146,7 +146,7 @@ $(document).ready(function () {
       const issues = JSON.parse(response.body).issues || [];
 
       epics.forEach(e => {
-        epic.notInWigCount = issues.filter(i => i.fields[epic_link_id] === e.key).length;
+        e.notInWigCount = issues.filter(i => i.fields[epic_link_id] === e.key).length;
       });
     }
 

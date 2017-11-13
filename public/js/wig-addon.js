@@ -243,9 +243,9 @@ $(document).ready(function () {
           label: config ? config.label : 'WIG'
         }));
 
-        const start = $('#wigStartDate').datePicker({'overrideBrowserDefault': true});
-        start.setDate(new Date(config.startDate));
-        start.datePicker('setDate', new Date(config.startDate));
+        AJS.$('#wigStartDate').datePicker({'overrideBrowserDefault': true});
+        AJS.$('#wigStartDate').datePicker(new Date(config.startDate));
+        AJS.$('#wigStartDate').datePicker('setDate', new Date(config.startDate));
         const end = $('#wigEndDate').datePicker({'overrideBrowserDefault': true});
         end.initPolyfill();
         end.setDate(new Date(config.endDate));

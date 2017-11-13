@@ -244,9 +244,9 @@ $(document).ready(function () {
         }));
 
         const start = $('#wigStartDate').datePicker({'overrideBrowserDefault': true});
-        start.setDate(config.startDate);
+        start.setDate(new Date(config.startDate));
         const end = $('#wigEndDate').datePicker({'overrideBrowserDefault': true});
-        end.setDate(config.endDate);
+        end.setDate(new Date(config.endDate));
 
         if (config) {
           $('#enableScaling').prop('checked', config.scalingEnabled);

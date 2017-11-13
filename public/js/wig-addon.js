@@ -243,12 +243,10 @@ $(document).ready(function () {
           label: config ? config.label : 'WIG'
         }));
 
-        const $start = $('#wigStartDate');
-        const $end = $('#wigEndDate');
-        $start.datePicker({'overrideBrowserDefault': true});
-        $start.value = config.startDate;
-        $end.datePicker({'overrideBrowserDefault': true});
-        $end.value = config.endDate;
+        const start = $('#wigStartDate').datePicker({'overrideBrowserDefault': true});
+        start.value = config.startDate;
+        const end = $('#wigEndDate').datePicker({'overrideBrowserDefault': true});
+        end.value = config.endDate;
 
         if (config) {
           $('#enableScaling').prop('checked', config.scalingEnabled);
@@ -284,7 +282,6 @@ $(document).ready(function () {
           data: JSON.stringify(configuration),
           success: successCallback
         });
-        AJS.messages.success('Success!', 'The configuration was saved');
       }
     };
   };

@@ -267,7 +267,7 @@ $(document).ready(function () {
     return {
       getConfiguration: async function () {
         const response = await AP.request(`/rest/api/2/dashboard/${db}/items/${dbItem}/properties/itemkey`);
-        return JSON.parse(response.body).key;
+        return JSON.parse(response.body).value;
       },
 
       isConfigured: async function () {

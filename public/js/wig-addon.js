@@ -62,7 +62,7 @@ $(document).ready(function () {
       render: async function (config) {
         AP.jira.setDashboardItemTitle(config ? config.title : 'WIG Dashboard');
 
-        $('#addon-wrapper').html(_.tempalte($('#loadingTemplate').html()));
+        $('#addon-wrapper').html(_.template($('#loadingTemplate').html()));
         const issueService = new IssueSearchService(config);
         const {epics, noEpic} = await issueService.getEpics();
 
@@ -85,6 +85,8 @@ $(document).ready(function () {
             $epicTable.append(epicTableLastRow(
               {noEpic, epicString: getEpicKeys(epics), label: config.label, hasAlerts: progress.hasAlerts}));
           }
+        } else {
+          $('#addon-wrapper').html(_.template($('#noIssuesTemplate').html()));
         }
       }
     };

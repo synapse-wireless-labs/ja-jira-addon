@@ -219,7 +219,6 @@
 
 <script type="text/underscore-template" id="addonConfigTemplate">
     <form class='aui'>
-    <h3>Dashboard Settings</h3>
     <fieldset>
         <div class='field-group'>
             <label for='itemTitle'>Title:<span class='aui-icon icon-required'>required</span></label>
@@ -229,6 +228,8 @@
             <label for='wigLabel'>JIRA Label:<span class='aui-icon icon-required'>required</span></label>
             <input class='text medium-field' type='text' id='wigLabel' value='<%- label %>'/>
         </div>
+    </fieldset>
+    <fieldset>
         <div class='field-group'>
             <label for='wigStartDate'>Start Date:<span class='aui-icon icon-required'>required</span></label>
             <input class='aui-date-picker text medium-field' type='date' id='wigStartDate' value='<%- start %>'/>
@@ -237,6 +238,8 @@
             <label for='wigEndDate'>End Date:<span class='aui-icon icon-required'>required</span></label>
             <input class='aui-date-picker text medium-field' type='date' id='wigEndDate' value='<%- end %>'/>
         </div>
+    </fieldset>
+    <fieldset>
         <div class="field-group">
             <label for="wigDescription">Description:</label>
             <textarea class="textarea" rows="6" cols="20" name="wigDescription" id="wigDescription"></textarea>

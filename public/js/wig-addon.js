@@ -230,7 +230,7 @@ $(document).ready(function () {
     async function cancelButtonHandler (e) {
       e.preventDefault();
 
-      const config = await configService.getConfiguration();
+      const config = await service.getConfiguration();
       new IssueTableView().render(config);
     }
 

@@ -19,7 +19,7 @@
     "morgan": "^1.6.1",
     "rsvp": "^3.2.1",
     "static-expiry": ">=0.0.5",
-    "@atlassian/aui": "^6",
+    "@atlassian/aui": "^7",
     "css-loader": "^0.28.7",
     "jquery": "^2.2.4",
     "style-loader": "^0.19.0",

@@ -17,7 +17,10 @@ let config = {
       },
       {
         test: /\.(png|jpg|gif|eot|woff|svg)$/,
-        loader: 'file-loader'
+        loader: 'file-loader',
+        options: {
+          outputPath: './public/'
+        }
       }
 ]
   }

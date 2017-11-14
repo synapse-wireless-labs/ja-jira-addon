@@ -227,10 +227,11 @@ $(document).ready(function () {
       service.save(config, () => new IssueTableView().render(config));
     }
 
-    function cancelButtonHandler (e) {
+    async function cancelButtonHandler (e) {
       e.preventDefault();
 
-      service.getConfiguration(config => new IssueTableView().render(config));
+      const config = await configService.getConfiguration();
+      new IssueTableView().render(config);
     }
 
     return {

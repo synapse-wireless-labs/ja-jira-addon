@@ -17,7 +17,7 @@ const IssueSearchService = function (config) {
     const epics = JSON.parse(response.body).issues || [];
     const statusCategoryColors = {
       'Deferred': 'aui-lozenge-error',
-      'To Do': 'aui-lozenge-complete',
+      'To Do': '',
       'In Progress': 'aui-lozenge-current',
       'Done': 'aui-lozenge-success'
     };

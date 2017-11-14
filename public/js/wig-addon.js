@@ -243,7 +243,8 @@ $(document).ready(function () {
           title: config ? config.title : 'WIG Status',
           label: config ? config.label : 'WIG',
           start: config ? config.startDate.substring(0, 10) : '',
-          end: config ? config.endDate.substring(0, 10) : ''
+          end: config ? config.endDate.substring(0, 10) : '',
+          description: config ? config.description : ''
         }));
 
         $('#wigStartDate').datePicker({'overrideBrowserDefault': true});

@@ -91,6 +91,10 @@ li.ag-empty {
     color: #7d7d7d;
 }
 
+li.ag-empty a {
+    color: #7d7d7d
+}
+
 li.ag-todo {
     background: #dfe1e6;
     color: #253858;

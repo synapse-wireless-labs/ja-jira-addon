@@ -14,17 +14,11 @@ let config = {
       },
       {
         test: /.ttf([?]?.*)$/,
-        loader: 'file-loader',
-        options: {
-          outputPath: './public/'
-        }
+        loader: 'file-loader'
       },
       {
         test: /\.(png|jpg|gif|eot|woff|svg)$/,
-        loader: 'file-loader',
-        options: {
-          outputPath: './public/'
-        }
+        loader: 'file-loader'
       }
 ]
   }

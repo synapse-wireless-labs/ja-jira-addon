@@ -3,7 +3,7 @@ const webpack = require('webpack');
 let config = {
     entry: './src/index.js',
     output: {
-        filename: 'dist/bundle.js'
+        filename: 'public/js/bundle.js'
     },
     module: {
         rules: [{

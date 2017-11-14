@@ -99,21 +99,21 @@
                     <% if (noEpic.done > 0) { %>
                         <li class="ag-done simple-tooltip" style="width:<%=noEpic.percentDone%>%" title="<%=noEpic.done%> Tasks Done">
                             <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=labels = %22<%=label%>%22 AND statusCategory = %22Done%22 AND issuetype != Epic AND (%22Epic Link%22 is empty OR %22Epic Link%22 not in (<%=epicString%>))" class="ag-status-info" target="_blank">
-                                <b><%=noEpic.done%></b>
+                                <%=noEpic.done%>
                             </a>
                         </li>
                     <% } %>
                     <% if (noEpic.inProgress > 0) { %>
                         <li class="ag-inprogress simple-tooltip" style="width:<%=noEpic.percentInProgress%>%" title="<%=noEpic.inProgress%> Tasks In Progress">
                             <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=labels = %22<%=label%>%22 AND statusCategory = %22In Progress%22 AND issuetype != Epic AND (%22Epic Link%22 is empty OR %22Epic Link%22 not in (<%=epicString%>))" class="ag-status-info" target="_blank">
-                                <b><%=noEpic.inProgress%></b>
+                                <%=noEpic.inProgress%>
                             </a>
                         </li>
                     <% } %>
                     <% if (noEpic.toDo > 0) { %>
                         <li class="ag-todo simple-tooltip" style="width:<%=noEpic.percentTodo%>%" title="<%=noEpic.toDo%> Tasks To Do">
                             <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=labels = %22<%=label%>%22 AND statusCategory = %22To Do%22 AND issuetype != Epic AND (%22Epic Link%22 is empty OR %22Epic Link%22 not in (<%=epicString%>))" class="ag-status-info" target="_blank">
-                                <b><%=noEpic.toDo%></b>
+                                <%=noEpic.toDo%>
                             </a>
                         </li>
                     <% } %>
@@ -143,21 +143,21 @@
                                 <% if (progress.done > 0) { %>
                                     <li class="ag-done simple-tooltip" style="width:<%=progress.percentDone%>%" title="<%=progress.done%> Tasks Done">
                                         <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory = %22Done%22 AND labels = %22<%=label%>%22" class="ag-status-info" target="_blank">
-                                            <b><%=progress.done%></b>
+                                            <%=progress.done%>
                                         </a>
                                     </li>
                                 <% } %>
                                 <% if (progress.inProgress > 0) { %>
                                     <li class="ag-inprogress simple-tooltip" style="width:<%=progress.percentInProgress%>%" title="<%=progress.inProgress%> Tasks In Progress">
                                         <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory = %22In Progress%22 AND labels = %22<%=label%>%22" class="ag-status-info" target="_blank">
-                                            <b><%=progress.inProgress%></b>
+                                            <%=progress.inProgress%>
                                         </a>
                                     </li>
                                 <% } %>
                                 <% if (progress.toDo > 0) { %>
                                     <li class="ag-todo simple-tooltip" style="width:<%=progress.percentTodo%>%" title="<%=progress.toDoP%> Tasks To Do">
                                         <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory = %22To Do%22 AND labels = %22<%=label%>%22" class="ag-status-info" target="_blank">
-                                            <b><%=progress.toDo%></b>
+                                            <%=progress.toDo%>
                                         </a>
                                     </li>
                                 <% } %>
@@ -176,12 +176,12 @@
                             <% } else { %>
                                 <% if (dates.daysPast > 0) { %>
                                     <li class="ag-past" style="width:<%=dates.percentDaysPast%>%">
-                                        <span class="ag-status-info simple-tooltip" title="<%=dates.daysPast%> Days Past"><b><%=dates.daysPast%> Days Past</b></span>
+                                        <span class="ag-status-info simple-tooltip" title="<%=dates.daysPast%> Days Past">%=dates.daysPast%> Days Past</span>
                                     </li>
                                 <% } %>
                                 <% if (dates.daysRemaining > 0) { %>
                                     <li class="ag-future" style="width:<%=dates.percentDaysRemaining%>%">
-                                        <span class="ag-status-info simple-tooltip" title="<%=dates.daysRemaining%> Days Remaining"><b><%=dates.daysRemaining%> Days Remaining</b></span>
+                                        <span class="ag-status-info simple-tooltip" title="<%=dates.daysRemaining%> Days Remaining"><%=dates.daysRemaining%> Days Remaining</span>
                                     </li>
                                 <% } %>
                             <% } %>

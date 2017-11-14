@@ -54,21 +54,21 @@
                     <% if (epic.done > 0) { %>
                         <li class="ag-done simple-tooltip" style="width:<%=epic.percentDone%>%" title="<%=epic.done%> Tasks Done">
                             <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory = %22Done%22 AND %22Epic Link%22 = <%=epic.key%>" class="ag-status-info" target="_blank">
-                                <b><%=epic.done%></b>
+                                <%=epic.done%>
                             </a>
                         </li>
                     <% } %>
                     <% if (epic.inProgress > 0) { %>
                         <li class="ag-inprogress simple-tooltip" style="width:<%=epic.percentInProgress%>%" title="<%=epic.inProgress%> Tasks In Progress">
                             <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory = %22In Progress%22 AND %22Epic Link%22 = <%=epic.key%>" class="ag-status-info" target="_blank">
-                                <b><%=epic.inProgress%></b>
+                                <%=epic.inProgress%>
                             </a>
                         </li>
                     <% } %>
                     <% if (epic.toDo > 0) { %>
                         <li class="ag-todo simple-tooltip" style="width:<%=epic.percentTodo%>%" title="<%=epic.toDo%> Tasks To Do">
                             <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory = %22To Do%22 AND %22Epic Link%22 = <%=epic.key%>" class="ag-status-info" target="_blank">
-                                <b><%=epic.toDo%></b>
+                                <%=epic.toDo%>
                             </a>
                         </li>
                     <% } %>

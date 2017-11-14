@@ -62,6 +62,7 @@ $(document).ready(function () {
       render: async function (config) {
         AP.jira.setDashboardItemTitle(config ? config.title : 'WIG Dashboard');
 
+        $('#addon-wrapper').html(_.tempalte($('#loadingTemplate').html()));
         const issueService = new IssueSearchService(config);
         const {epics, noEpic} = await issueService.getEpics();
 

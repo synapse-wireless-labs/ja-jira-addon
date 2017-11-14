@@ -219,21 +219,11 @@
 
 <script type="text/underscore-template" id="addonConfigTemplate">
     <form class='aui'>
+    <h3>Dashboard Settings</h3>
+    <fieldset>
         <div class='field-group'>
             <label for='itemTitle'>Title:<span class='aui-icon icon-required'>required</span></label>
             <input class='text medium-field' type='text' id='itemTitle' value='<%- title %>'/>
-        </div>
-        <div class='field-group'>
-            <label for='wigLabel'>Label:<span class='aui-icon icon-required'>required</span></label>
-            <input class='text medium-field' type='text' id='wigLabel' value='<%- label %>'/>
-        </div>
-        <div class='field-group'>
-            <label for='wigStartDate'>Start Date:<span class='aui-icon icon-required'>required</span></label>
-            <input class='aui-date-picker' type='date' id='wigStartDate'/>
-        </div>
-        <div class='field-group'>
-            <label for='wigEndDate'>End Date:<span class='aui-icon icon-required'>required</span></label>
-            <input class='aui-date-picker' type='date' id='wigEndDate'/>
         </div>
         <div class='field-group'>
             <label for="enableScaling">Scaling:</label>
@@ -244,6 +234,26 @@
                 </label>
             </div>
         </div>
+    </fieldset>
+    <h3>WIG Settings</h3>
+    <fieldset>
+        <div class='field-group'>
+            <label for='wigLabel'>Label:<span class='aui-icon icon-required'>required</span></label>
+            <input class='text medium-field' type='text' id='wigLabel' value='<%- label %>'/>
+        </div>
+        <div class='field-group'>
+            <label for='wigStartDate'>Start Date:<span class='aui-icon icon-required'>required</span></label>
+            <input class='aui-date-picker' type='date' id='wigStartDate' value='<%- start %>'/>
+        </div>
+        <div class='field-group'>
+            <label for='wigEndDate'>End Date:<span class='aui-icon icon-required'>required</span></label>
+            <input class='aui-date-picker' type='date' id='wigEndDate' value='<%- end %>'/>
+        </div>
+        <div class="field-group">
+            <label for="wigDescription">WIG Description</label>
+            <textarea class="textarea" rows="6" cols="20" name="wigDescription" id="wigDescription"></textarea>
+        </div>
+    </fieldset>
         <div class='buttons-container'>
             <button type='submit' id='saveConfiguration' class='aui-button'>Save</button>
             <button type='submit' id='cancelConfiguration' class='aui-button aui-button-link cancel'>Cancel</button>

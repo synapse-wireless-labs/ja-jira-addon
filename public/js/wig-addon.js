@@ -218,6 +218,7 @@ $(document).ready(function () {
       const config = {
         title: $('#itemTitle').val(),
         label: $('#wigLabel').val(),
+        description: $('#wigDescription').val(),
         startDate: new Date($('#wigStartDate').val() || 0),
         endDate: new Date($('#wigEndDate').val() || 0),
         scalingEnabled: $('#enableScaling').prop('checked')
@@ -240,13 +241,13 @@ $(document).ready(function () {
         $addon.empty();
         $addon.html(configTemplate({
           title: config ? config.title : 'WIG Status',
-          label: config ? config.label : 'WIG'
+          label: config ? config.label : 'WIG',
+          start: config ? config.startDate.toISOString().substring(0, 10) : '',
+          end: config ? config.endDate.toISOString().substring(0, 10) : ''
         }));
 
-        const date = AJS.$('#wigStartDate').datePicker({'overrideBrowserDefault': true});
-        date.setDate(new Date(config.startDate));
-        const end = $('#wigEndDate').datePicker({'overrideBrowserDefault': true});
-        end.setDate(new Date(config.endDate));
+        $('#wigStartDate').datePicker({'overrideBrowserDefault': true});
+        $('#wigEndDate').datePicker({'overrideBrowserDefault': true});
 
         if (config) {
           $('#enableScaling').prop('checked', config.scalingEnabled);

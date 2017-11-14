@@ -21,7 +21,7 @@
     <div class="aui-page-panel ac-content">
         <div class="aui-page-panel-inner">
             <section id="addon-wrapper" class="aui-page-panel-content">
-                <span>No Epics found.</span>
+                <span>Loading data...</span> <div class="button-spinner"></div>
             </section>
         </div>
     </div>
@@ -226,19 +226,7 @@
             <input class='text medium-field' type='text' id='itemTitle' value='<%- title %>'/>
         </div>
         <div class='field-group'>
-            <label for="enableScaling">Scaling:</label>
-            <div class="checkbox">
-                <label>
-                    <input type="checkbox" class="checkbox" id="enableScaling">
-                    Normalize Epic progress bars relative to each other
-                </label>
-            </div>
-        </div>
-    </fieldset>
-    <h3>WIG Settings</h3>
-    <fieldset>
-        <div class='field-group'>
-            <label for='wigLabel'>Label:<span class='aui-icon icon-required'>required</span></label>
+            <label for='wigLabel'>JIRA Label:<span class='aui-icon icon-required'>required</span></label>
             <input class='text medium-field' type='text' id='wigLabel' value='<%- label %>'/>
         </div>
         <div class='field-group'>
@@ -250,8 +238,17 @@
             <input class='aui-date-picker text medium-field' type='date' id='wigEndDate' value='<%- end %>'/>
         </div>
         <div class="field-group">
-            <label for="wigDescription">WIG Description</label>
+            <label for="wigDescription">Description:</label>
             <textarea class="textarea" rows="6" cols="20" name="wigDescription" id="wigDescription"></textarea>
+        </div>
+        <div class='field-group'>
+            <label for="enableScaling">Scaling:</label>
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" class="checkbox" id="enableScaling">
+                    Normalize Epic progress bars relative to each other
+                </label>
+            </div>
         </div>
     </fieldset>
         <div class='buttons-container'>

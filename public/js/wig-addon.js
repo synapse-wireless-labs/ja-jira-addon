@@ -299,6 +299,7 @@ $(document).ready(function () {
     const configured = await configService.isConfigured();
     if (configured) {
       const config = await configService.getConfiguration();
+      AJS.$('.button-spinner').spin();
       new IssueTableView().render(config);
     } else {
       new DashboardItemConfigurationView().render();

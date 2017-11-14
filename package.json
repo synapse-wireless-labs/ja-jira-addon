@@ -7,24 +7,25 @@
     "webpack": "webpack"
   },
   "dependencies": {
+    "@atlassian/aui": "^7",
     "atlassian-connect-express": "~1.0.10",
     "body-parser": "^1.14.2",
     "compression": "^1.6.0",
     "cookie-parser": "^1.4.0",
+    "css-loader": "^0.28.7",
     "errorhandler": "^1.4.2",
     "express": "^4.13.3",
     "express-hbs": "*",
+    "file-loader": "^1.1.5",
+    "jquery": "^3.2.1",
+    "jquery-migrate": "^3.0.1",
     "jugglingdb-postgres": "*",
     "jugglingdb-sqlite3": "0.0.5",
     "morgan": "^1.6.1",
     "rsvp": "^3.2.1",
     "static-expiry": ">=0.0.5",
-    "@atlassian/aui": "^7",
-    "css-loader": "^0.28.7",
     "style-loader": "^0.19.0",
     "webpack": "^3.8.1",
-    "jquery": "^3.2.1",
-    "jquery-migrate": "^3.0.1",
     "webpack-dev-server": "^2.9.4"
-  },
+  }
 }

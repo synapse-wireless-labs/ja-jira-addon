@@ -16,7 +16,7 @@ let config = {
         loader: 'file-loader'
       },
       {
-        test: /\.(png|jpg|gif)$/,
+        test: /\.(png|jpg|gif|eot|woff|svg)$/,
         loader: 'file-loader'
       }
 ]

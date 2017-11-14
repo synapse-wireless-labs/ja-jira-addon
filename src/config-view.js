@@ -40,8 +40,8 @@ const DashboardItemConfigurationView = function () {
         description: config ? config.description : ''
       }));
 
-      $('#wigStartDate').datePicker({'overrideBrowserDefault': true});
-      $('#wigEndDate').datePicker({'overrideBrowserDefault': true});
+      AJS.$('#wigStartDate').datePicker({'overrideBrowserDefault': true});
+      AJS.$('#wigEndDate').datePicker({'overrideBrowserDefault': true});
 
       if (config) {
         $('#enableScaling').prop('checked', config.scalingEnabled);

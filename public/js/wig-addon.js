@@ -242,8 +242,8 @@ $(document).ready(function () {
         $addon.html(configTemplate({
           title: config ? config.title : 'WIG Status',
           label: config ? config.label : 'WIG',
-          start: config ? config.startDate.toISOString().substring(0, 10) : '',
-          end: config ? config.endDate.toISOString().substring(0, 10) : ''
+          start: config ? config.startDate.substring(0, 10) : '',
+          end: config ? config.endDate.substring(0, 10) : ''
         }));
 
         $('#wigStartDate').datePicker({'overrideBrowserDefault': true});

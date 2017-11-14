@@ -95,45 +95,26 @@ li.ag-todo {
     background: #4a6785
 }
 
-li.ag-todo:hover {
-    background-color: #537495
-}
-
 li.ag-inprogress {
-    color: #815b3a;
-    background: #f6c342
+    background-color: #b3d4ff;
+    border-color: #b3d4ff;
 }
 
 li.hidden {
     display: none;
 }
 
-li.ag-inprogress:hover {
-    background-color: #f7cb5a
-}
-
 li.ag-inprogress a {
-    color: #815b3a
-}
-
-li.ag-inprogress a:hover {
-    color: inherit
+    color: #0052cc;
 }
 
 li.ag-done {
-    background: #14892c
-}
-
-li.ag-done:hover {
-    background-color: #179f33
+    background-color: #00875a;
+    border-color: #00875a;
 }
 
 li.ag-none {
     background: #707070
-}
-
-li.ag-none:hover {
-    background-color: #7d7d7d
 }
 
 .ag-none li {

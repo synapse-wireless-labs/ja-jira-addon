@@ -3,7 +3,8 @@ const webpack = require('webpack');
 let config = {
   entry: './src/index.js',
   output: {
-    filename: 'public/js/bundle.js'
+    filename: 'public/js/bundle.js',
+    publicPath: ''
   },
   module: {
     rules: [
@@ -15,16 +16,14 @@ let config = {
         test: /.ttf([?]?.*)$/,
         loader: 'file-loader',
         options: {
-          outputPath: './public/',
-          publicPath: ''
+          outputPath: './public/'
         }
       },
       {
         test: /\.(png|jpg|gif|eot|woff|svg)$/,
         loader: 'file-loader',
         options: {
-          outputPath: './public/',
-          publicPath: ''
+          outputPath: './public/'
         }
       }
 ]

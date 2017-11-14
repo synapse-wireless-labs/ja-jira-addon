@@ -14,7 +14,12 @@ let config = {
       {
         test: /.ttf([?]?.*)$/,
         loader: 'file-loader'
-      }]
+      },
+      {
+        test: /\.(png|jpg|gif)$/,
+        loader: 'file-loader'
+      }
+]
   }
 };
 

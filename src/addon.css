@@ -92,25 +92,20 @@ li.ag-empty {
 }
 
 li.ag-todo {
-    background: #4a6785
+    background: #dfe1e6;
+    color: #253858;
 }
 
 li.ag-inprogress {
-    background-color: #b3d4ff;
-    border-color: #b3d4ff;
+    background-color: #0052cc;
 }
 
 li.hidden {
     display: none;
 }
 
-li.ag-inprogress a {
-    color: #0052cc;
-}
-
 li.ag-done {
     background-color: #00875a;
-    border-color: #00875a;
 }
 
 li.ag-none {

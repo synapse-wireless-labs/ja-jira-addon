@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "webpack": "webpack"
   },
   "dependencies": {
     "atlassian-connect-express": "~1.0.10",
@@ -17,6 +18,12 @@
     "jugglingdb-sqlite3": "0.0.5",
     "morgan": "^1.6.1",
     "rsvp": "^3.2.1",
-    "static-expiry": ">=0.0.5"
+    "static-expiry": ">=0.0.5",
+    "@atlassian/aui": "^6",
+    "css-loader": "^0.28.7",
+    "jquery": "^2.2.4",
+    "style-loader": "^0.19.0",
+    "webpack": "^3.8.1",
+    "webpack-dev-server": "^2.9.4"
   }
 }

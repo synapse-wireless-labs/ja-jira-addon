@@ -91,13 +91,13 @@ li.ag-empty {
     color: #7d7d7d;
 }
 
-li.ag-empty a {
-    color: #7d7d7d
-}
-
 li.ag-todo {
     background: #dfe1e6;
     color: #253858;
+}
+
+li.ag-todo a {
+    color: #253858
 }
 
 li.ag-inprogress {
@@ -133,14 +133,14 @@ ul.ag-none, .ag-none li {
     width: 100%
 }
 
-.ag-progress .ag-status-info b {
+.ag-progress .ag-status-info {
     display: block;
     text-align: center;
     vertical-align: middle;
     line-height: 24px;
 }
 
-#addon-header .ag-progress .ag-status-info b {
+#addon-header .ag-progress .ag-status-info {
     line-height: 36px;
 }
 

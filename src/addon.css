@@ -88,11 +88,13 @@ li.ag-future {
 
 li.ag-empty {
     background: #EBECF0;
+    font-weight: 500;
     color: #42526E;
 }
 
 li.ag-todo {
     background: #EBECF0;
+    font-weight: 500;
     color: #42526E;
 }
 
@@ -115,7 +117,8 @@ li.ag-done {
 
 li.ag-none {
     background: #EBECF0;
-    color: #42526E;
+     font-weight: 500;
+   color: #42526E;
 }
 
 ul.ag-none, .ag-none li {

@@ -45,11 +45,11 @@
 }
 
 .aui-iconfont-warning {
-    color: #f6c342;
+    color: #FFAB00;
 }
 
 .aui-iconfont-error {
-    color: #d04437;
+    color: #FF5230;
 }
 
 .ag-progress li {
@@ -79,25 +79,20 @@ li.ag-notfound {
 }
 
 li.ag-past {
-    background: #707070
+    background: #5E6C84
 }
 
 li.ag-future {
-    background: #59afe1
+    background: #00B8D9
 }
 
 li.ag-empty {
-    background: #ffffff;
-    color: #7d7d7d;
+    background: #EBECF0;
+    color: #42526E;
 }
 
 li.ag-todo {
-    background: #dfe1e6;
-    color: #253858;
-}
-
-li.ag-todo a {
-    color: #253858
+    background: #172B4D;
 }
 
 li.ag-inprogress {
@@ -109,15 +104,17 @@ li.hidden {
 }
 
 li.ag-done {
-    background-color: #00875a;
+    background-color: #36B37E;
 }
 
 li.ag-none {
-    background: #707070
+    background: #EBECF0;
+    color: #42526E;
 }
 
 .ag-none li {
-    background: #e9e9e9
+    background: #EBECF0;
+    color: #42526E;
 }
 
 ul.ag-none, .ag-none li {
@@ -182,7 +179,7 @@ ul.ag-none, .ag-none li {
 }
 
 .ag-scope-increase {
-    color: #d04437
+    color: #FF5230
 }
 
 a:hover .ag-scope-increase {

@@ -96,10 +96,10 @@ li.ag-todo {
     color: #42526E;
 }
 
-.ag-todo li {
-    background: #EBECF0;
+.ag-progress li a {
     color: #42526E;
 }
+
 
 li.ag-inprogress {
     background-color: #0052cc;
@@ -114,11 +114,6 @@ li.ag-done {
 }
 
 li.ag-none {
-    background: #EBECF0;
-    color: #42526E;
-}
-
-.ag-none li {
     background: #EBECF0;
     color: #42526E;
 }

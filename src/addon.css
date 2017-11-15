@@ -96,10 +96,9 @@ li.ag-todo {
     color: #42526E;
 }
 
-.ag-progress li a {
+.ag-todo li a {
     color: #42526E;
 }
-
 
 li.ag-inprogress {
     background-color: #0052cc;

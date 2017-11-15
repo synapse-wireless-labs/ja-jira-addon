@@ -97,6 +97,7 @@ li.ag-todo {
 }
 
 li.ag-todo a {
+    font-weight: 500;
     color: #42526E;
 }
 

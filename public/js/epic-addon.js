@@ -46,7 +46,7 @@ $( document ).ready(function() {
                 this.setTitle(configuration);
 
                 var $addon = $('#addon-wrapper');
-                $addon.empty();
+                $addon.html(_.template($('#loadingTemplate').html()));
 
                 var releaseInfo = {};
                 releaseInfo.projectName = configuration.projectName;

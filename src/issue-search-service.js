@@ -13,22 +13,20 @@ const IssueSearchService = function (config) {
 
   async function getEpicList () {
     const jql = encodeURIComponent(`labels = "${config.label}" AND issuetype = Epic`);
+
     const response = await AP.request(`/rest/api/2/search?jql=${jql}`);
     const epics = JSON.parse(response.body).issues || [];
-    const statusCategoryColors = {
-      'Deferred': 'aui-lozenge-error',
-      'To Do': '',
-      'In Progress': 'aui-lozenge-current',
-      'Done': 'aui-lozenge-success'
-    };
 
     return epics.map(function (e) {
       e.summary = e.fields.summary;
       e.statusCategoryName = e.fields.status.name === 'Deferred' ? 'Deferred' : e.fields.status.statusCategory.name;
-      e.lozengeColorClass = statusCategoryColors[e.statusCategoryName] || '';
       e.issues = [];
       return e;
     });
+  }
+
+  function countIssuesWithStatusCategory(issues, statusCategory) {
+    return issues.filter(issue => issue.fields.status.statusCategory.name === statusCategory).length
   }
 
   async function getIssuesNotInEpics (epics) {
@@ -40,15 +38,15 @@ const IssueSearchService = function (config) {
     const response = await AP.request(`/rest/api/2/search?jql=${jql}&fields=${fields}&maxResults=${MAX_RESULTS}`);
     const issues = JSON.parse(response.body).issues || [];
 
-    const noEpic = {};
-    noEpic.issues = issues.map(issue => issue.key);
-    noEpic.toDo = issues.filter(issue => issue.fields.status.statusCategory.name === 'To Do').length;
-    noEpic.inProgress = issues.filter(issue => issue.fields.status.statusCategory.name === 'In Progress').length;
-    noEpic.done = issues.filter(issue => issue.fields.status.statusCategory.name === 'Done').length;
-    return noEpic;
+    return {
+      issues: issues.map(issue => issue.key),
+      toDo: countIssuesWithStatusCategory(issues, 'To Do'),
+      inProgress: countIssuesWithStatusCategory(issues, 'In Progress'),
+      done: countIssuesWithStatusCategory(issues, 'Done')
+    };
   }
 
-  async function findIssuesNotInWig (epics) {
+  async function findIssuesNotInOverall (epics) {
     const jql = encodeURIComponent(
       `(labels is empty or labels != "${config.label}") AND "Epic Link" in (${getEpicKeys(epics)})`);
     const fields = encodeURIComponent([epic_link_id, 'status', 'key'].join(','));
@@ -58,49 +56,31 @@ const IssueSearchService = function (config) {
     const issues = JSON.parse(response.body).issues || [];
 
     epics.forEach(e => {
-      e.notInWigCount = issues.filter(i => i.fields[epic_link_id] === e.key).length;
+      e.notInOverallCount = issues.filter(i => i.fields[epic_link_id] === e.key).length;
     });
   }
 
-  async function getIssuesInEpics (epics) {
+  async function askJIRAforIssues (startAt, result) {
     const jql = encodeURIComponent(`labels = "${config.label}" AND "Epic Link" in (${getEpicKeys(epics)})`);
     const fields = encodeURIComponent([epic_link_id, 'status', 'key', 'issuetype'].join(','));
 
-    async function askJIRAforIssues (startAt, result) {
-      const response = await AP.request(`/rest/api/2/search?jql=${jql}&fields=${fields}&startAt=${startAt || 0}`);
-      const issues = JSON.parse(response.body);
-      const next = issues.startAt + issues.maxResults;
-      const totalIssues = result ? result.concat(issues.issues) : issues.issues;
+    const response = await AP.request(`/rest/api/2/search?jql=${jql}&fields=${fields}&startAt=${startAt || 0}`);
+    const issues = JSON.parse(response.body);
 
-      return (issues.total >= next) ? askJIRAforIssues(next, totalIssues) : totalIssues;
-    }
+    const next = issues.startAt + issues.maxResults;
+    const totalIssues = result ? result.concat(issues.issues) : issues.issues;
 
+    return (issues.total >= next) ? askJIRAforIssues(next, totalIssues) : totalIssues;
+  }
+
+  async function getIssuesInEpics (epics) {
     const issues = await askJIRAforIssues(0, []);
 
     epics.forEach(e => {
       e.issues = issues.filter(i => e.key === i.fields[epic_link_id]);
-      e.toDo = e.issues.filter(i => i.fields.status.statusCategory.name === 'To Do').length;
-      e.inProgress = e.issues.filter(i => i.fields.status.statusCategory.name === 'In Progress').length;
-      e.done = e.issues.filter(i => i.fields.status.statusCategory.name === 'Done').length;
-    });
-  }
-
-  function applyScaleFactor (epics, noEpic) {
-    const max = [...epics, noEpic].reduce((acc, epic) => (epic.issues.length > acc) ? epic.issues.length : acc, 0);
-
-    [...epics, noEpic].forEach(e => {
-      const scaleRatio = 0.35;
-      let scaleFactor = 1;
-      let divisor = e.issues.length;
-
-      if (config.scalingEnabled && max) {
-        scaleFactor = (divisor + (max - divisor) * scaleRatio) / divisor;
-        divisor = max;
-      }
-
-      e.percentTodo = divisor ? (e.toDo / divisor) * 100 * scaleFactor : 0;
-      e.percentInProgress = divisor ? (e.inProgress / divisor) * 100 * scaleFactor : 0;
-      e.percentDone = divisor ? (e.done / divisor) * 100 * scaleFactor : 0;
+      e.toDo = countIssuesWithStatusCategory(e.issues, 'To Do');
+      e.inProgress = countIssuesWithStatusCategory(e.issues, 'In Progress');
+      e.done = countIssuesWithStatusCategory(e.issues, 'Done');
     });
   }
 
@@ -109,12 +89,10 @@ const IssueSearchService = function (config) {
       epic_link_id = await getCustomIds();
       const epics = await getEpicList();
 
-      const [noEpic, ,] = await Promise.all([
+      const [noEpic, {}, {}] = await Promise.all([
         getIssuesNotInEpics(epics),
-        findIssuesNotInWig(epics),
+        findIssuesNotInOverall(epics),
         getIssuesInEpics(epics)]);
-
-      applyScaleFactor(epics, noEpic);
 
       return {epics, noEpic};
     }

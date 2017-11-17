@@ -83,7 +83,9 @@ li.ag-past {
 }
 
 li.ag-future {
-    background: #00B8D9
+    background: #EBECF0;
+    font-weight: 500;
+    color: #42526E;
 }
 
 li.ag-empty {

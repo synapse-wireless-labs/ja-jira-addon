@@ -35,13 +35,13 @@
             <p><a class="issue-link" data-issue-key="<%=epic.key%>" href="{{hostBaseUrl}}/browse/<%=epic.key%>" target="_blank"><%=epic.summary%></a></p>
         </td>
         <td headers="status">
-            <span class="aui-lozenge aui-lozenge-subtle <%=epic.lozengeColorClass%>"><%=epic.statusCategoryName%></span>
+            <span class="aui-lozenge aui-lozenge-subtle <%=lozengeColor%>"><%=epic.statusCategoryName%></span>
         </td>
-        <% if (hasAlerts) { %>
+        <% if (progress.hasAlerts) { %>
             <td headers="alerts">
-                <% if (epic.notInWigCount > 0) { %>
-                    <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=%22Epic Link%22 = <%=epic.key%> and (labels is empty or labels != %22<%=label%>%22)" target="_blank">
-                        <span class="aui-icon aui-icon-small aui-iconfont-error simple-tooltip" title="<%= epic.notInWigCount %> issues not in wig" />
+                <% if (epic.notInOverallCount > 0) { %>
+                    <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=%22Epic Link%22 = <%=epic.key%> and (labels is empty or labels != %22<%=config.label%>%22)" target="_blank">
+                        <span class="aui-icon aui-icon-small aui-iconfont-error simple-tooltip" title="<%= epic.notInOverallCount %> issues not associated" />
                     </a>
                 <% } %>
             </td>
@@ -81,13 +81,13 @@
 <script type="text/underscore-template" id="epicTableLastRow">
     <tr>
         <td headers="summary">
-            <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=labels = %22<%=label%>%22 AND issuetype != Epic AND (%22Epic Link%22 is empty OR %22Epic Link%22 not in (<%=epicString%>))" class="ag-status-info" target="_blank">
+            <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=labels = %22<%=config.label%>%22 AND issuetype != Epic AND (%22Epic Link%22 is empty OR %22Epic Link%22 not in (<%=epicString%>))" class="ag-status-info" target="_blank">
                 Issues without an Epic
             </a>
         </td>
         <td headers="status">
         </td>
-        <% if (hasAlerts) { %>
+        <% if (progress.hasAlerts) { %>
             <td headers="alerts">
             </td>
         <% } %>
@@ -98,21 +98,21 @@
                 <% } else { %>
                     <% if (noEpic.done > 0) { %>
                         <li class="ag-done simple-tooltip" style="width:<%=noEpic.percentDone%>%" title="<%=noEpic.done%> Tasks Done">
-                            <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=labels = %22<%=label%>%22 AND statusCategory = %22Done%22 AND issuetype != Epic AND (%22Epic Link%22 is empty OR %22Epic Link%22 not in (<%=epicString%>))" class="ag-status-info" target="_blank">
+                            <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=labels = %22<%=config.label%>%22 AND statusCategory = %22Done%22 AND issuetype != Epic AND (%22Epic Link%22 is empty OR %22Epic Link%22 not in (<%=epicString%>))" class="ag-status-info" target="_blank">
                                 <%=noEpic.done%>
                             </a>
                         </li>
                     <% } %>
                     <% if (noEpic.inProgress > 0) { %>
                         <li class="ag-inprogress simple-tooltip" style="width:<%=noEpic.percentInProgress%>%" title="<%=noEpic.inProgress%> Tasks In Progress">
-                            <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=labels = %22<%=label%>%22 AND statusCategory = %22In Progress%22 AND issuetype != Epic AND (%22Epic Link%22 is empty OR %22Epic Link%22 not in (<%=epicString%>))" class="ag-status-info" target="_blank">
+                            <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=labels = %22<%=config.label%>%22 AND statusCategory = %22In Progress%22 AND issuetype != Epic AND (%22Epic Link%22 is empty OR %22Epic Link%22 not in (<%=epicString%>))" class="ag-status-info" target="_blank">
                                 <%=noEpic.inProgress%>
                             </a>
                         </li>
                     <% } %>
                     <% if (noEpic.toDo > 0) { %>
                         <li class="ag-todo simple-tooltip" style="width:<%=noEpic.percentTodo%>%" title="<%=noEpic.toDo%> Tasks To Do">
-                            <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=labels = %22<%=label%>%22 AND statusCategory = %22To Do%22 AND issuetype != Epic AND (%22Epic Link%22 is empty OR %22Epic Link%22 not in (<%=epicString%>))" class="ag-status-info" target="_blank">
+                            <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=labels = %22<%=config.label%>%22 AND statusCategory = %22To Do%22 AND issuetype != Epic AND (%22Epic Link%22 is empty OR %22Epic Link%22 not in (<%=epicString%>))" class="ag-status-info" target="_blank">
                                 <%=noEpic.toDo%>
                             </a>
                         </li>
@@ -129,10 +129,16 @@
         <table id='addon-header-table' class='aui'>
             <thead>
                 <th></th>
-                <th><h2>Summary of Epics in <b><%=label%></b></h2></th>
+                <th><h2><b><%=config.label%></b> Progress Report</h2></th>
             </thead>
 
             <tbody>
+                <% if (config.description) { %>
+                <tr>
+                    <td>Summary:</td>
+                    <td><%- config.description %></td>
+                </tr>
+                <% } %>
                 <tr>
                     <td>Overall Progress:</td>
                     <td>
@@ -142,21 +148,21 @@
                             <% } else { %>
                                 <% if (progress.done > 0) { %>
                                     <li class="ag-done simple-tooltip" style="width:<%=progress.percentDone%>%" title="<%=progress.done%> Tasks Done">
-                                        <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory = %22Done%22 AND labels = %22<%=label%>%22" class="ag-status-info" target="_blank">
+                                        <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory = %22Done%22 AND labels = %22<%=config.label%>%22" class="ag-status-info" target="_blank">
                                             <%=progress.done%>
                                         </a>
                                     </li>
                                 <% } %>
                                 <% if (progress.inProgress > 0) { %>
                                     <li class="ag-inprogress simple-tooltip" style="width:<%=progress.percentInProgress%>%" title="<%=progress.inProgress%> Tasks In Progress">
-                                        <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory = %22In Progress%22 AND labels = %22<%=label%>%22" class="ag-status-info" target="_blank">
+                                        <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory = %22In Progress%22 AND labels = %22<%=config.label%>%22" class="ag-status-info" target="_blank">
                                             <%=progress.inProgress%>
                                         </a>
                                     </li>
                                 <% } %>
                                 <% if (progress.toDo > 0) { %>
                                     <li class="ag-todo simple-tooltip" style="width:<%=progress.percentTodo%>%" title="<%=progress.toDoP%> Tasks To Do">
-                                        <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory = %22To Do%22 AND labels = %22<%=label%>%22" class="ag-status-info" target="_blank">
+                                        <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=statusCategory = %22To Do%22 AND labels = %22<%=config.label%>%22" class="ag-status-info" target="_blank">
                                             <%=progress.toDo%>
                                         </a>
                                     </li>
@@ -196,13 +202,13 @@
 
         </table>
     </div>
-    <div id="epics-in-wig" class="aui-item">
+    <div id="epics-section" class="aui-item">
         <span><br></span>
         <table id='epic-table' class='aui'>
             <thead>
                 <th id="summary">Summary</th>
                 <th id="status">Status</th>
-                <% if (hasAlerts) { %>
+                <% if (progress.hasAlerts) { %>
                     <th id="alerts">Alerts</th>
                 <% } %>
                 <th id="progress">Progress</th>
@@ -213,8 +219,8 @@
     </div>
     <div id="addon-footer">
         <b>Summary of Epics in</b>
-        <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=labels = %22<%=label%>%22 AND issuetype = Epic" target="_blank">
-            <%=label%>
+        <a href="{{hostBaseUrl}}/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=labels = %22<%=config.label%>%22 AND issuetype = Epic" target="_blank">
+            <%=config.label%>
         </a>
     </div>
 </script>

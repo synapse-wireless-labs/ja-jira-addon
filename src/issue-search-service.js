@@ -89,7 +89,7 @@ const IssueSearchService = function (config) {
       epic_link_id = await getCustomIds();
       const epics = await getEpicList();
 
-      const [noEpic, {}, {}] = await Promise.all([
+      const [noEpic, , ] = await Promise.all([
         getIssuesNotInEpics(epics),
         findIssuesNotInOverall(epics),
         getIssuesInEpics(epics)]);

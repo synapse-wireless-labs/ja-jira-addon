@@ -70,7 +70,7 @@ const IssueSearchService = function (config) {
     const next = issues.startAt + issues.maxResults;
     const totalIssues = result ? result.concat(issues.issues) : issues.issues;
 
-    return (issues.total >= next) ? askJIRAforIssues(next, totalIssues) : totalIssues;
+    return (issues.total >= next) ? askJIRAforIssues(epics, next, totalIssues) : totalIssues;
   }
 
   async function getIssuesInEpics (epics) {

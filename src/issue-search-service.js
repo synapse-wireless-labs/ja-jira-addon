@@ -60,7 +60,7 @@ const IssueSearchService = function (config) {
     });
   }
 
-  async function askJIRAforIssues (startAt, result) {
+  async function askJIRAforIssues (epics, startAt, result) {
     const jql = encodeURIComponent(`labels = "${config.label}" AND "Epic Link" in (${getEpicKeys(epics)})`);
     const fields = encodeURIComponent([epic_link_id, 'status', 'key', 'issuetype'].join(','));
 
@@ -74,7 +74,7 @@ const IssueSearchService = function (config) {
   }
 
   async function getIssuesInEpics (epics) {
-    const issues = await askJIRAforIssues(0, []);
+    const issues = await askJIRAforIssues(epics, 0, []);
 
     epics.forEach(e => {
       e.issues = issues.filter(i => e.key === i.fields[epic_link_id]);

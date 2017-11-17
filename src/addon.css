@@ -75,7 +75,7 @@
 }
 
 li.ag-notfound {
-    background: #cccccc;
+    background: #7A869A;
 }
 
 li.ag-past {
@@ -90,7 +90,7 @@ li.ag-future {
 
 li.ag-empty {
     font-weight: 500;
-    color: #42526E;
+    color: #7A869A;
 }
 
 li.ag-todo {

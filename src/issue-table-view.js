@@ -1,3 +1,5 @@
+import IssueSearchService from './issue-search-service';
+
 const getOverallDates = function (config) {
   const MS_PER_DAY = 1000 * 60 * 60 * 24;
   const start = new Date(config.startDate);
@@ -66,6 +68,8 @@ const applyEpicScaling = function (config, epics, noEpic) {
 };
 
 const IssueTableView = function () {
+  const _loadingTemplate = _.template($('#loadingTemplate').html());
+  const _noIssuesTemplate = _.template($('#noIssuesTemplate').html());
   const _addonWrapperTemplate = _.template($('#addonWrapperTemplate').html());
   const _epicTableRowTemplate = _.template($('#epicTableRow').html());
   const _epicTableLastRowTemplate = _.template($('#epicTableLastRow').html());
@@ -86,13 +90,27 @@ const IssueTableView = function () {
   };
 
   return {
-    render: async function (config, epics, noEpic) {
+    render: async function (config) {
+      const $addon = $('#addon-wrapper');
+      $addon.html(_loadingTemplate);
+
+      AP.jira.setDashboardItemTitle(config.title || 'WIG Dashboard');
+
+      // Get Epics
+      const issueService = new IssueSearchService(config);
+      const {epics, noEpic} = await issueService.getEpics();
+
+      if (epics.length === 0) {
+        $addon.html(_noIssuesTemplate);
+        return;
+      }
+
       applyEpicScaling(config, epics, noEpic);
 
       const dates = getOverallDates(config);
       const progress = getOverallProgress(epics);
 
-      $('#addon-wrapper').html(_addonWrapperTemplate({config, progress, dates}));
+      $addon.html(_addonWrapperTemplate({config, progress, dates}));
       const $epicTable = $('#epic-table').find('tbody');
 
       epics.sort(sortBySummary).forEach(epic => {

@@ -129,13 +129,13 @@
         <table id='addon-header-table' class='aui'>
             <thead>
                 <th></th>
-                <th><h2><b><%=config.label%></b> Progress Report</h2></th>
+                <th><h3><b><%=config.label%></b> Dashboard</h3></th>
             </thead>
 
             <tbody>
                 <% if (config.description) { %>
                 <tr>
-                    <td>Summary:</td>
+                    <td>Goal:</td>
                     <td><%- config.description %></td>
                 </tr>
                 <% } %>
@@ -270,7 +270,7 @@
 </script>
 
 
-<script type="text/javascript" src="{{furl '/js/bundle.js'}}"></script>
+<script type="text/javascript" src="{{furl '/js/wig-bundle.js'}}"></script>
 <script src="//code.jquery.com/jquery-migrate-1.4.1.js"></script>
 </body>
 </html>

@@ -1,9 +1,9 @@
 const webpack = require('webpack');
 
 let config = {
-  entry: './src/index.js',
+  entry: './src/wig.js',
   output: {
-    filename: 'public/js/bundle.js',
+    filename: 'public/js/wig-bundle.js',
     publicPath: ''
   },
   module: {
